@@ -10,9 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../inc/Server.hpp"
+#include <unistd.h>
 
-int	main() {
-	Server	ircServ;
+int main()
+{
+	if (fork() == 0)
+	{
+		Server ircServ;
+	}
+	else
+	{
+		sleep(2);
+		virtualClient();
+	}
 	return 0;
 }

@@ -10,36 +10,48 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef SERVER_HPP
+#define SERVER_HPP
 
+#include "Client.hpp"
+#include <arpa/inet.h>
+#include <iostream>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include <iostream>
-#include <unistd.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 #include <vector>
 
-#define portNumber 8080
+void virtualClient();
 
-class Server {
-public:
+class Server
+{
+  public:
 	Server();
 	~Server();
+	Server(unsigned int port);
 
-	void	createSocket();
-	void	bindSocket();
-	void	setSocketToListen ();
-	void	acceptConnection();
-	void	serverSetup();
+	void createSocket();
+	void bindSocket();
+	void setSocketToListen();
+	void acceptConnection();
+	void serverSetup();
 
-private:
-	int	_serverSocket;
-	std::vector<int>	_clientSockets;
-	struct sockaddr_in	_serverAddress;
+  private:
+	unsigned int portNumber;
+	std::vector<Client> _clientList;
+	struct pollfd *_fdList;
+	bool _serverIsUp;
+	int _serverSocket;
+	size_t _usersOnline;
+	std::vector<int> _clientSockets;
+	struct sockaddr_in _serverAddress;
 
 	Server(const Server &src);
-	Server	&operator=(const Server &rhs);
+	Server &operator=(const Server &rhs);
 };
+
+#endif // !SERVER_HPP
