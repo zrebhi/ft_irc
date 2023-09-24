@@ -22,7 +22,7 @@ int main()
 	else
 	{
 		sleep(2);
-		virtualClient();
+		virtualClient("Mohamadou");
 	}
 	return 0;
 }

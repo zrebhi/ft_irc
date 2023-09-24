@@ -16,6 +16,7 @@
 #include "Client.hpp"
 #include <arpa/inet.h>
 #include <iostream>
+#include <map>
 #include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +26,7 @@
 #include <unistd.h>
 #include <vector>
 
-void virtualClient();
+void virtualClient(std::string response);
 
 class Server
 {
@@ -37,12 +38,12 @@ class Server
 	void createSocket();
 	void bindSocket();
 	void setSocketToListen();
-	void acceptConnection();
+	void acceptConnection(size_t i);
 	void serverSetup();
 
   private:
 	unsigned int portNumber;
-	std::vector<Client> _clientList;
+	std::map<int, Client *> _clientList;
 	struct pollfd *_fdList;
 	bool _serverIsUp;
 	int _serverSocket;
@@ -50,6 +51,9 @@ class Server
 	std::vector<int> _clientSockets;
 	struct sockaddr_in _serverAddress;
 
+	bool nickIsExisting(char *buffer);
+	void setNickname(size_t i);
+	void ClientInput(size_t i);
 	Server(const Server &src);
 	Server &operator=(const Server &rhs);
 };

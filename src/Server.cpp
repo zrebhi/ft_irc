@@ -15,10 +15,14 @@
 //
 
 #include "../inc/Server.hpp"
+#include <arpa/inet.h>
+#include <cstddef>
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <map>
 #include <ostream>
+#include <string>
 #include <sys/poll.h>
 #include <sys/socket.h>
 
@@ -48,41 +52,102 @@ Server::~Server()
 {
 }
 
+void Server::ClientInput(size_t i)
+{
+	// to clear
+	static int endCount;
+
+	if (_clientList[i]->getPseudo() == "")
+		setNickname(i);
+	else
+	{
+		endCount++;
+		std::cout << "Client Created and handle message" << std::endl;
+		char buffer[1000];
+		size_t bytesRead = recv(_fdList[i].fd, buffer, sizeof(buffer), 0);
+		// parsing et gerer l'input
+		if (endCount > 4)
+		{
+			send(_fdList[i].fd, "stop", 4, 0);
+			_serverIsUp = false;
+		}
+		else if (bytesRead)
+			std::cout << buffer << std::endl;
+	}
+}
+
+bool Server::nickIsExisting(char *buffer)
+{
+	std::map<int, Client *>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		if (it->second->getPseudo() == buffer)
+			return true;
+		it++;
+	}
+	return false;
+}
+
+void Server::setNickname(size_t i)
+{
+	char buffer[1000];
+	std::string nick = "Enter your nickname: ";
+	std::string wrongNickSize = "Size of nickname is less than five.\n";
+	std::string nickExisting = "Nickname is already attributed.\n";
+	send(_fdList[i].fd, nick.c_str(), nick.size(), 0);
+	int bytesRead = recv(_fdList[i].fd, buffer, sizeof(buffer), 0);
+	if (bytesRead < 5)
+		send(_fdList[i].fd, wrongNickSize.c_str(), wrongNickSize.size(), 0);
+	else if (nickIsExisting(buffer))
+		send(_fdList[i].fd, nickExisting.c_str(), nickExisting.size(), 0);
+	else
+	{
+		buffer[bytesRead] = '\0';
+		std::string pseudo(buffer);
+		std::cout << buffer << ": is the new pseudo: " << pseudo << std::endl;
+		if (!_clientList[i])
+			std::cout << "no client in this list" << std::endl;
+		_clientList[i]->setPseudo(pseudo);
+		std::cout << _clientList[i]->getPseudo() << ": check new pseudo" << std::endl;
+	}
+}
+
 void Server::serverSetup()
 {
 	createSocket();
 	bindSocket();
 	setSocketToListen();
-	acceptConnection();
+	acceptConnection(0);
 	_serverIsUp = true;
 	while (_serverIsUp)
 	{
 		int pollSize = poll(_fdList, _usersOnline, -1);
 		if (pollSize == -1)
 		{
-			std::cerr << "poll failed" << std::endl;
-			break;
+			std::cerr << "|";
+			sleep(2);
+			continue;
 		}
+		std::cerr << std::endl;
 		for (size_t i = 0; i < _usersOnline; i++)
 		{
 			if (_fdList[i].revents & POLLIN)
 			{
 				if (_fdList[i].fd == _serverSocket) // si c'est une nouvelle co
-					acceptConnection();
+					acceptConnection(i);
 				else
-				{
-					// envoi a une autre f() pour gerer le message
-					char buffer[1000];
-					size_t bytesRead = read(_fdList[i].fd, buffer, sizeof(buffer));
-					if (bytesRead)
-						std::cout << buffer << std::endl;
-				}
+					ClientInput(i);
 			}
 		}
 	}
 	close(_serverSocket);
-	for (size_t i = 0; i < _clientList.size(); i++)
-		close(_clientList[i].getSocket());
+	std::map<int, Client *>::iterator it = _clientList.begin();
+	while (it != _clientList.end())
+	{
+		close(it->first);
+		delete (it->second);
+		it++;
+	}
 }
 
 void Server::createSocket()
@@ -123,7 +188,7 @@ void Server::setSocketToListen()
 	printf("Server socket created successfully\n");
 }
 
-void Server::acceptConnection()
+void Server::acceptConnection(size_t i)
 {
 	struct sockaddr_in clientAddress;
 	int newSocket;
@@ -136,7 +201,10 @@ void Server::acceptConnection()
 		close(this->_serverSocket);
 		exit(1);
 	}
-	this->_clientSockets.push_back(newSocket);
-	printf("Connection accepted from %s:%d\n", inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port));
-	send(newSocket, "Welcome!", 8, 0);
+	_fdList[i].fd = newSocket;
+	_fdList[i].events = POLLIN;
+	_clientList[i] = new Client("", newSocket);
+	std::cout << "connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":" << ntohs(clientAddress.sin_port) << std::endl;
+	// printf("Connection accepted from %s:%d\n", inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port));
+	setNickname(i);
 }

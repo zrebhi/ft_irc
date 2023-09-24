@@ -1,29 +1,29 @@
 #include "../inc/Client.hpp"
+#include <iostream>
 
 Client::Client()
 {
 	this->pseudo = "";
-	this->ip = "";
 	this->socket = 0;
 	this->rights = 0;
 }
 
-Client::Client(std::string pseudo, std::string ip, int socket)
+Client::Client(std::string pseudo, int socket)
 {
 	this->pseudo = pseudo;
-	this->ip = ip;
 	this->socket = socket;
 	this->rights = 0;
+	std::cout << "client created" << std::endl;
+}
+
+Client::~Client()
+{
+	std::cout << "client destroyed" << std::endl;
 }
 
 std::string Client::getPseudo()
 {
 	return this->pseudo;
-}
-
-std::string Client::getIp()
-{
-	return this->ip;
 }
 
 int Client::getSocket()
@@ -34,11 +34,6 @@ int Client::getSocket()
 void Client::setPseudo(std::string pseudo)
 {
 	this->pseudo = pseudo;
-}
-
-void Client::setIp(std::string ip)
-{
-	this->ip = ip;
 }
 
 void Client::setSocket(int socket)
