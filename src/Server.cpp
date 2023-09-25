@@ -15,16 +15,14 @@
 //
 
 #include "../inc/Server.hpp"
-#include <fstream>
-#include <ios>
 #include <iostream>
-#include <ostream>
-#include <sys/poll.h>
-#include <sys/socket.h>
+#include <map>
 
 Server::Server()
 	: portNumber(8080), _serverIsUp(false)
 {
+	_serverEvent.events = EPOLLIN;
+	_serverEvent.data.fd = _serverSocket;
 	Server::serverSetup();
 }
 
@@ -53,36 +51,46 @@ void Server::serverSetup()
 	createSocket();
 	bindSocket();
 	setSocketToListen();
-	acceptConnection();
+
 	_serverIsUp = true;
+	std::vector<struct epoll_event> events(10);
 	while (_serverIsUp)
 	{
-		int pollSize = poll(_fdList, _usersOnline, -1);
-		if (pollSize == -1)
+		std::cout << "1" << std::endl;
+		int nbEvents = epoll_wait(_epfd, events.data(), static_cast<int>(events.size()), -1);
+		if (nbEvents == -1)
 		{
-			std::cerr << "poll failed" << std::endl;
+			std::cerr << "epoll wait failed" << std::endl;
 			break;
 		}
-		for (size_t i = 0; i < _usersOnline; i++)
+		for (int i = 0; i < nbEvents; i++)
 		{
-			if (_fdList[i].revents & POLLIN)
-			{
-				if (_fdList[i].fd == _serverSocket) // si c'est une nouvelle co
-					acceptConnection();
-				else
-				{
-					// envoi a une autre f() pour gerer le message
-					char buffer[1000];
-					size_t bytesRead = read(_fdList[i].fd, buffer, sizeof(buffer));
-					if (bytesRead)
-						std::cout << buffer << std::endl;
-				}
-			}
+			int currentFd = events[i].data.fd;
+			if (currentFd == _serverSocket) // si c'est une nouvelle co
+				acceptConnection(_epfd);
+			else
+				handleClient(_clientSockets[currentFd]);
 		}
 	}
 	close(_serverSocket);
+	close(_epfd);
 	for (size_t i = 0; i < _clientList.size(); i++)
 		close(_clientList[i].getSocket());
+}
+
+void Server::handleClient(Client *client)
+{
+	// if (client->getPseudo().empty())
+	// 	send(client->getSocket(), "Please enter a valid NICK", 8, 0);
+	// else
+	// {
+	_serverIsUp = false;
+	char buffer[1000];
+	memset(buffer, 0, sizeof(buffer));
+	std::cout << "message from client " << client->getSocket() << std::endl;
+	recv(client->getSocket(), buffer, 1000, 0);
+	std::cout << buffer << std::endl;
+	// }
 }
 
 void Server::createSocket()
@@ -121,9 +129,21 @@ void Server::setSocketToListen()
 		exit(1);
 	}
 	printf("Server socket created successfully\n");
+	_epfd = epoll_create1(0);
+	if (_epfd == -1)
+	{
+		perror("failed to create epoll");
+		exit(1);
+	}
+	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _serverSocket, &_serverEvent) == -1)
+	{
+		perror("failed to create epoll");
+		close(_epfd);
+		exit(1);
+	}
 }
 
-void Server::acceptConnection()
+void Server::acceptConnection(int _epfd)
 {
 	struct sockaddr_in clientAddress;
 	int newSocket;
@@ -136,7 +156,27 @@ void Server::acceptConnection()
 		close(this->_serverSocket);
 		exit(1);
 	}
-	this->_clientSockets.push_back(newSocket);
+	_clientSockets[newSocket] = new Client("", newSocket);
 	printf("Connection accepted from %s:%d\n", inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port));
+	struct epoll_event newEvent;
+	newEvent.events = EPOLLIN;
+	newEvent.data.fd = newSocket;
+	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, newSocket, &newEvent))
+	{
+		perror("failed add client - acceptConnection");
+		exit(1);
+	}
 	send(newSocket, "Welcome!", 8, 0);
+}
+
+void Server::parseString(char *receivedMessage)
+{
+	std::vector<char *> ptrArray;
+	char *tempPtr = receivedMessage;
+	if (tempPtr && *tempPtr)
+		ptrArray.push_back(tempPtr);
+	while (tempPtr && *tempPtr)
+	{
+		tempPtr++;
+	}
 }

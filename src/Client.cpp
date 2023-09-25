@@ -2,23 +2,22 @@
 
 Client::Client()
 {
-	this->pseudo = "";
+	this->nickname = "";
 	this->ip = "";
 	this->socket = 0;
 	this->rights = 0;
 }
 
-Client::Client(std::string pseudo, std::string ip, int socket)
+Client::Client(std::string nickname, int socket)
 {
-	this->pseudo = pseudo;
-	this->ip = ip;
+	this->nickname = nickname;
 	this->socket = socket;
 	this->rights = 0;
 }
 
 std::string Client::getPseudo()
 {
-	return this->pseudo;
+	return this->nickname;
 }
 
 std::string Client::getIp()
@@ -31,9 +30,9 @@ int Client::getSocket()
 	return this->socket;
 }
 
-void Client::setPseudo(std::string pseudo)
+void Client::setPseudo(std::string nickname)
 {
-	this->pseudo = pseudo;
+	this->nickname = nickname;
 }
 
 void Client::setIp(std::string ip)

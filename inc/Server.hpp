@@ -14,16 +14,7 @@
 #define SERVER_HPP
 
 #include "Client.hpp"
-#include <arpa/inet.h>
-#include <iostream>
-#include <poll.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <vector>
+#include "CommonLibs.hpp"
 
 void virtualClient();
 
@@ -37,7 +28,7 @@ class Server
 	void createSocket();
 	void bindSocket();
 	void setSocketToListen();
-	void acceptConnection();
+	void acceptConnection(int epfd);
 	void serverSetup();
 
   private:
@@ -47,9 +38,15 @@ class Server
 	bool _serverIsUp;
 	int _serverSocket;
 	size_t _usersOnline;
-	std::vector<int> _clientSockets;
+	std::map<int, Client *> _clientSockets;
 	struct sockaddr_in _serverAddress;
+	void parseString(char *receivedMessage);
+	struct epoll_event _serverEvent;
+	int _epfd;
 
+	void handleClient(Client *client);
+	t_cmd *parseInput(const std::string &input);
+	bool isCommand(std::string input);
 	Server(const Server &src);
 	Server &operator=(const Server &rhs);
 };

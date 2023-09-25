@@ -1,10 +1,4 @@
-#include <arpa/inet.h>
-#include <cstdlib>
-#include <iostream>
-#include <netinet/in.h>
-#include <ostream>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "../inc/CommonLibs.hpp"
 
 void virtualClient()
 {
@@ -23,7 +17,16 @@ void virtualClient()
 		std::cout << "Connected" << std::endl;
 	}
 	char buffer[1000];
+	memset(buffer, 0, sizeof(buffer));
 	recv(socketClient, buffer, sizeof(buffer), 0);
 	std::cout << "server send: " << buffer << std::endl;
+	for (int i = 0; i < 1000; i++)
+	{
+		sleep(100);
+	}
+	std::string str = "Hello how are you";
+	send(socketClient, str.c_str(), str.size(), 0);
+	str = "stop";
+	send(socketClient, str.c_str(), str.size(), 0);
 	close(socketClient);
 }

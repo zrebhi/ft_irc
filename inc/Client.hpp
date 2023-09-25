@@ -1,19 +1,21 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include <iostream>
+#include "CommonLibs.hpp"
 
 class Client
 {
   private:
-	std::string pseudo;
+	std::string nickname;
+	std::string username;
+	std::string realname;
 	std::string ip;
 	int socket;
 	int rights;
 
   public:
 	Client();
-	Client(std::string pseudo, std::string ip, int socket);
+	Client(std::string pseudo, int socket);
 	std::string getPseudo();
 	std::string getIp();
 	int getSocket();
