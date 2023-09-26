@@ -25,6 +25,7 @@ Server::Server()
 	Server::serverSetup();
 }
 
+// Traite la commande JOIN a  partir d'un client
 void Server::joinHandler(t_cmd *input, Client *client)
 {
 	std::string addFail = "Error: add user failed";
@@ -57,6 +58,7 @@ void Server::joinHandler(t_cmd *input, Client *client)
 	_channels[0].addUser(client);
 }
 
+// Traite la commande NICK
 void Server::nickHandler(t_cmd *input, Client *client)
 {
 	std::string argsNb = "Error: too many arguments";
@@ -81,6 +83,7 @@ void Server::nickHandler(t_cmd *input, Client *client)
 	}
 }
 
+// Traite les messages prinves PRIVMSG (pas encore les messages du Channel)
 void Server::messageHandler(t_cmd *input, Client *client)
 {
 	std::map<int, Client *>::iterator it = _clients.begin();
@@ -97,6 +100,7 @@ void Server::messageHandler(t_cmd *input, Client *client)
 	send(client->getSocket(), notFound.c_str(), notFound.size(), 0);
 }
 
+// Commande USER  pour mettre a jour le profil du client
 void Server::userHandler(t_cmd *input, Client *client)
 {
 	std::string argsNb = "Error: too many arguments";
@@ -169,6 +173,9 @@ void Server::serverSetup()
 			close(_clients[i]->getSocket());
 }
 
+// recois la commande du client -> parseInput renvoi un strcuture t_cmd
+// avec la commande + les arguments (un peu comme minishell);
+// en fonction de la commande recue, il renvoi vers la bonne fonction
 void Server::handleClient(Client *client)
 {
 	char buffer[1000];

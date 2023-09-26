@@ -2,6 +2,7 @@
 #include "../inc/Server.hpp"
 #include <string>
 
+// NE SERT PAS POUR L'INSTANT
 bool Server::isCommand(std::string input)
 {
 	static std::string cmds[] = {"KICK", "INVITE", "MODE", "TOPIC", "USER"};
@@ -12,6 +13,12 @@ bool Server::isCommand(std::string input)
 	}
 	return false;
 }
+
+// t_cmd;
+// {
+// 	std::string cmdType;  || ex: NICK
+// 	std::vector<std::string> params; || ex: {moboigui}
+// }
 
 t_cmd *Server::parseInput(const std::string &input)
 {

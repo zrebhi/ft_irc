@@ -2,6 +2,10 @@
 #include <iostream>
 #include <string>
 
+// ===============================================================
+// NE CALCULEZ PAS CE CODE POUR LE MOMENT
+// ===============================================================
+
 void virtualClient(char letter)
 {
 	std::string msgList[] = {"hey salut", "ca va ?", "je suis le client A", "bonjour toi", "oui et toi ?", "et moi je suis le client B"};
