@@ -12,17 +12,30 @@
 
 #include "../inc/CommonLibs.hpp"
 #include "../inc/Server.hpp"
+#include <iostream>
 
 int main()
 {
+	std::cout << "Colors: \n"
+			  << RED << "Server" << std::endl;
+	std::cout << GREEN << "Client A\n"
+			  << YELLOW << "Client B\n"
+			  << RESET << std::endl;
 	if (fork() == 0)
 	{
-		Server ircServ;
+		if (fork() == 0)
+		{
+			virtualClient('A');
+		}
+		else
+		{
+			sleep(3);
+			virtualClient('B');
+		}
 	}
 	else
 	{
-		sleep(2);
-		virtualClient();
+		Server ircServ;
 	}
 	return 0;
 }

@@ -15,15 +15,105 @@
 //
 
 #include "../inc/Server.hpp"
+#include <cstddef>
 #include <iostream>
-#include <map>
+#include <string>
 
 Server::Server()
 	: portNumber(8080), _serverIsUp(false)
 {
-	_serverEvent.events = EPOLLIN;
-	_serverEvent.data.fd = _serverSocket;
 	Server::serverSetup();
+}
+
+void Server::joinHandler(t_cmd *input, Client *client)
+{
+	std::string addFail = "Error: add user failed";
+	std::string addSuccess = "Success: add user ";
+	std::vector<Channels>::iterator it = _channels.begin();
+	if (input->params.size() > 1)
+		return;
+	while (it != _channels.end())
+	{
+		if (it->getChanName().compare(input->params[0]))
+		{
+			if (!it->addUser(client))
+				send(client->getSocket(), addFail.c_str(), addFail.size(), 0);
+			else
+			{
+				addSuccess.append(client->getNickname());
+				addSuccess.append(" to ");
+				addSuccess.append(it->getChanName());
+				send(client->getSocket(), addSuccess.c_str(), addSuccess.size(), 0);
+			}
+			return;
+		}
+		it++;
+	}
+	_channels.push_back(Channels(input->params[0]));
+	addSuccess.append(client->getNickname());
+	addSuccess.append(" to ");
+	addSuccess.append(_channels[0].getChanName());
+	send(client->getSocket(), addSuccess.c_str(), addSuccess.size(), 0);
+	_channels[0].addUser(client);
+}
+
+void Server::nickHandler(t_cmd *input, Client *client)
+{
+	std::string argsNb = "Error: too many arguments";
+	std::string nickLen = "Error: wrong nick length";
+	std::string newNickname = "New pseudo: ";
+	if (input->params.size() != 1)
+	{
+		std::cout << RED << "\t" << argsNb << RESET << std::endl;
+		send(client->getSocket(), argsNb.c_str(), argsNb.size(), 0);
+	}
+	else if (input->params[0].size() < 3 || input->params[0].size() > 12)
+	{
+		std::cout << RED << "\t" << nickLen << RESET << std::endl;
+		send(client->getSocket(), nickLen.c_str(), nickLen.size(), 0);
+	}
+	else
+	{
+		client->setNickname(input->params[0]);
+		std::cout << RED << "\tnew pseudo: " << client->getNickname() << RESET << std::endl;
+		newNickname.append(client->getNickname());
+		send(client->getSocket(), newNickname.c_str(), nickLen.size(), 0);
+	}
+}
+
+void Server::messageHandler(t_cmd *input, Client *client)
+{
+	std::map<int, Client *>::iterator it = _clients.begin();
+	while (it != _clients.end())
+	{
+		if (it->second->getNickname().compare(input->params[0]))
+		{
+			send(it->second->getSocket(), input->params[1].c_str(), input->params[1].size(), 0);
+			return;
+		}
+		it++;
+	}
+	std::string notFound = "client not found";
+	send(client->getSocket(), notFound.c_str(), notFound.size(), 0);
+}
+
+void Server::userHandler(t_cmd *input, Client *client)
+{
+	std::string argsNb = "Error: too many arguments";
+	if (input->params.size() < 5)
+		send(client->getSocket(), argsNb.c_str(), argsNb.size(), 0);
+	else
+	{
+		client->setUsername(input->params[0]);
+		std::string realname;
+		for (size_t i = 4; i < input->params.size(); i++)
+		{
+			if (i != 4)
+				realname.push_back(' ');
+			realname.append(input->params[i]);
+		}
+		client->setRealname(realname);
+	}
 }
 
 Server::Server(unsigned int port)
@@ -36,7 +126,7 @@ Server::Server(unsigned int port)
 	}
 	else
 	{
-		std::cerr << "wrong port value" << std::endl;
+		std::cerr << "wrong port value" << RESET << std::endl;
 		exit(1);
 	}
 	// manage exit;
@@ -51,16 +141,16 @@ void Server::serverSetup()
 	createSocket();
 	bindSocket();
 	setSocketToListen();
+	epollSetup();
 
 	_serverIsUp = true;
-	std::vector<struct epoll_event> events(10);
+	std::vector<struct epoll_event> events(2);
 	while (_serverIsUp)
 	{
-		std::cout << "1" << std::endl;
 		int nbEvents = epoll_wait(_epfd, events.data(), static_cast<int>(events.size()), -1);
 		if (nbEvents == -1)
 		{
-			std::cerr << "epoll wait failed" << std::endl;
+			std::cerr << "epoll wait failed" << RESET << std::endl;
 			break;
 		}
 		for (int i = 0; i < nbEvents; i++)
@@ -69,28 +159,36 @@ void Server::serverSetup()
 			if (currentFd == _serverSocket) // si c'est une nouvelle co
 				acceptConnection(_epfd);
 			else
-				handleClient(_clientSockets[currentFd]);
+				handleClient(_clients[currentFd]);
 		}
 	}
 	close(_serverSocket);
 	close(_epfd);
-	for (size_t i = 0; i < _clientList.size(); i++)
-		close(_clientList[i].getSocket());
+	for (size_t i = 0; i < _clients.size(); i++)
+		if (_clients[i])
+			close(_clients[i]->getSocket());
 }
 
 void Server::handleClient(Client *client)
 {
-	// if (client->getPseudo().empty())
-	// 	send(client->getSocket(), "Please enter a valid NICK", 8, 0);
-	// else
-	// {
-	_serverIsUp = false;
 	char buffer[1000];
 	memset(buffer, 0, sizeof(buffer));
-	std::cout << "message from client " << client->getSocket() << std::endl;
 	recv(client->getSocket(), buffer, 1000, 0);
-	std::cout << buffer << std::endl;
-	// }
+	std::cout << RED << "\tServer recv: " << buffer << RESET << std::endl;
+	if (strncmp(buffer, "stop", 4) == 0)
+	{
+		_serverIsUp = false;
+		return;
+	}
+	t_cmd *parsedInput = parseInput(buffer);
+	if (parsedInput->cmdType.compare("NICK") == 0)
+		nickHandler(parsedInput, client);
+	else if (parsedInput->cmdType.compare("PRIVMSG") == 0)
+		messageHandler(parsedInput, client);
+	else if (parsedInput->cmdType.compare("USER") == 0)
+		userHandler(parsedInput, client);
+	else if (parsedInput->cmdType.compare("JOIN") == 0)
+		joinHandler(parsedInput, client);
 }
 
 void Server::createSocket()
@@ -129,13 +227,20 @@ void Server::setSocketToListen()
 		exit(1);
 	}
 	printf("Server socket created successfully\n");
+}
+
+void Server::epollSetup()
+{
 	_epfd = epoll_create1(0);
 	if (_epfd == -1)
 	{
 		perror("failed to create epoll");
 		exit(1);
 	}
-	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _serverSocket, &_serverEvent) == -1)
+	struct epoll_event event;
+	event.events = EPOLLIN;
+	event.data.fd = _serverSocket;
+	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, _serverSocket, &event) == -1)
 	{
 		perror("failed to create epoll");
 		close(_epfd);
@@ -145,6 +250,7 @@ void Server::setSocketToListen()
 
 void Server::acceptConnection(int _epfd)
 {
+	std::cout << RED << "\tEnter acceptConnection" << RESET << std::endl;
 	struct sockaddr_in clientAddress;
 	int newSocket;
 
@@ -156,27 +262,15 @@ void Server::acceptConnection(int _epfd)
 		close(this->_serverSocket);
 		exit(1);
 	}
-	_clientSockets[newSocket] = new Client("", newSocket);
-	printf("Connection accepted from %s:%d\n", inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port));
-	struct epoll_event newEvent;
-	newEvent.events = EPOLLIN;
-	newEvent.data.fd = newSocket;
-	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, newSocket, &newEvent))
+	_clients[newSocket] = new Client(newSocket);
+	printf("\t%sConnection accepted from %s:%d %s\n", RED, inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port), RESET);
+	struct epoll_event event;
+	event.events = EPOLLIN;
+	event.data.fd = newSocket;
+	if (epoll_ctl(_epfd, EPOLL_CTL_ADD, newSocket, &event))
 	{
 		perror("failed add client - acceptConnection");
 		exit(1);
 	}
 	send(newSocket, "Welcome!", 8, 0);
-}
-
-void Server::parseString(char *receivedMessage)
-{
-	std::vector<char *> ptrArray;
-	char *tempPtr = receivedMessage;
-	if (tempPtr && *tempPtr)
-		ptrArray.push_back(tempPtr);
-	while (tempPtr && *tempPtr)
-	{
-		tempPtr++;
-	}
 }

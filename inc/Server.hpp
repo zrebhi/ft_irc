@@ -13,10 +13,11 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Channels.hpp"
 #include "Client.hpp"
 #include "CommonLibs.hpp"
 
-void virtualClient();
+void virtualClient(char letter);
 
 class Server
 {
@@ -32,23 +33,24 @@ class Server
 	void serverSetup();
 
   private:
+	// variables
 	unsigned int portNumber;
-	std::vector<Client> _clientList;
-	struct pollfd *_fdList;
 	bool _serverIsUp;
 	int _serverSocket;
-	size_t _usersOnline;
-	std::map<int, Client *> _clientSockets;
+	std::map<int, Client *> _clients;
+	std::vector<Channels> _channels;
 	struct sockaddr_in _serverAddress;
-	void parseString(char *receivedMessage);
-	struct epoll_event _serverEvent;
 	int _epfd;
-
+	// functions
+	void joinHandler(t_cmd *input, Client *client);
+	void userHandler(t_cmd *input, Client *client);
+	void messageHandler(t_cmd *input, Client *client);
+	void nickHandler(t_cmd *input, Client *client);
+	void epollSetup();
 	void handleClient(Client *client);
 	t_cmd *parseInput(const std::string &input);
 	bool isCommand(std::string input);
 	Server(const Server &src);
-	Server &operator=(const Server &rhs);
 };
 
 #endif // !SERVER_HPP

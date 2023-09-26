@@ -2,27 +2,17 @@
 
 Client::Client()
 {
-	this->nickname = "";
-	this->ip = "";
-	this->socket = 0;
-	this->rights = 0;
+	this->socket = -1;
 }
 
-Client::Client(std::string nickname, int socket)
+Client::Client(int newSocket)
 {
-	this->nickname = nickname;
-	this->socket = socket;
-	this->rights = 0;
+	socket = newSocket;
 }
 
-std::string Client::getPseudo()
+std::string Client::getNickname()
 {
 	return this->nickname;
-}
-
-std::string Client::getIp()
-{
-	return this->ip;
 }
 
 int Client::getSocket()
@@ -30,14 +20,9 @@ int Client::getSocket()
 	return this->socket;
 }
 
-void Client::setPseudo(std::string nickname)
+void Client::setNickname(std::string nickname)
 {
 	this->nickname = nickname;
-}
-
-void Client::setIp(std::string ip)
-{
-	this->ip = ip;
 }
 
 void Client::setSocket(int socket)
@@ -45,12 +30,22 @@ void Client::setSocket(int socket)
 	this->socket = socket;
 }
 
-int Client::getRights()
+std::string Client::getUsername()
 {
-	return this->rights;
+	return username;
 }
 
-void Client::setRights(int rights)
+void Client::setUsername(std::string newUsername)
 {
-	this->rights = rights;
+	username = newUsername;
+}
+
+std::string Client::getRealname()
+{
+	return username;
+}
+
+void Client::setRealname(std::string newRealname)
+{
+	username = newRealname;
 }

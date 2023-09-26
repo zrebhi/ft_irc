@@ -21,7 +21,27 @@
 #include <unistd.h>
 #include <vector>
 
+// Codes d'échappement ANSI pour les couleurs
+#define RESET "\033[0m"               // Réinitialisation des couleurs
+#define BLACK "\033[30m"              // Noir
+#define RED "\033[31m"                // Rouge
+#define GREEN "\033[32m"              // Vert
+#define YELLOW "\033[33m"             // Jaune
+#define BLUE "\033[34m"               // Bleu
+#define MAGENTA "\033[35m"            // Magenta
+#define CYAN "\033[36m"               // Cyan
+#define WHITE "\033[37m"              // Blanc
+#define BOLDBLACK "\033[1m\033[30m"   // Noir gras
+#define BOLDRED "\033[1m\033[31m"     // Rouge gras
+#define BOLDGREEN "\033[1m\033[32m"   // Vert gras
+#define BOLDYELLOW "\033[1m\033[33m"  // Jaune gras
+#define BOLDBLUE "\033[1m\033[34m"    // Bleu gras
+#define BOLDMAGENTA "\033[1m\033[35m" // Magenta gras
+#define BOLDCYAN "\033[1m\033[36m"    // Cyan gras
+#define BOLDWHITE "\033[1m\033[37m"   // Blanc gras
+
 #define CMD_SIZE 5
+#define EVENT_LIST_SIZE 11
 
 typedef struct s_cmd
 {

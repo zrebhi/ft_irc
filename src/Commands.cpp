@@ -33,6 +33,11 @@ t_cmd *Server::parseInput(const std::string &input)
 			}
 			cmd->params.push_back(leftover.substr(wordStart, wordEnd - wordStart));
 			wordStart = wordEnd + 1;
+			if (cmd->cmdType.compare("PRIVMSG") == 0)
+			{
+				cmd->params.push_back(leftover);
+				break;
+			}
 		}
 	}
 	else

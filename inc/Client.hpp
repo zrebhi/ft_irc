@@ -9,21 +9,21 @@ class Client
 	std::string nickname;
 	std::string username;
 	std::string realname;
-	std::string ip;
+	std::string topic;
 	int socket;
-	int rights;
 
   public:
 	Client();
-	Client(std::string pseudo, int socket);
-	std::string getPseudo();
+	Client(int socket);
+	std::string getNickname();
 	std::string getIp();
 	int getSocket();
-	void setPseudo(std::string pseudo);
-	void setIp(std::string ip);
+	void setNickname(std::string pseudo);
 	void setSocket(int socket);
-	int getRights();
-	void setRights(int rights);
+	std::string getUsername();
+	void setUsername(std::string newUsername);
+	std::string getRealname();
+	void setRealname(std::string newRealname);
 };
 
 #endif // !CLIENT_HPP
