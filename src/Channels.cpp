@@ -30,7 +30,7 @@ std::string Channels::getusersList()
 }
 int Channels::addUser(Client *newClient)
 {
-	std::string added = "user added in channel";
+	std::string added = "user added in channel\n";
 	_usersList.push_back(newClient);
 	send(newClient->getSocket(), added.c_str(), added.size(), 0);
 	return 1;

@@ -51,7 +51,13 @@ void virtualClient(char letter)
 	send(socketClient, joinMsg.c_str(), joinMsg.size(), 0);
 	recv(socketClient, buffer, sizeof(buffer), 0);
 	std::cout << color << socketClient << letter << " recv: " << buffer << RESET << std::endl;
-	sleep(10);
+	for (int i = 0; i < 100; i++)
+	{
+		recv(socketClient, buffer, sizeof(buffer), 0);
+		std::cout << color << i << letter << " recv: " << buffer << RESET << std::endl;
+		memset(buffer, 0, sizeof(buffer));
+		sleep(5);
+	}
 	std::string stop = "stop";
 	if (letter == 'A')
 		send(socketClient, stop.c_str(), stop.size(), 0);

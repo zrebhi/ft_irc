@@ -1,5 +1,6 @@
 #include "../inc/CommonLibs.hpp"
 #include "../inc/Server.hpp"
+#include <cstddef>
 #include <string>
 
 // NE SERT PAS POUR L'INSTANT
@@ -20,10 +21,18 @@ bool Server::isCommand(std::string input)
 // 	std::vector<std::string> params; || ex: {moboigui}
 // }
 
-t_cmd *Server::parseInput(const std::string &input)
+t_cmd *Server::parseInput(std::string &input)
 {
-	t_cmd *cmd;
+	t_cmd *cmd = NULL;
 
+	if (!input.empty())
+	{
+		char lastChar = input.at(input.size() - 1);
+		if (lastChar == '\r' || lastChar == '\n')
+			input = input.substr(0, input.size() - 1);
+	}
+	else
+		return NULL;
 	size_t spacePos = input.find(' ');
 	if (spacePos != std::string::npos)
 	{
@@ -35,12 +44,10 @@ t_cmd *Server::parseInput(const std::string &input)
 		{
 			size_t wordEnd = leftover.find(' ', wordStart);
 			if (wordEnd == std::string::npos)
-			{
 				wordEnd = leftover.length();
-			}
 			cmd->params.push_back(leftover.substr(wordStart, wordEnd - wordStart));
 			wordStart = wordEnd + 1;
-			if (cmd->cmdType.compare("PRIVMSG") == 0)
+			if (cmd->cmdType.compare("PRIVMSG") == 0 && cmd->params.size() == 1)
 			{
 				cmd->params.push_back(leftover);
 				break;
@@ -48,6 +55,9 @@ t_cmd *Server::parseInput(const std::string &input)
 		}
 	}
 	else
-		return NULL;
+	{
+		cmd = new t_cmd;
+		cmd->cmdType = input;
+	}
 	return cmd;
 }

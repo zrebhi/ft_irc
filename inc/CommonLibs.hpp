@@ -1,6 +1,7 @@
 #ifndef COMMONLIBS_HPP
 #define COMMONLIBS_HPP
 #include <arpa/inet.h>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -11,6 +12,7 @@
 #include <netinet/in.h>
 #include <ostream>
 #include <poll.h>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
