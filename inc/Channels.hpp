@@ -3,7 +3,13 @@
 
 #include "Client.hpp"
 #include "CommonLibs.hpp"
-#include <string>
+#include <map>
+
+#define INVITE_ONLY 0
+#define TOPIC_CMD 1
+#define CHAN_KEY 2
+#define OP_PRIVILEGE 3
+#define USER_LIMIT 4
 
 class Channels
 {
@@ -20,16 +26,22 @@ class Channels
 	std::string getTopic();
 	std::string getChanName();
 	std::string getusersList();
+	std::string getNbUsers();
+	int checkProtected(const std::string &password);
 	// functions
 	int addUser(Client *newClient);
 	bool removeUser(Client *oldClient);
 	void invite(std::string nickname);
 
   private:
+	std::map<Client *, int> _clientList; // client - rights
 	std::vector<Client *> _usersList;
+	std::vector<Client *> _invited;
 	std::string _chanName;
-	std::string _topic;
 	int _chanMode;
+	bool _isProtected;
+	std::string _topic;
+	std::string _password;
 	// functions
 };
 #endif // !DEBUG

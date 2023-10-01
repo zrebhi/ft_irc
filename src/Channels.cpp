@@ -1,14 +1,15 @@
 #include "../inc/Channels.hpp"
 #include <string>
+#include <vector>
 
 Channels::Channels()
+	: _chanName(""), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
 {
 }
 
 Channels::Channels(std::string chanName)
-	: _chanName(chanName)
+	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
 {
-	_chanMode = 42;
 }
 
 Channels::~Channels()
@@ -19,29 +20,74 @@ std::string Channels::getTopic()
 {
 	return _topic;
 }
+
+int Channels::getMode()
+{
+	return _chanMode;
+}
+
 std::string Channels::getChanName()
 {
 	return _chanName;
 }
+
+std::string Channels::getNbUsers()
+{
+	std::stringstream size;
+	size << _usersList.size();
+	return size.str();
+}
+
+int Channels::checkProtected(const std::string &password)
+{
+	if (_isProtected == false)
+		return -1;
+	if (password == _password)
+		return 1;
+	else
+		return 0;
+}
+
 std::string Channels::getusersList()
 {
-	// todo
-	return "todo";
+	std::vector<Client *>::iterator it = _usersList.begin();
+	std::string usersListStr;
+	while (it != _usersList.end())
+	{
+		if (usersListStr.empty() == false)
+			usersListStr.append(" ");
+		usersListStr.append((*it)->getNick());
+		it++;
+	}
+	usersListStr.append("\n");
+	return usersListStr;
 }
+
 int Channels::addUser(Client *newClient)
 {
-	std::string added = "user added in channel\n";
-	_usersList.push_back(newClient);
-	send(newClient->getSocket(), added.c_str(), added.size(), 0);
-	return 1;
-	// if (_chanMode < 1)
-	// {
-	// }
-	// else
-	// {
-	// 	std::cout << "can't add user" << std::endl;
-	// 	return -1;
-	// }
+	std::string added = ":" + newClient->getNick() + "@localhost JOIN :" + getChanName() + "\n";
+	if (_chanMode > 42) // invite only
+	{
+		std::vector<Client *>::iterator it = _invited.begin();
+		while (it != _invited.end())
+		{
+			if (*it == newClient)
+			{
+				_usersList.push_back(newClient);
+				send(newClient->getSocket(), added.c_str(), added.size(), 0);
+				return 1;
+			}
+			it++;
+		}
+	}
+	else
+	{
+		_usersList.push_back(newClient);
+		for (std::vector<Client *>::iterator it = _usersList.begin(); it != _usersList.end(); it++)
+			send((*it)->getSocket(), added.c_str(), added.size(), 0);
+		return 1;
+	}
+	return 0;
 }
 
 bool Channels::removeUser(Client *oldClient)
@@ -49,7 +95,7 @@ bool Channels::removeUser(Client *oldClient)
 	std::vector<Client *>::iterator it = _usersList.begin();
 	while (it != _usersList.end())
 	{
-		if (oldClient->getNickname().compare((*it)->getNickname()))
+		if (oldClient->getNick().compare((*it)->getNick()))
 		{
 			_usersList.erase(it);
 			if (_usersList.empty())

@@ -1,6 +1,4 @@
 #include "../inc/CommonLibs.hpp"
-#include <iostream>
-#include <string>
 
 // ===============================================================
 // NE CALCULEZ PAS CE CODE POUR LE MOMENT

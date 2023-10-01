@@ -2,50 +2,55 @@
 
 Client::Client()
 {
-	this->socket = -1;
+	_socket = -1;
 }
 
 Client::Client(int newSocket)
+	: _socket(newSocket), _username(NOT_REGISTERED)
 {
-	socket = newSocket;
 }
 
-std::string Client::getNickname()
+Client::~Client()
 {
-	return this->nickname;
+	close(_socket);
+}
+
+std::string Client::getNick()
+{
+	return _nickname;
 }
 
 int Client::getSocket()
 {
-	return this->socket;
+	return _socket;
 }
 
-void Client::setNickname(std::string nickname)
+void Client::setNickname(std::string newNickname)
 {
-	this->nickname = nickname;
+	_nickname = newNickname;
 }
 
-void Client::setSocket(int socket)
+void Client::setSocket(int newSocket)
 {
-	this->socket = socket;
+	_socket = newSocket;
 }
 
 std::string Client::getUsername()
 {
-	return username;
+	return _username;
 }
 
 void Client::setUsername(std::string newUsername)
 {
-	username = newUsername;
+	_username = newUsername;
 }
 
 std::string Client::getRealname()
 {
-	return username;
+	return _username;
 }
 
 void Client::setRealname(std::string newRealname)
 {
-	username = newRealname;
+	_username = newRealname;
 }

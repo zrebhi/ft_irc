@@ -1,6 +1,8 @@
 #ifndef COMMONLIBS_HPP
 #define COMMONLIBS_HPP
+
 #include <arpa/inet.h>
+#include <cctype>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -42,12 +44,25 @@
 #define BOLDCYAN "\033[1m\033[36m"    // Cyan gras
 #define BOLDWHITE "\033[1m\033[37m"   // Blanc gras
 
+#define NOT_REGISTERED "NR"
 #define CMD_SIZE 5
 #define EVENT_LIST_SIZE 11
 
-typedef struct s_cmd
+class ErrorHandler : public std::exception
 {
-	std::string cmdType;
-	std::vector<std::string> params;
-} t_cmd;
+  public:
+	ErrorHandler(int errorCode)
+		: _errorCode(errorCode)
+	{
+	}
+
+	int getCode() const
+	{
+		return _errorCode;
+	}
+
+  private:
+	int _errorCode;
+};
+
 #endif // !COMMONLIBS_HPP

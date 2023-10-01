@@ -42,15 +42,9 @@ class Server
 	struct sockaddr_in _serverAddress;
 	int _epfd;
 	// functions
-	void capHandler(t_cmd *input, int clientSocket);
-	void listHandler(int socket);
-	void joinHandler(t_cmd *input, Client *client);
-	void userHandler(t_cmd *input, Client *client);
-	void messageHandler(t_cmd *input, Client *client);
-	void nickHandler(t_cmd *input, Client *client);
+	void removeClient(Client *client);
 	void epollSetup();
 	void handleClient(Client *client);
-	t_cmd *parseInput(std::string &input);
 	bool isCommand(std::string input);
 	Server(const Server &src);
 };
