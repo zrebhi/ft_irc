@@ -12,6 +12,12 @@ Channels::Channels(std::string chanName)
 {
 }
 
+Channels::Channels(std::string chanName, Client *client)
+	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
+{
+	_operators.push_back(client);
+}
+
 Channels::~Channels()
 {
 }
@@ -50,8 +56,16 @@ int Channels::checkProtected(const std::string &password)
 
 std::string Channels::getusersList()
 {
-	std::vector<Client *>::iterator it = _usersList.begin();
+	std::vector<Client *>::iterator it = _operators.begin();
 	std::string usersListStr;
+	while (it != _operators.end())
+	{
+		if (usersListStr.empty() == false)
+			usersListStr.append(" ");
+		usersListStr.append((*it)->getNick());
+		it++;
+	}
+	it = _usersList.begin();
 	while (it != _usersList.end())
 	{
 		if (usersListStr.empty() == false)

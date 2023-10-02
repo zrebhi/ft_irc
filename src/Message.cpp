@@ -1,15 +1,19 @@
 #include "../inc/Message.hpp"
 #include "../inc/Channels.hpp"
 #include "../inc/ErrorCodes.hpp"
+#include "../inc/SuccessCodes.hpp"
 #include <algorithm>
 #include <cstring>
 #include <exception>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <vector>
+#define USERNAME_MAX_LEN 20
+#define REALNAME_MAX_LEN 30
 
 bool isAlnumStr(std::string str)
 {
@@ -134,27 +138,25 @@ std::string createResponse(t_cmd *input, std::string nickname)
 // Traite la commande NICK
 void Message::nickHandler(t_cmd *input, Client *client)
 {
-	std::string connectStr;
+	std::string strSended;
 	// nick_collision
 	std::string &newNick = input->params[0];
 	if (input->params.empty())
-		connectStr = ErrorCodes(client->getNick(), "", client->getSocket()).sendErrMsg(ERR_NONICK);
-	else if (newNick.size() < 3 || !isAlnumStr(newNick))
-		connectStr = ErrorCodes(client->getNick(), newNick, client->getSocket()).sendErrMsg(ERR_NICK);
+		strSended = ErrorCodes(client->getNick(), "", client->getSocket()).sendErrMsg(ERR_NONICK);
+	else if (newNick.length() < 3 || newNick.length() > 12 || !isAlnumStr(newNick))
+		strSended = ErrorCodes(client->getNick(), newNick, client->getSocket()).sendErrMsg(ERR_NICK);
 	else if (newNick == client->getNick() || isClientExist(_clients, newNick))
-		connectStr = ErrorCodes(client->getNick(), newNick, client->getSocket()).sendErrMsg(ERR_NICKUSE);
+		strSended = ErrorCodes(client->getNick(), newNick, client->getSocket()).sendErrMsg(ERR_NICKUSE);
 	else
 	{
-		if (newNick.size() > 12)
-			newNick.resize(12);
+		Channels nullChan;
+		// create nullChan dans le serveur et le passer aux classes
 		client->setNickname(newNick);
-		std::string connectStr = ":ft_irc 001  :Welcome to ft_irc \nType FT_HELP for list of commands\n";
-		connectStr.insert(32, client->getNick());
-		connectStr.insert(12, client->getNick());
-		std::cout << RED << connectStr << RESET << std::endl;
-		send(client->getSocket(), connectStr.c_str(), connectStr.size(), 0);
+		strSended = SuccessCodes(client, nullChan).createStr(BASIC, NICK);
+		std::cout << RED << strSended << RESET << std::endl;
+		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
 	}
-	std::cout << RED << "Server send : " << connectStr << RESET << std::endl;
+	std::cout << RED << "Server send : " << strSended << RESET << std::endl;
 }
 
 // Commande USER  pour mettre a jour le profil du client
@@ -169,22 +171,26 @@ void Message::userHandler(t_cmd *input, Client *client)
 		strSended = ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(ERR_NEEDPARAMS);
 	else
 	{
-		if (username.length() > 12)
-			username.resize(12);
+		Channels nullChan;
+		if (username.length() > USERNAME_MAX_LEN)
+			username.resize(USERNAME_MAX_LEN);
 		client->setUsername(username);
+		client->setHost(input->params[1]);
+		client->setServer(input->params[2]);
 		std::string realname;
-		for (size_t i = 3; i < input->params.size() && realname.length() <= 30; i++)
+		for (size_t i = 3; i < input->params.size() && realname.length() < 30; i++)
 		{
+			// ne pas decouper le reste de la string si USER dans parseInput
 			if (i != 3)
 				realname.push_back(' ');
 			else if (input->params[i].at(0) == ':')
 				input->params[i].erase(0);
 			realname.append(input->params[i]);
-			if (realname.length() > 30)
-				realname.resize(30);
+			if (realname.length() > REALNAME_MAX_LEN)
+				realname.resize(REALNAME_MAX_LEN);
 		}
 		client->setRealname(realname);
-		strSended += client->getNick() + " :User '" + username + "' '" + realname + "' has been added." + "\n";
+		strSended = SuccessCodes(client, nullChan).createStr(BASIC, USER);
 		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
 	}
 	std::cout << RED << "Server send: " << strSended << RESET << std::endl;
@@ -194,18 +200,24 @@ void Message::namesHandler(t_cmd *input, Client *client)
 {
 	std::string strSended = ":ft_irc 353 " + client->getNick() + " :";
 	std::string endNames = ":ft_irc 366  # :End of /NAMES list.\n";
-	// 22 24
+	//  boucle pour traiter tous les salons si liste
 	int channelInfo[3];
 	if (input->params.empty())
 		strSended = ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(ERR_NEEDPARAMS);
 	else if (isChannelExist(input->params[0], channelInfo, ""))
 	{
-		std::string userList;
-		strSended += _channels[channelInfo[0]].getusersList();
+		// std::string userList;
+		// strSended += _channels[channelInfo[0]].getusersList();
+		strSended = SuccessCodes(client, _channels[channelInfo[0]]).createStr(NAMESSTART, USER_LIST);
 		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
-		endNames.insert(14, _channels[channelInfo[0]].getChanName());
-		endNames.insert(12, client->getNick());
-		send(client->getSocket(), endNames.c_str(), endNames.size(), 0);
+		std::cout << RED << "Server send: " << strSended << RESET << std::endl;
+		strSended = SuccessCodes(client, _channels[channelInfo[0]]).createStr(NAMESEND, USER_LIST);
+		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
+		std::cout << RED << "Server send: " << strSended << RESET << std::endl;
+		// endNames.insert(14, _channels[channelInfo[0]].getChanName());
+		// endNames.insert(12, client->getNick());
+		// send(client->getSocket(), endNames.c_str(), endNames.size(), 0);
+		// std::cout << RED << "Server send: " << endNames << RESET << std::endl;
 	}
 	else
 	{
@@ -213,29 +225,42 @@ void Message::namesHandler(t_cmd *input, Client *client)
 		strSended.insert(14, _channels[channelInfo[0]].getChanName());
 		strSended.insert(12, client->getNick());
 		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
+		std::cout << RED << "Server send: " << strSended << RESET << std::endl;
 	}
 }
 
+std::string joinStrMake(Client *client, std::string channel)
+{
+	std::string joinedstr = ":" + client->getNick() + "!" + client->getUsername();
+	joinedstr += "@" + client->getHost() + " JOIN " + channel;
+	return joinedstr;
+}
 // Traite la commande JOIN a  partir d'un client
 void Message::joinHandler(t_cmd *input, Client *client)
 {
 	// Format d'envoi : JOIN #canal
+	std::string chanName = input->params[0];
 	std::string strSended = ":ft_irc 001 ";
 	int channelInfo[3];
 	if (input->params.empty())
 		strSended = ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(ERR_NEEDPARAMS);
-	if (!isChannelExist(input->params[0], channelInfo, ""))
+	else if (!isChannelExist(chanName, channelInfo, ""))
 	{
-		_channels.push_back(input->params[0]); // add client
+		Channels newChannel(chanName, client);
+		_channels.push_back(newChannel); // add client
 		_channels[_channels.size() - 1].addUser(client);
-		std::string addSuccess = ":" + client->getNick() + "!" + client->getUsername() + "@localhost JOIN #" + input->params[0] + "\n";
-		send(client->getSocket(), addSuccess.c_str(), addSuccess.size(), 0);
-		std::string mode = ":ft_irc MODE #" + input->params[0] + " +nt" + "\n";
-		send(client->getSocket(), mode.c_str(), mode.size(), 0);
+		strSended = joinStrMake(client, chanName);
+		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
+		std::cout << RED << "Server send: " << strSended << RESET << std::endl;
+		std::string strSended = ":ft_irc MODE #" + chanName + " +nt" + "\n";
+		send(client->getSocket(), strSended.c_str(), strSended.size(), 0);
+		std::cout << RED << "Server send: " << strSended << RESET << std::endl;
 		namesHandler(input, client);
 	}
 	else if (channelInfo[1] == -1)
+	{
 		_channels[channelInfo[0]].addUser(client);
+	}
 	std::cout << RED << "Server send: " << strSended << RESET << std::endl;
 }
 

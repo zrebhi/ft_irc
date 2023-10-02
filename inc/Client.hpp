@@ -10,20 +10,27 @@ class Client
 	std::string _nickname;
 	std::string _username;
 	std::string _realname;
+	std::string _host;
+	std::string _server;
 
   public:
 	Client();
 	Client(int newSocket);
 	~Client();
-	std::string getNick();
-	std::string getIp();
-	int getSocket();
-	void setNickname(std::string newNickname);
+	// setters
 	void setSocket(int newSocket);
-	std::string getUsername();
+	void setHost(std::string newHost);
+	void setServer(std::string newServer);
+	void setNickname(std::string newNickname);
 	void setUsername(std::string newUsername);
-	std::string getRealname();
 	void setRealname(std::string newRealname);
+	// getters
+	int getSocket();
+	std::string getNick();
+	std::string getHost();
+	std::string getServer();
+	std::string getUsername();
+	std::string getRealname();
 };
 
 #endif // !CLIENT_HPP

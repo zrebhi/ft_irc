@@ -102,7 +102,7 @@ void Server::handleClient(Client *client)
 		removeClient(client);
 	if (bytesReceived > MAX_CHARS)
 		send(client->getSocket(), TOO_LONG, sizeof(TOO_LONG), 0);
-	std::cout << RED << "\tServer recv: " << buffer << RESET << std::endl;
+	std::cout << GREEN << "\tServer recv: " << buffer << RESET << std::endl;
 	std::istringstream bufferStream(buffer);
 	std::string bufferLine;
 	while (std::getline(bufferStream, bufferLine))
@@ -177,7 +177,7 @@ void Server::epollSetup()
 
 void Server::acceptConnection(int _epfd)
 {
-	std::cout << RED << "\tEnter acceptConnection" << RESET << std::endl;
+	std::cout << GREEN << "\tEnter acceptConnection" << RESET << std::endl;
 	struct sockaddr_in clientAddress;
 	int newSocket;
 
@@ -190,7 +190,7 @@ void Server::acceptConnection(int _epfd)
 		exit(1);
 	}
 	_clients[newSocket] = new Client(newSocket);
-	printf("\t%sConnection accepted from %s:%d %s\n", RED, inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port), RESET);
+	printf("\t%sConnection accepted from %s:%d %s\n", GREEN, inet_ntoa(clientAddress.sin_addr), ntohs(clientAddress.sin_port), RESET);
 	struct epoll_event event;
 	event.events = EPOLLIN;
 	event.data.fd = newSocket;

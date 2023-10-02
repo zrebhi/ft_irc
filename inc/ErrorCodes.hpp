@@ -36,6 +36,7 @@ class ErrorCodes
 		errorMessages_[ERR_NEEDPARAMS] = " :Need more parameters.\n";
 		errorMessages_[ERR_REGISTERED] = " :Already registered.\n";
 
+		// pas encore utilises
 		errorMessages_[ERR_TOPIC] = " :Le sujet du canal est ";
 		errorMessages_[ERR_INVITE] = " :Vous n'avez pas l'autorisation d'inviter des utilisateurs.";
 		errorMessages_[ERR_KICK] = " :Vous n'avez pas l'autorisation de chasser un utilisateur.";
@@ -47,21 +48,7 @@ class ErrorCodes
 		errorMessages_[ERR_JOIN] = " :Vous n'avez pas l'autorisation de rejoindre ce canal.";
 		errorMessages_[ERR_LIST] = " :Impossible de récupérer la liste des canaux.";
 	}
-
-	std::string sendErrMsg(int code) const
-	{
-		if (errorMessages_.find(code) != errorMessages_.end())
-		{
-			std::stringstream message;
-			message << ":" << _host << " " << code << " " << _nickname;
-			if (_param.empty() == false)
-				message << " " << _param;
-			message << errorMessages_.at(code);
-			send(_socket, message.str().c_str(), message.str().size(), 0);
-			return message.str();
-		}
-		return "Code d'erreur inconnu";
-	}
+	std::string sendErrMsg(int code) const;
 
   private:
 	std::map<int, std::string> errorMessages_;

@@ -16,6 +16,7 @@ class Channels
   public:
 	Channels();
 	Channels(std::string chanName);
+	Channels(std::string chanName, Client *client);
 	~Channels();
 	// setters
 	void setMode(int mode);
@@ -37,6 +38,8 @@ class Channels
 	std::map<Client *, int> _clientList; // client - rights
 	std::vector<Client *> _usersList;
 	std::vector<Client *> _invited;
+	std::vector<Client *> _operators;
+	std::vector<Client *> _halfOperators;
 	std::string _chanName;
 	int _chanMode;
 	bool _isProtected;

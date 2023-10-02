@@ -1,61 +1,103 @@
+#include <map>
+#include <string>
 #ifndef SUCCESSCODE_HPP
 
+#include "Channels.hpp"
+#include "Client.hpp"
 #include "CommonLibs.hpp"
 #include "Definition.hpp"
 
-#define OK_NICK 401
-#define OK_TOPIC 332
-#define OK_INVITE 341
-#define OK_KICK 342
-#define OK_MODE 324
-#define OK_PORT 667
-#define OK_PASS 464
-#define OK_PRIVMSG 401
-#define OK_PRIVMSG_CHANNEL 404
-#define OK_USER 461
-#define OK_JOIN 473
-#define OK_LIST 322
-// NICK OK => :monNick!~monUserNa@2a01:e0a:16e:a460:5eb4:15ad:7f38:78fd NICK :july << PING LAG1695
+#define EMPTY 0
+#define BASIC 001
+#define CHANNEL 001
+#define NAMESSTART 353
+#define NAMESEND 366
+#define USER_LIST 1000
+#define NICK 401
+#define NOCHANNEL 403
+#define USER 461
+// #define TOPIC 332
+// #define INVITE 341
+// #define KICK 342
+// #define MODE 324
+// #define PORT 667
+// #define PASS 464
+// #define PRIVMSG 401
+// #define PRIVMSG_CHANNEL 404
+// #define JOIN 473
+// #define LIST 322
+
+std::string ft_to_string(int nb)
+{
+	std::stringstream converted;
+	converted << nb;
+	return converted.str();
+}
 
 class SuccessCodes
 {
   public:
-	SuccessCodes(const std::string &nickname, const std::string &receiver)
-		: _host(HOST), _nickname(nickname), _receiver(receiver)
+	SuccessCodes(Client *client, Channels &channel)
+		: _host(HOST), _client(client), _channel(channel)
 	{
-		successMessages_[OK_NICK] = " :Welcome to the server" + _host;
-		successMessages_[OK_TOPIC] = " :Le sujet du canal est ";
-		successMessages_[OK_INVITE] = " :Vous n'avez pas l'autorisation d'inviter des utilisateurs.";
-		successMessages_[OK_KICK] = " :Vous n'avez pas l'autorisation de chasser un utilisateur.";
-		successMessages_[OK_MODE] = " :Vous n'avez pas l'autorisation de changer les modes du canal.";
-		successMessages_[OK_PORT] = " :Le port spécifié n'est pas valide.";
-		successMessages_[OK_PASS] = " :Mot de passe incorrect.";
-		successMessages_[OK_PRIVMSG] = " :L'utilisateur spécifié n'existe pas.";
-		successMessages_[OK_PRIVMSG_CHANNEL] = " :Le canal spécifié n'existe pas.";
-		successMessages_[OK_USER] = " :Paramètres de l'utilisateur incorrects.";
-		successMessages_[OK_JOIN] = " :Vous n'avez pas l'autorisation de rejoindre ce canal.";
-		successMessages_[OK_LIST] = " :Impossible de récupérer la liste des canaux.";
+		_formatRPL[BASIC] = ":<host> <code> <nick> :<message>\n";
+		_formatRPL[CHANNEL] = ":<host> <code> <channel> :\n";
+		//---------
+		_formatMSG[NICK] = "Welcome to ft_irc <nick>\nType FT_HELP for commands\n";
+		_formatMSG[USER] = "USER added '<username>' '<realname>' to '<host>'\n";
+		_formatMSG[USER_LIST] = "<userlist>";
+		_formatRPL[NAMESSTART] = channel.getusersList();
+		_formatMSG[NAMESEND] = "End of /NAMES list.";
 	}
 
-	std::string getSuccessMessage(int code) const
+	~SuccessCodes()
 	{
-		if (successMessages_.find(code) != successMessages_.end())
+	}
+
+	std::string createStr(int format, int message)
+	{
+		std::map<int, std::string>::iterator it = _formatRPL.find(format);
+		if (it != _formatRPL.end())
 		{
-			std::stringstream message;
-			message << ":" << _host << " " << code << " " << _nickname << " ";
-			if (_receiver.empty() == false)
-				message << _receiver << " ";
-			message << ":" << successMessages_.at(code);
-			return message.str();
+			std::string formatted = it->second;
+			if (message != EMPTY)
+				replacer(formatted, "<message>", _formatMSG.find(message)->second);
+			replacer(formatted, "<host>", _host);
+			replacer(formatted, "<code>", ft_to_string(message));
+			replacer(formatted, "<nick>", _client->getNick());
+			replacer(formatted, "<username>", _client->getUsername());
+			replacer(formatted, "<realname>", _client->getRealname());
+			if (_channel.getChanName().empty() == false)
+			{
+				replacer(formatted, "<channel>", ("#" + _channel.getChanName()));
+				replacer(formatted, "<userlist>", _channel.getusersList());
+			}
+			// replacer(formatted, "<>", _client->);
+			return formatted;
 		}
-		return "Code d'erreur inconnu";
+		else
+			return "";
+	}
+
+	void replacer(std::string &str, const std::string &placeholder, const std::string &replacement)
+	{
+		if (replacement.empty())
+			return;
+		size_t pos = 0;
+		while ((pos = str.find(placeholder, pos)) != std::string::npos)
+		{
+			str.replace(pos, placeholder.length(), replacement);
+			pos += replacement.length();
+		}
 	}
 
   private:
-	std::map<int, std::string> successMessages_;
+	std::map<int, std::string> _formatRPL;
+	std::map<int, std::string> _formatMSG;
 	const std::string _host;
-	const std::string _nickname;
-	const std::string _receiver;
+	Client *_client;
+	Channels &_channel;
+	std::string _message;
 };
 
 #endif

@@ -30,9 +30,26 @@ void Client::setNickname(std::string newNickname)
 	_nickname = newNickname;
 }
 
+void Client::setHost(std::string newHost)
+{
+	_host = newHost;
+}
+void Client::setServer(std::string newServer)
+{
+	_server = newServer;
+}
 void Client::setSocket(int newSocket)
 {
 	_socket = newSocket;
+}
+
+std::string Client::getHost()
+{
+	return _host;
+}
+std::string Client::getServer()
+{
+	return _server;
 }
 
 std::string Client::getUsername()
