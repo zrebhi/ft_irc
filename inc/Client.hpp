@@ -2,6 +2,7 @@
 #define CLIENT_HPP
 
 #include "CommonLibs.hpp"
+#include <vector>
 
 class Client
 {
@@ -12,6 +13,7 @@ class Client
 	std::string _realname;
 	std::string _host;
 	std::string _server;
+	std::vector<std::string> _chanList;
 
   public:
 	Client();
@@ -24,6 +26,7 @@ class Client
 	void setNickname(std::string newNickname);
 	void setUsername(std::string newUsername);
 	void setRealname(std::string newRealname);
+	void setNewChan(std::string &newChan);
 	// getters
 	int getSocket();
 	std::string getNick();

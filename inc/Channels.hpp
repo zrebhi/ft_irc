@@ -28,7 +28,8 @@ class Channels
 	std::string getChanName();
 	std::string getusersList();
 	std::string getNbUsers();
-	int checkProtected(const std::string &password);
+	int getIsProtected(const std::string &password);
+	std::vector<Client *> &getUsers();
 	// functions
 	int addUser(Client *newClient);
 	bool removeUser(Client *oldClient);

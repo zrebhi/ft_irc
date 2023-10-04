@@ -44,7 +44,7 @@
 #define BOLDCYAN "\033[1m\033[36m"    // Cyan gras
 #define BOLDWHITE "\033[1m\033[37m"   // Blanc gras
 
-#define NOT_REGISTERED "NR"
+#define NOT_REGISTERED "undefined"
 #define CMD_SIZE 5
 #define EVENT_LIST_SIZE 11
 

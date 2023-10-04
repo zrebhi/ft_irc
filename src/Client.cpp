@@ -1,6 +1,9 @@
 #include "../inc/Client.hpp"
+#include <iterator>
+#include <vector>
 
 Client::Client()
+	: _chanList()
 {
 	_socket = -1;
 }
@@ -41,6 +44,11 @@ void Client::setServer(std::string newServer)
 void Client::setSocket(int newSocket)
 {
 	_socket = newSocket;
+}
+
+void Client::setNewChan(std::string &newChan)
+{
+	_chanList.push_back(newChan);
 }
 
 std::string Client::getHost()

@@ -3,7 +3,7 @@
 #include <vector>
 
 Channels::Channels()
-	: _chanName(""), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
+	: _chanName(""), _chanMode(0), _isProtected(false), _topic("No topic defined\n")
 {
 }
 
@@ -44,7 +44,7 @@ std::string Channels::getNbUsers()
 	return size.str();
 }
 
-int Channels::checkProtected(const std::string &password)
+int Channels::getIsProtected(const std::string &password)
 {
 	if (_isProtected == false)
 		return -1;
@@ -54,6 +54,10 @@ int Channels::checkProtected(const std::string &password)
 		return 0;
 }
 
+std::vector<Client *> &Channels::getUsers()
+{
+	return _usersList;
+}
 std::string Channels::getusersList()
 {
 	std::vector<Client *>::iterator it = _operators.begin();

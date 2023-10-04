@@ -16,7 +16,6 @@
 #include <cstring>
 #include <sys/epoll.h>
 #define MAX_CHARS 256
-#define TOO_LONG "WARNING: Message are limited to 256 characters, remaining will be ignored.\n"
 
 #include "../inc/Message.hpp"
 #include "../inc/Server.hpp"
