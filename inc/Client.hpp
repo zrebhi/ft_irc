@@ -34,6 +34,7 @@ class Client
 	std::string getServer();
 	std::string getUsername();
 	std::string getRealname();
+	std::string getUserInfos();
 };
 
 #endif // !CLIENT_HPP

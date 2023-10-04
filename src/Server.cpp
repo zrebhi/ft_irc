@@ -21,7 +21,7 @@
 #include "../inc/Server.hpp"
 
 Server::Server()
-	: portNumber(8080), _serverIsUp(false)
+	: _port(8080), _serverIsUp(false)
 {
 	Server::serverSetup();
 }
@@ -29,9 +29,9 @@ Server::Server()
 Server::Server(unsigned int port)
 	: _serverIsUp(false)
 {
-	if (portNumber < 9999)
+	if (_port < 9999)
 	{
-		this->portNumber = port;
+		this->_port = port;
 		Server::serverSetup();
 	}
 	else
@@ -48,6 +48,9 @@ Server::~Server()
 
 void Server::serverSetup()
 {
+	// to clear
+	close(_port);
+	//
 	createSocket();
 	bindSocket();
 	setSocketToListen();
@@ -132,7 +135,7 @@ void Server::bindSocket()
 {
 	this->_serverAddress.sin_family = AF_INET;
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
-	this->_serverAddress.sin_port = htons(portNumber);
+	this->_serverAddress.sin_port = htons(_port);
 
 	if (bind(this->_serverSocket, (struct sockaddr *)&this->_serverAddress, sizeof(this->_serverAddress)) == -1)
 	{

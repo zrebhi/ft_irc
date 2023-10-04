@@ -34,7 +34,7 @@ class Server
 
   private:
 	// variables
-	unsigned int portNumber;
+	unsigned int _port;
 	bool _serverIsUp;
 	int _serverSocket;
 	std::map<int, Client *> _clients;

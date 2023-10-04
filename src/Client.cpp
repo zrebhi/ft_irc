@@ -9,7 +9,7 @@ Client::Client()
 }
 
 Client::Client(int newSocket)
-	: _socket(newSocket), _username(NOT_REGISTERED)
+	: _socket(newSocket), _username(NOT_REGISTERED), _host("Ecole42")
 {
 }
 
@@ -35,6 +35,8 @@ void Client::setNickname(std::string newNickname)
 
 void Client::setHost(std::string newHost)
 {
+	if (newHost == "0" || newHost.length() < 5)
+		return;
 	_host = newHost;
 }
 void Client::setServer(std::string newServer)
@@ -73,6 +75,11 @@ std::string Client::getUsername()
 std::string Client::getRealname()
 {
 	return _username;
+}
+
+std::string Client::getUserInfos()
+{
+	return getNick() + "!" + getUsername() + "@" + getHost();
 }
 
 void Client::setRealname(std::string newRealname)
