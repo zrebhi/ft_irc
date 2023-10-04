@@ -73,10 +73,12 @@ void Server::serverSetup()
 		}
 	}
 	close(_serverSocket);
-	// close(_epfd);
-	// for (size_t i = 0; i < _clients.size(); i++)
-	// 	if (_clients[i])
-	// 		close(_clients[i]->getSocket());
+	close(_epfd);
+	for (size_t i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i])
+			close(_clients[i]->getSocket());
+	}
 }
 
 // recois la commande du client -> parseInput renvoi un strcuture t_cmd
@@ -99,8 +101,6 @@ void Server::handleClient(Client *client)
 	int bytesReceived = recv(client->getSocket(), buffer, MAX_CHARS - 1, 0);
 	if (bytesReceived <= 0)
 		removeClient(client);
-	if (bytesReceived > MAX_CHARS)
-		send(client->getSocket(), TOO_LONG, sizeof(TOO_LONG), 0);
 	std::cout << GREEN << "\tServer recv: " << buffer << RESET << std::endl;
 	std::istringstream bufferStream(buffer);
 	std::string bufferLine;

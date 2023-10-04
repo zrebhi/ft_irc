@@ -47,7 +47,6 @@ int Message::channelExist(std::string chanName, t_chanInfos &infos, std::string 
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		std::cout << _channels[i].getChanName() << " == " << chanName << std::endl;
 		if (_channels[i].getChanName() == chanName)
 		{
 			infos.index = i;
@@ -109,26 +108,26 @@ t_cmd *Message::parseInput(std::string &input)
 	}
 	else
 		return NULL;
+	cmd = new t_cmd;
 	size_t spacePos = input.find(' ');
+	cmd->cmdType = input.substr(0, spacePos);
 	if (spacePos != std::string::npos)
 	{
-		cmd = new t_cmd;
-		cmd->cmdType = input.substr(0, spacePos);
 		std::string leftover = input.substr(spacePos + 1);
 		size_t wordStart = 0;
 		while (wordStart < leftover.length())
 		{
 			size_t wordEnd = leftover.find(' ', wordStart);
-			if (wordEnd == std::string::npos || leftover.at(0) == ':')
+			if (wordEnd == std::string::npos)
 				wordEnd = leftover.length();
 			cmd->params.push_back(leftover.substr(wordStart, wordEnd - wordStart));
 			wordStart = wordEnd + 1;
+			if (!leftover.empty() && leftover[wordStart] == ':')
+			{
+				cmd->params.push_back(leftover.substr(1));
+				break;
+			}
 		}
-	}
-	else
-	{
-		cmd = new t_cmd;
-		cmd->cmdType = input;
 	}
 	return cmd;
 	// Format d'envoi : TOPIC #canal :nouveau_sujet
@@ -161,10 +160,10 @@ void Message::nickHandler(t_cmd *input, Client *client)
 void Message::userHandler(t_cmd *input, Client *client)
 {
 	// Format d'envoi : USER nom_utilisateur hote serveur :nom_reel
-	std::string &username = input->params[0];
+	std::string username = input->params[0];
 	if (client->getUsername() != NOT_REGISTERED)
 		ErrorCodes(client->getNick(), EMPTYSTR, client->getSocket()).sendErrMsg(ERR_REGISTERED);
-	else if (input->params.size() < 4 || input->params[3].at(0) != ':' || username.empty())
+	else if (input->params.size() < 4)
 		ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(ERR_NEEDPARAMS);
 	else
 	{
@@ -173,18 +172,11 @@ void Message::userHandler(t_cmd *input, Client *client)
 		client->setUsername(username);
 		client->setHost(input->params[1]);
 		client->setServer(input->params[2]);
-		std::string realname;
-		for (size_t i = 3; i < input->params.size() && realname.length() < 30; i++)
-		{
-			// ne pas decouper le reste de la string si USER dans parseInput
-			if (i != 3)
-				realname.push_back(' ');
-			else if (input->params[i].at(0) == ':')
-				input->params[i].erase(0);
-			realname.append(input->params[i]);
-			if (realname.length() > REALNAME_MAX_LEN)
-				realname.resize(REALNAME_MAX_LEN);
-		}
+		std::string realname = input->params[3];
+		if (realname.at(0) == ':')
+			realname.erase(0, 1);
+		if (realname.length() > REALNAME_MAX_LEN)
+			realname.resize(REALNAME_MAX_LEN);
 		client->setRealname(realname);
 		SuccessCodes(client, _nullChannel).createStr(USER, EMPTYSTR);
 	}
@@ -229,17 +221,16 @@ void Message::joinHandler(t_cmd *input, Client *client)
 		chanName.erase(0, 1);
 		if (!channelExist(chanName, chanInfos, EMPTYSTR))
 		{
-			// if (_channels.size() >= MAXCHANNELS)
-			// 	return; // Eroor for too many channels - make void return on error
-			// else
-			// {
-			std::cout << chanName << std::endl;
-			Channels newChannel(chanName, client);
-			_channels.push_back(newChannel);
-			client->setNewChan(newChannel, OP);
-			SuccessCodes(client, newChannel).createStr(JOIN, EMPTYSTR);
-			channelExist(chanName, chanInfos, EMPTYSTR);
-			// }
+			if (_channels.size() >= MAXCHANNELS)
+				return; // Eroor for too many channels - make void return on error
+			else
+			{
+				Channels newChannel(chanName, client);
+				_channels.push_back(newChannel);
+				client->setNewChan(newChannel.getChanName());
+				SuccessCodes(client, newChannel).createStr(JOIN, EMPTYSTR);
+				channelExist(chanName, chanInfos, EMPTYSTR);
+			}
 		}
 		else if (chanInfos.protection != -10000000) // check password
 		{
@@ -254,6 +245,7 @@ void Message::joinHandler(t_cmd *input, Client *client)
 
 void Message::canalMessage(t_cmd *input, Client *client)
 {
+	std::cout << "enter canal" << std::endl;
 	// :<sender_nick> PRIVMSG <channel_name> :<message_content>
 	t_chanInfos chanInfos;
 	if (channelExist(input->params[0], chanInfos, ""))
@@ -266,6 +258,7 @@ void Message::canalMessage(t_cmd *input, Client *client)
 			msg += _channels[chanInfos.index].getChanName() + " ";
 			msg += (*it)->getNick() + " :" + input->params[1] + "\n";
 			send(client->getSocket(), msg.c_str(), msg.size(), 0);
+			std::cout << "Server send: " << msg << std::endl;
 			it++;
 		}
 	}
@@ -278,16 +271,20 @@ void Message::privateMessage(t_cmd *input, Client *client)
 	std::map<int, Client *>::iterator it = _clients.begin();
 	while (it != _clients.end())
 	{
-		if (it->second->getNick().compare(input->params[0]) == 0)
+		std::string currentClientNick = (*it).second->getNick();
+		// si client est le meme ???
+		if (currentClientNick == input->params[0])
 		{
+			std::cout << "enter private: if" << std::endl;
 			std::string msg = ":" + client->getNick() + " PRIVMSG ";
-			msg += it->second->getNick() + " :" + input->params[1];
-			send(client->getSocket(), msg.c_str(), msg.size(), 0);
+			msg += currentClientNick + " " + input->params[1] + "\n";
+			std::cout << "enter private: " << msg << std::endl;
+			send((*it).second->getSocket(), msg.c_str(), msg.size(), 0);
 			return;
 		}
 		it++;
 	}
-	std::string notFound = "Error: Client not found.\n";
+	std::string notFound = client->getNick() + " " + input->params[0] + "<= Error: Client not found.\n";
 	send(client->getSocket(), notFound.c_str(), notFound.size(), 0);
 }
 // Traite les messages prinves PRIVMSG (pas encore les messages du Channel)

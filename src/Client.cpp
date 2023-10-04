@@ -51,6 +51,11 @@ void Client::setNewChan(std::string &newChan)
 	_chanList.push_back(newChan);
 }
 
+void Client::setUsername(std::string newUsername)
+{
+	_username = newUsername;
+}
+
 std::string Client::getHost()
 {
 	return _host;
@@ -63,11 +68,6 @@ std::string Client::getServer()
 std::string Client::getUsername()
 {
 	return _username;
-}
-
-void Client::setUsername(std::string newUsername)
-{
-	_username = newUsername;
 }
 
 std::string Client::getRealname()

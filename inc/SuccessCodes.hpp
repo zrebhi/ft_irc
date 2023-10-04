@@ -59,7 +59,7 @@ class SuccessCodes
 		_formatRPL[NICK] = ":<host> 001 <nick> :Welcome to ft_irc <nick>\nType FT_HELP for commands\n";
 		_formatRPL[USER] = ":<host> 001 <nick> :USER added '<username>' '<realname>' to '<host>'\n";
 		_formatRPL[NAMES_START] = ":<host> 353 <nick> = <channel> :<userlist>\n";
-		_formatRPL[NAMES_END] = "<host> 356 <nick> = <channel> :End of /NAMES list.\n";
+		_formatRPL[NAMES_END] = "<host> 356 <nick> <channel> :End of /NAMES list.\n";
 		_formatRPL[JOIN] = ":<nick>!<username>@<userhost> JOIN <channel>\n";
 		_formatRPL[MODE] = ":<host> MODE <channel> +nt\n"; //+nt modes a gerer
 														   // nickname + "@" + HOST + "PRIVMSG" + input->params[0] + " :" + input->params[1] + "\n";
@@ -72,7 +72,7 @@ class SuccessCodes
 		std::vector<Client *> &clientList = _channel.getUsers();
 		std::vector<Client *>::iterator clientIt = clientList.begin();
 		while (clientIt != clientList.end())
-			send((*clientIt)->getSocket(), announcement.c_str(), announcement.size(), 0);
+			send((*(clientIt++))->getSocket(), announcement.c_str(), announcement.size(), 0);
 		std::cout << RED << "Server send to channel: " << announcement << RESET << std::endl;
 	}
 

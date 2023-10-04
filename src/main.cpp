@@ -16,26 +16,6 @@
 
 int main()
 {
-	std::cout << "Colors: \n"
-			  << RED << "Server" << std::endl;
-	std::cout << GREEN << "Client A\n"
-			  << YELLOW << "Client B\n"
-			  << RESET << std::endl;
-	// if (fork() == 0)
-	// {
-	// 	if (fork() == 0)
-	// 	{
-	// 		virtualClient('A');
-	// 	}
-	// 	else
-	// 	{
-	// 		sleep(3);
-	// 		virtualClient('B');
-	// 	}
-	// }
-	// else
-	// {
 	Server ircServ;
-	// }
 	return 0;
 }

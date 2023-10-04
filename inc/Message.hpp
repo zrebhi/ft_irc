@@ -39,7 +39,6 @@ class Message
 	int channelExist(std::string chanName, int (&chanInfo)[3], std::string password);
 	std::vector<Channels> &_channels;
 	std::map<int, Client *> &_clients;
-	Client *_currentClient;
 	std::vector<Client *> _invitedClients;
 	// verifier comment initialiser &_channels et &_clients
 	// avec le constructeur par defaut

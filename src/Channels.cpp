@@ -2,20 +2,22 @@
 #include <string>
 #include <vector>
 
+#define UNDEFINED "No topic defined"
+
 Channels::Channels()
-	: _chanName(""), _chanMode(0), _isProtected(false), _topic("No topic defined\n")
+	: _chanName(""), _chanMode(0), _isProtected(false), _topic(UNDEFINED)
 {
 }
 
 Channels::Channels(std::string chanName)
-	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
+	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic(UNDEFINED)
 {
 }
 
 Channels::Channels(std::string chanName, Client *client)
-	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic("No topic defined\n")
+	: _chanName(chanName), _chanMode(1), _isProtected(false), _topic(UNDEFINED)
 {
-	_operators.push_back(client);
+	addUser(client);
 }
 
 Channels::~Channels()
@@ -32,7 +34,7 @@ int Channels::getMode()
 	return _chanMode;
 }
 
-std::string Channels::getChanName()
+std::string &Channels::getChanName()
 {
 	return _chanName;
 }

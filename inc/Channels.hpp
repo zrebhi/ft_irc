@@ -3,7 +3,6 @@
 
 #include "Client.hpp"
 #include "CommonLibs.hpp"
-#include <map>
 
 #define INVITE_ONLY 0
 #define TOPIC_CMD 1
@@ -14,6 +13,7 @@
 class Channels
 {
   public:
+	// constructors and destructors
 	Channels();
 	Channels(std::string chanName);
 	Channels(std::string chanName, Client *client);
@@ -24,11 +24,11 @@ class Channels
 	void setChanName(std::string newChanName);
 	// getters
 	int getMode();
+	int getIsProtected(const std::string &password);
 	std::string getTopic();
-	std::string getChanName();
+	std::string &getChanName();
 	std::string getusersList();
 	std::string getNbUsers();
-	int getIsProtected(const std::string &password);
 	std::vector<Client *> &getUsers();
 	// functions
 	int addUser(Client *newClient);
