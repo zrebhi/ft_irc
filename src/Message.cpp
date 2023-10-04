@@ -122,9 +122,9 @@ t_cmd *Message::parseInput(std::string &input)
 				wordEnd = leftover.length();
 			cmd->params.push_back(leftover.substr(wordStart, wordEnd - wordStart));
 			wordStart = wordEnd + 1;
-			if (!leftover.empty() && leftover[wordStart] == ':')
+			if (leftover[wordStart] == ':')
 			{
-				cmd->params.push_back(leftover.substr(1));
+				cmd->params.push_back(leftover.substr(wordStart + 1));
 				break;
 			}
 		}
@@ -245,20 +245,20 @@ void Message::joinHandler(t_cmd *input, Client *client)
 
 void Message::canalMessage(t_cmd *input, Client *client)
 {
-	std::cout << "enter canal" << std::endl;
 	// :<sender_nick> PRIVMSG <channel_name> :<message_content>
 	t_chanInfos chanInfos;
-	if (channelExist(input->params[0], chanInfos, ""))
+	if (channelExist(input->params[0].substr(1), chanInfos, ""))
 	{
+		std::cout << "enter canal" << std::endl;
 		std::vector<Client *> &usersList = _channels[chanInfos.index].getUsers();
 		std::vector<Client *>::iterator it = usersList.begin();
+		// :ClientB!user@host PRIVMSG #canal :Salut tout le monde ! Comment ça va ?
+		std::string msg = ":" + client->getNick() + "!" + client->getUsername() + "@" + client->getHost() + " PRIVMSG ";
+		msg += input->params[0] + " :" + input->params[1] + "\n";
+		std::cout << msg << std::endl;
 		while (it != usersList.end())
 		{
-			std::string msg = ":" + client->getNick() + " PRIVMSG #";
-			msg += _channels[chanInfos.index].getChanName() + " ";
-			msg += (*it)->getNick() + " :" + input->params[1] + "\n";
-			send(client->getSocket(), msg.c_str(), msg.size(), 0);
-			std::cout << "Server send: " << msg << std::endl;
+			send((*it)->getSocket(), msg.c_str(), msg.size(), 0);
 			it++;
 		}
 	}
@@ -275,10 +275,9 @@ void Message::privateMessage(t_cmd *input, Client *client)
 		// si client est le meme ???
 		if (currentClientNick == input->params[0])
 		{
-			std::cout << "enter private: if" << std::endl;
+			std::cout << "enter private: 1 " << currentClientNick << " - 2 " << input->params[1] << std::endl;
 			std::string msg = ":" + client->getNick() + " PRIVMSG ";
 			msg += currentClientNick + " " + input->params[1] + "\n";
-			std::cout << "enter private: " << msg << std::endl;
 			send((*it).second->getSocket(), msg.c_str(), msg.size(), 0);
 			return;
 		}
@@ -287,6 +286,7 @@ void Message::privateMessage(t_cmd *input, Client *client)
 	std::string notFound = client->getNick() + " " + input->params[0] + "<= Error: Client not found.\n";
 	send(client->getSocket(), notFound.c_str(), notFound.size(), 0);
 }
+
 // Traite les messages prinves PRIVMSG (pas encore les messages du Channel)
 void Message::messageHandler(t_cmd *input, Client *client)
 {
