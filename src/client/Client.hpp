@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:02:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/09/27 22:04:26 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/03 20:16:53 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ public:
 	~Client();
 	Client	&operator=(const Client &rhs);
 
-	int			getSocket();
+	int			getSocket() const;
 
 	const std::string	getNickname() const;
 	const std::string	getUsername() const;

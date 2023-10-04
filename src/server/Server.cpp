@@ -6,12 +6,12 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/09/28 23:25:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/04 21:13:59 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "../commands/Commands.hpp"
+#include "../commands/Command.hpp"
 
 void Server::listenToNewEvents() {
 	struct pollfd *fds = new struct pollfd[this->_clientSockets.size() + 1];
@@ -51,7 +51,7 @@ void Server::manageEvents(struct pollfd *fds) {
 			} else {
 				buffer[bytesRead] = '\0';  // Null-terminate the string
 				std::string bufferString(buffer);
-				std::cout << "Received message: " << bufferString << std::endl;
+				std::cout << "<- " << bufferString << std::endl;
 				commandHandler(bufferString, it->second);
 			}
 		}
@@ -74,39 +74,18 @@ void Server::acceptConnection() {
 }
 
 void Server::commandHandler(std::string bufferString, Client &client) {
-	std::vector<std::string> commands = ft_split(bufferString, '\n');
+	std::vector <std::string> commands = ft_split(bufferString, '\n');
 
 	for (size_t i = 0; i < commands.size(); i++) {
 		std::vector <std::string> commandArray = ft_split(commands[i], ' ');
-		if (commandArray[0] == "USER") { // Create Map -> Exam_CPP maps
-			client.setUsername(commandArray[1]);
-			std::string reply = ":IRC 001 " + client.getNickname() + " :Welcome to the Internet Relay Network " +
-								client.getNickname() + "!" + client.getUsername() + "@" + client.getHostname() + "\n";
-			std::cout << reply;
-			send(client.getSocket(), reply.c_str(), reply.size(), 0);
-		}
+		Command cmd = Command(commandArray, client);
 		if (commandArray[0] == "NICK")
-			client.setNickname(commandArray[1]);
+			cmd.nick();
+		if (commandArray[0] == "USER")
+			cmd.user();
+		if (commandArray[0] == "JOIN")
+			cmd.join(this->_channels);
+		if (commandArray[0]== "PRIVMSG")
+			cmd.privmsg(*this, client);
 	}
-}
-
-
-
-std::vector <std::string> Server::ft_split(std::string string, char separator) {
-	std::vector<std::string> stringsVector;
-	std::string newString;
-
-	for (size_t i = 0; i < string.length(); i++) {
-		if (string[i] == separator) {
-			stringsVector.push_back(newString);
-			newString.clear();
-		}
-		else if (i == string.length() - 1) {
-			stringsVector.push_back(newString);
-			newString.clear();
-		}
-		else
-			newString += string[i];
-	}
-	return stringsVector;
 }

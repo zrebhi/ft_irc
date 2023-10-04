@@ -18,6 +18,10 @@ Server::Server() {
 
 Server::~Server() {}
 
+Server::Server(const Server &src) :
+_serverSocket(src._serverSocket), _clientSockets(src._clientSockets),
+_channels(src._channels), _serverAddress(src._serverAddress) {}
+
 void	Server::serverSetup() {
 	close(this->_serverSocket);
 	createSocket();
