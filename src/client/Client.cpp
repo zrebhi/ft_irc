@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.cpp                                         :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:12:48 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/09/27 22:05:54 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/03 20:17:41 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Client::Client(const Client &src) {
 	this->_clientSocket = src._clientSocket;
 }
 
-int Client::getSocket() {
+int Client::getSocket() const {
 	return this->_clientSocket;
 }
 
