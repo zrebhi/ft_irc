@@ -90,6 +90,8 @@ bool Message::handleInput(Client *client, std::string input)
 		listHandler(client->getSocket(), client->getNick());
 	else if (cmd->cmdType.compare("MODE") == 0)
 		modeHandler(cmd, client);
+	else if (cmd->cmdType.compare("TOPIC") == 0)
+		topicHandler(cmd, client);
 	else if (cmd->cmdType.compare("QUIT") == 0)
 		return true;
 	// QUIT => envoye un message a tous les canaux ou le client est connecte (via Server a removeClient ?)
@@ -207,6 +209,18 @@ void Message::modeHandler(t_cmd *input, Client *client)
 		ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(NOSUCHCHAN);
 	else
 		SuccessCodes(client, _channels[chanInfos.index]).createStr(MODE, EMPTYSTR);
+}
+
+void Message::topicHandler(t_cmd *input, Client *client)
+{
+	t_chanInfos chanInfos;
+	std::string &chanName = input->params[0];
+	if (chanName[0] != '#' || chanName.length() < 4)
+		ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(ERR_NEEDPARAMS);
+	else if (channelExist(input->params[0], chanInfos, EMPTYSTR) == false)
+		ErrorCodes(client->getNick(), input->cmdType, client->getSocket()).sendErrMsg(NOSUCHCHAN);
+	else
+		SuccessCodes(client, _channels[chanInfos.index]).createStr(TOPIC, EMPTYSTR);
 }
 
 // Traite la commande JOIN a  partir d'un client

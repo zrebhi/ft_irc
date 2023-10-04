@@ -31,6 +31,7 @@ class Message
 	void nickHandler(t_cmd *input, Client *client);
 	void modeHandler(t_cmd *input, Client *client);
 	void whoHandler(t_cmd *input, Client *client);
+	void topicHandler(t_cmd *input, Client *client);
 	t_cmd *parseInput(std::string &input);
 	void canalMessage(t_cmd *input, Client *client);
 	void privateMessage(t_cmd *input, Client *client);
