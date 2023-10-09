@@ -6,13 +6,15 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/09/28 23:16:50 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 21:26:22 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() {
+Server::Server() {}
+
+Server::Server(int portNumber) : _portNumber(portNumber) {
 	Server::serverSetup();
 }
 
@@ -41,7 +43,7 @@ void	Server::createSocket() {
 void	Server::bindSocket() {
 	this->_serverAddress.sin_family = AF_INET;
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
-	this->_serverAddress.sin_port = htons(portNumber);
+	this->_serverAddress.sin_port = htons(_portNumber);
 
 	if (bind(this->_serverSocket, (struct sockaddr *) &this->_serverAddress, \
 	sizeof(this->_serverAddress)) == -1) {

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/04 22:41:21 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 23:47:03 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,11 @@ void Command::join(std::map <std::string, Channel> &channels) {
 	if (it == channels.end()) {
 		Channel	newChannel(channelName);
 		channels.insert(std::make_pair(channelName, newChannel));
+		channels[channelName].addOperator(this->_client);
 	}
-	std::string joinMessage = "JOIN #" + channelName;
-	if (ft_send(this->_client, joinMessage))
-		return;
 	channels[channelName].addUser(this->_client);
 
-	joinMessage = ":" + this->_client.getNickname() + " JOIN :#" + channelName + "\n";
+	std::string joinMessage = ":" + this->_client.getUsername() + " JOIN :#" + channelName;
 	ft_send(this->_client, joinMessage);
 }
 
