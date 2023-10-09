@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/04 21:13:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 21:52:58 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.join(this->_channels);
 		if (commandArray[0]== "PRIVMSG")
 			cmd.privmsg(*this, client);
+		if (commandArray[0] == "WHO")
+			cmd.who(*this, client);
 	}
 }

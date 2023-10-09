@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 21:40:45 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/04 23:31:36 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 22:06:39 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ bool Command::checkChannelExists(Server ircServ, Client user) {
 	std::map<std::string, Channel> channelList = ircServ.getChannelList();
 	std::map<std::string, Channel>::iterator it = channelList.find(channelName);
 	if (it == channelList.end()) {
-		std::string reply = ":IRC 403 " + user.getUsername() + " " + channelName + " :No such channel";
+		std::string reply = ":IRC 403 " + user.getNickname() + " " + channelName + " :No such channel";
 		ft_send(user, reply);
 		return false;
 	}
@@ -56,10 +56,10 @@ bool Command::checkIsChannelMember(Server ircServ, Client user) {
 	std::string channelName = this->_commandArray[1].substr(1);
 	std::map<std::string, Channel> channelList = ircServ.getChannelList();
 
-	std::map<int, Client> channelUsers = channelList[channelName].getUserList();
+	std::map<int, Client> channelUsers = channelList[channelName].getUsers();
 	std::map<int, Client>::iterator it = channelUsers.find(user.getSocket());
 	if (it == channelUsers.end()) {
-		std::string reply = ":IRC 442 " + user.getUsername() + " " + channelName + " :You're not on that channel";
+		std::string reply = ":IRC 442 " + user.getNickname() + " " + channelName + " :You're not on that channel";
 		ft_send(user, reply);
 		return false;
 	}

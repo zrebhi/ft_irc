@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/03 21:04:08 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 23:58:31 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,15 @@ public:
 	Channel(const std::string &channelName);
 	~Channel();
 
-	void	addUser(const Client &user);
+	void	addUser(Client &user);
+	void	addOperator(Client &user);
 
-	void	printUserList();
 	std::string	getName() const;
-	std::map<int, Client> getUserList() const;
+	std::string getUserList();
+	std::map<int, Client> getUsers();
 
 private:
 	std::string	_name;
 	std::map<int, Client>	_users;
+	std::map<int, Client>	_operators;
 };

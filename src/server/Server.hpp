@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/04 22:38:39 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/09 21:26:22 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,13 @@
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
 
-#define portNumber 6667
-
 class Client;
 class Channel;
 
 class Server {
 public:
 	Server();
+	Server(int portNumber);
 	Server(const Server &src);
 	~Server();
 
@@ -45,6 +44,7 @@ public:
 
 private:
 	int	_serverSocket;
+	int	_portNumber;
 	std::map<int, Client>	_clientSockets;
 	std::map<std::string, Channel> _channels;
 	struct sockaddr_in	_serverAddress;
@@ -66,3 +66,6 @@ private:
 };
 
 int	ft_send(Client user, std::string reply);
+
+bool	checkPortNumber(char *portNumber);
+bool	invalidInput(int argc, char **argv);
