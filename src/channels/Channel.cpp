@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:11:02 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ std::map<std::string, Client> Channel::getUsers() {
 	return this->_users;
 }
 
-std::string Channel::UserListString() {
+std::string Channel::userListString() {
 	std::string userList;
 	std::map<std::string, Client>::iterator it = _users.begin();
 
