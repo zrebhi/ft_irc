@@ -1,18 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Command.cpp                                        :+:      :+:    :+:   */
+/*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/03 19:51:47 by zrebhi           ###   ########.fr       */
+/*   Created: 2023/10/10 22:51:50 by zrebhi            #+#    #+#             */
+/*   Updated: 2023/10/10 22:54:19 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Command.hpp"
+#pragma once
 
-Command::Command(const std::vector <std::string> &commandArray, Client &client, Server &ircServ) :
-_commandArray(commandArray), _client(client) , _ircServ(ircServ) {}
+#include <sstream>
+#include "server/Server.hpp"
 
-Command::~Command() {}
+std::vector<std::string>	ft_split(std::string string, char separator);
+
+std::string intToString(int number);
+
+int	ft_send(Client user, std::string reply);
+
+bool	checkPortNumber(char *portNumber);
+bool	invalidInput(int argc, char **argv);

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:02:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/03 20:16:53 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/10 23:42:55 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,18 @@ public:
 	Client(const Client &src);
 	~Client();
 	Client	&operator=(const Client &rhs);
+	bool	operator==(std::string nickname);
 
 	int			getSocket() const;
 
-	const std::string	getNickname() const;
-	const std::string	getUsername() const;
-	const std::string	getPassword() const;
-	const std::string	getHostname() const;
+	std::string	getNickname() const;
+	std::string	getUsername() const;
+	std::string	getPassword() const;
+	std::string	getHostname() const;
 
-	void	setNickname(const std::string &nickname);
-	void	setUsername(const std::string &username);
-	void	setPassword(const std::string &password);
+	void	setNickname(std::string nickname);
+	void	setUsername(std::string username);
+	void	setPassword(std::string password);
 
 
 private:
@@ -40,5 +41,6 @@ private:
 	std::string _password;
 	std::string _username;
 	std::string _hostname;
+
 	int	_clientSocket;
 };

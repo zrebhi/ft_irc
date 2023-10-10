@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/09 21:26:22 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 00:23:42 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
+#include "../Utils.hpp"
 
 class Client;
 class Channel;
@@ -40,14 +41,18 @@ public:
 	void	listenToNewEvents();
 
 	std::map<std::string, Channel> getChannelList() const;
-	std::map<int, Client>	getClientList() const;
+	Channel	getChannel(std::string channelName);
+	std::vector<Client>	getClientList() const;
+
+	void	addClientToServer(Client &client);
 
 private:
 	int	_serverSocket;
 	int	_portNumber;
-	std::map<int, Client>	_clientSockets;
-	std::map<std::string, Channel> _channels;
 	struct sockaddr_in	_serverAddress;
+
+	std::vector<Client>				_clients;
+	std::map<std::string, Channel>	_channels;
 
 	void	createSocket();
 	void	bindSocket();
@@ -60,12 +65,5 @@ private:
 	void	manageEvents(struct pollfd *fds);
 	void	commandHandler(std::string bufferString, Client &client);
 
-	std::vector<std::string>	ft_split(std::string string, char separator);
-
 	Server	&operator=(const Server &rhs);
 };
-
-int	ft_send(Client user, std::string reply);
-
-bool	checkPortNumber(char *portNumber);
-bool	invalidInput(int argc, char **argv);
