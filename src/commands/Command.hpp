@@ -41,7 +41,7 @@ private:
 	Server&	_ircServ;
 
 	void	channelMessage();
-	bool	ChannelExists();
+	bool	channelExists();
 	bool	IsChannelMember();
 	void	privateMessage();
 };

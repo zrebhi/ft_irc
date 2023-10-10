@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 21:25:53 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ public:
 
 	std::string	getName() const;
 	std::map<std::string, Client> getUsers();
-	std::string	UserListString();
+	std::string	userListString();
 
 private:
 	std::string	_name;
