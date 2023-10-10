@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/09 23:58:31 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/10 21:25:53 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,16 @@ public:
 	void	addUser(Client &user);
 	void	addOperator(Client &user);
 
+	void	sendMessageToChannel(Client sender, std::string message);
+
+	bool	isOperator(const std::string &nickname);
+
 	std::string	getName() const;
-	std::string getUserList();
-	std::map<int, Client> getUsers();
+	std::map<std::string, Client> getUsers();
+	std::string	UserListString();
 
 private:
 	std::string	_name;
-	std::map<int, Client>	_users;
-	std::map<int, Client>	_operators;
+	std::map<std::string, Client>	_users;
+	std::map<std::string, Client>	_operators;
 };

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/09 23:47:03 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/10 20:04:19 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void Command::join(std::map <std::string, Channel> &channels) {
 	}
 	channels[channelName].addUser(this->_client);
 
-	std::string joinMessage = ":" + this->_client.getUsername() + " JOIN :#" + channelName;
+	std::string joinMessage = ":" + this->_client.getNickname() + " JOIN :#" + channelName;
 	ft_send(this->_client, joinMessage);
 }
 

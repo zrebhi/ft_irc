@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/09 21:26:22 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/10 23:30:25 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,15 @@ Server::Server(int portNumber) : _portNumber(portNumber) {
 
 Server::~Server() {}
 
-Server::Server(const Server &src) :
-_serverSocket(src._serverSocket), _clientSockets(src._clientSockets),
-_channels(src._channels), _serverAddress(src._serverAddress) {}
+Server::Server(const Server &src) {
+	_serverSocket = src._serverSocket;
+	_clients = src._clients;
+	_channels = src._channels;
+	_serverAddress = src._serverAddress;
+	_portNumber = src._portNumber;
+}
 
 void	Server::serverSetup() {
-	close(this->_serverSocket);
 	createSocket();
 	bindSocket();
 	setSocketToListen();
