@@ -6,14 +6,13 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:52:11 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/09 21:35:53 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 01:40:20 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server/Server.hpp"
 
 int	main(int argc, char **argv) {
-	std::cout << "test";
 	if (invalidInput(argc, argv))
 		return 1;
 
