@@ -13,6 +13,7 @@
 #include "server/Server.hpp"
 
 int	main(int argc, char **argv) {
+	std::cout << "test";
 	if (invalidInput(argc, argv))
 		return 1;
 
