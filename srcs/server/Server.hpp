@@ -26,7 +26,7 @@
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
-#include "../Utils.hpp"
+#include "../utils/Utils.hpp"
 
 class Client;
 class Channel;

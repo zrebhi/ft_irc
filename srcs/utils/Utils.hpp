@@ -6,14 +6,14 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 22:51:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 22:54:19 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 01:46:21 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <sstream>
-#include "server/Server.hpp"
+#include "../server/Server.hpp"
 
 std::vector<std::string>	ft_split(std::string string, char separator);
 
