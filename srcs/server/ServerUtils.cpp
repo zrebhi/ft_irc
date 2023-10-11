@@ -13,7 +13,7 @@
 #include "Server.hpp"
 
 void Server::addSocketToEpoll(int socket) {
-	struct epoll_event event;
+	struct epoll_event event = {};
 	event.events = EPOLLIN;
 	event.data.fd = socket;
 	if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, socket, &event) == -1) {

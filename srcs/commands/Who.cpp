@@ -13,7 +13,7 @@
 #include "Command.hpp"
 
 void	Command::who() {
-	if (this->_commandArray[1][0] == '#' && channelExists())
+	if (this->_commandArray[1][0] == '#' && channelExists(this->_commandArray[1]))
 		whoChannel();
 }
 
