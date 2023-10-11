@@ -40,9 +40,13 @@ public:
 
 	void	listenToNewEvents();
 
+	void	serverShutdown();
+	bool	serverRunning();
+
 	std::map<std::string, Channel> getChannelList() const;
 	Channel	getChannel(std::string channelName);
 	std::vector<Client>	getClientList() const;
+	int	getServerSocket();
 
 	void	addClientToServer(Client &client);
 
@@ -50,6 +54,8 @@ private:
 	int	_serverSocket;
 	int	_portNumber;
 	struct sockaddr_in	_serverAddress;
+
+	bool	_serverUp;
 
 	std::vector<Client>				_clients;
 	std::map<std::string, Channel>	_channels;

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:02:42 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 18:34:18 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void Server::listenToNewEvents() {
 	struct pollfd *fds = new struct pollfd[this->_clients.size() + 1];
 	pollSetup(fds);
 
-	int ret = poll(fds, this->_clients.size() + 1, -1);  // Wait indefinitely for an event
+	int ret = poll(fds, this->_clients.size() + 1, 10);  // Wait indefinitely for an event
 	if (ret == -1) {
 		perror("Failed to poll file descriptors");
 		exit(1);
@@ -47,11 +47,10 @@ void Server::manageEvents(struct pollfd *fds) {
 		return;
 	}
 
-	if (this->_clients.empty())
-		return;
-
 	std::vector<Client>::iterator it = this->_clients.begin();
 	for (size_t i = 1; it != this->_clients.end(); ++it, ++i) {
+		if (this->_clients.empty())
+			return;
 		if (fds[i].revents & POLLIN) {
 			char buffer[1024];
 			size_t bytesRead = recv(it->getSocket(), buffer, sizeof(buffer) - 1, 0);
@@ -99,5 +98,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.privmsg();
 		if (commandArray[0] == "WHO")
 			cmd.who();
+		if (commandArray[0] == "STOP")
+			cmd.shutdown();
 	}
 }

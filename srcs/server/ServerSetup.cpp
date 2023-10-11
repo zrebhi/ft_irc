@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 23:30:25 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 18:32:28 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Server::Server() {}
 
-Server::Server(int portNumber) : _portNumber(portNumber) {
+Server::Server(int portNumber) : _portNumber(portNumber), _serverUp(true) {
 	Server::serverSetup();
 }
 
@@ -39,6 +39,14 @@ void	Server::createSocket() {
 
 	if (this->_serverSocket == -1) {
 		perror("Failed to create socket");
+		exit(1);
+	}
+
+	// Set socket options to allow reuse of the local address
+	int reuse = 1;
+	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1) {
+		std::cerr << "Error setting socket options" << std::endl;
+		close(this->_serverSocket);
 		exit(1);
 	}
 }

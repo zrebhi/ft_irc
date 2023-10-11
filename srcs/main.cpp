@@ -19,7 +19,7 @@ int	main(int argc, char **argv) {
 	int	portNumber = atoi(argv[1]);
 	Server	ircServ(portNumber);
 
-	while (true)
+	while (ircServ.serverRunning())
 		ircServ.listenToNewEvents();
 	return 0;
 }

@@ -34,6 +34,7 @@ public:
 	void	privmsg();
 	void	who();
 	void	whoChannel();
+	void	shutdown();
 
 private:
 	std::vector<std::string> _commandArray;
@@ -41,7 +42,7 @@ private:
 	Server&	_ircServ;
 
 	void	channelMessage();
+	void	privateMessage();
 	bool	channelExists();
 	bool	IsChannelMember();
-	void	privateMessage();
 };

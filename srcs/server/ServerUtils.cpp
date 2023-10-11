@@ -27,3 +27,18 @@ Channel Server::getChannel(std::string channelName) {
 std::vector<Client>	Server::getClientList() const {
 	return this->_clients;
 }
+
+int Server::getServerSocket() {
+	return this->_serverSocket;
+}
+
+void Server::serverShutdown() {
+	this->_serverUp = false;
+}
+
+bool Server::serverRunning() {
+	if (this->_serverUp)
+		return true;
+	else
+		return false;
+}
