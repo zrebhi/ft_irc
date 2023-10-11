@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 00:23:42 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 21:03:54 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <arpa/inet.h>
 #include <map>
 #include <vector>
+#include <sys/epoll.h>
+#include <cerrno>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
@@ -45,19 +47,21 @@ public:
 
 	std::map<std::string, Channel> getChannelList() const;
 	Channel	getChannel(std::string channelName);
-	std::vector<Client>	getClientList() const;
+	std::map<int, Client>	getClientList() const;
 	int	getServerSocket();
+	int	getEpollFd();
 
 	void	addClientToServer(Client &client);
 
 private:
 	int	_serverSocket;
+	int	_epollFd;
 	int	_portNumber;
 	struct sockaddr_in	_serverAddress;
 
 	bool	_serverUp;
 
-	std::vector<Client>				_clients;
+	std::map<int, Client>			_clients;
 	std::map<std::string, Channel>	_channels;
 
 	void	createSocket();
@@ -67,8 +71,10 @@ private:
 	void	serverSetup();
 
 	void	pollSetup(struct pollfd *fds);
+	void	epollSetup();
+	void	addSocketToEpoll(int Socket);
 
-	void	manageEvents(struct pollfd *fds);
+	void	manageClientEvents(Client &client);
 	void	commandHandler(std::string bufferString, Client &client);
 
 	Server	&operator=(const Server &rhs);

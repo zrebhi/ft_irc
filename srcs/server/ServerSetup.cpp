@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 18:32:28 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 20:34:40 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,16 @@ void	Server::serverSetup() {
 	createSocket();
 	bindSocket();
 	setSocketToListen();
+	epollSetup();
+}
+
+void Server::epollSetup() {
+	this->_epollFd = epoll_create1(0);
+	if (this->_epollFd == -1) {
+		perror("Failed to create epoll instance");
+		exit (1);
+	}
+	addSocketToEpoll(this->_serverSocket);
 }
 
 void	Server::createSocket() {

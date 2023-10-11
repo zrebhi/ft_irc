@@ -6,64 +6,40 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 18:34:18 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/11 21:14:00 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "../commands/Command.hpp"
 
 void Server::listenToNewEvents() {
-	struct pollfd *fds = new struct pollfd[this->_clients.size() + 1];
-	pollSetup(fds);
+	struct epoll_event events[10];
+	int numEvents = epoll_wait(this->_epollFd, events, 10, -1);
 
-	int ret = poll(fds, this->_clients.size() + 1, 10);  // Wait indefinitely for an event
-	if (ret == -1) {
-		perror("Failed to poll file descriptors");
-		exit(1);
-	}
-
-	manageEvents(fds);
-	delete[] fds;
-}
-
-void Server::pollSetup(struct pollfd *fds) {
-	fds[0].fd = this->_serverSocket;
-	fds[0].events = POLLIN;
-
-	if (this->_clients.empty())
-		return;
-
-	std::vector<Client>::iterator it = this->_clients.begin();
-	for (size_t i = 1; it != this->_clients.end(); ++it, ++i) {
-		fds[i].fd = it->getSocket();  // Get the socket from the map key
-		fds[i].events = POLLIN;
-	}
-}
-
-void Server::manageEvents(struct pollfd *fds) {
-	if (fds[0].revents & POLLIN) {
-		this->acceptConnection();
-		return;
-	}
-
-	std::vector<Client>::iterator it = this->_clients.begin();
-	for (size_t i = 1; it != this->_clients.end(); ++it, ++i) {
-		if (this->_clients.empty())
-			return;
-		if (fds[i].revents & POLLIN) {
-			char buffer[1024];
-			size_t bytesRead = recv(it->getSocket(), buffer, sizeof(buffer) - 1, 0);
-			if (bytesRead <= 0) {
-				close(it->getSocket());
-				it = this->_clients.erase(it);
-			} else {
-				buffer[bytesRead] = '\0';  // Null-terminate the string
-				std::string bufferString(buffer);
-				std::cout << "<- " << bufferString << std::endl;
-				commandHandler(bufferString, *it);
-			}
+	for (int i = 0; i < numEvents; ++i) {
+		if (events[i].data.fd == this->_serverSocket)
+			acceptConnection();
+		else {
+			Client &client = this->_clients.find(events[i].data.fd)->second;
+			manageClientEvents(client);
 		}
+	}
+}
+
+void Server::manageClientEvents(Client &client) {
+	char buffer[1024];
+	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
+	if (bytesRead == 0 || (bytesRead == -1 && errno == ECONNRESET)) {
+		std::cout << "CRASH!" << std::endl;
+		close(client.getSocket());
+		epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), NULL);
+		this->_clients.erase(client.getSocket());
+	}
+	else {
+		buffer[bytesRead] = '\0';  // Null-terminate the string
+		std::string bufferString(buffer);
+		std::cout << "<- " << bufferString << std::endl;
+		commandHandler(bufferString, client);
 	}
 }
 
@@ -77,7 +53,8 @@ void Server::acceptConnection() {
 		close(this->_serverSocket);
 		exit(1);
 	}
-	this->_clients.push_back(Client(newSocket));
+	this->_clients.insert(std::make_pair(newSocket, Client(newSocket)));
+	addSocketToEpoll(newSocket);
 	std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":"
 			  << ntohs(clientAddress.sin_port) << std::endl;
 }
