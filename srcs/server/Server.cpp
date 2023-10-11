@@ -29,7 +29,8 @@ void Server::listenToNewEvents() {
 void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
 	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
-	if (bytesRead == 0 || (bytesRead == -1 && errno == ECONNRESET)) {
+	if (bytesRead <= 0) {
+		std::cout << "CRASH" << std::endl;
 		close(client.getSocket());
 		epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), NULL);
 		this->_clients.erase(client.getSocket());
