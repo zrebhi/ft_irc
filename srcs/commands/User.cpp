@@ -20,5 +20,11 @@ void Command::user() {
 }
 
 void Command::nick() {
+	std::string oldNick = _client.getNickname();
+	if (oldNick.empty())
+		oldNick = '*';
 	this->_client.setNickname(this->_commandArray[1]);
+	std::string reply = ":" + oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK :" + _client.getNickname();
+	ft_send(this->_client, reply);
+	//ajout de la confirmation de changement de nick
 }

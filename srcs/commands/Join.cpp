@@ -21,11 +21,15 @@ void Command::join(std::map <std::string, Channel> &channels) {
 		Channel	newChannel(channelName);
 		channels.insert(std::make_pair(channelName, newChannel));
 		channels[channelName].addOperator(this->_client);
+		if (_commandArray.size() >= 3)
+			channels[channelName].setPassword(_commandArray[2], _client.getNickname());
 	}
-	channels[channelName].addUser(this->_client);
-
-	std::string joinMessage = ":" + this->_client.getNickname() + " JOIN :#" + channelName;
-	ft_send(this->_client, joinMessage);
+	if (channels[channelName].checkPassword(_commandArray[2]))
+	{
+		channels[channelName].addUser(this->_client);
+		std::string joinMessage = ":" + this->_client.getNickname() + " JOIN :#" + channelName;
+		ft_send(this->_client, joinMessage);
+	}
 }
 
 void Command::list(std::map <std::string, Channel> &channels) {

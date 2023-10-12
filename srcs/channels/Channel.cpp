@@ -65,3 +65,29 @@ std::string Channel::userListString() {
 	}
 	return userList;
 }
+
+bool Channel::checkPassword(const std::string &newPassword)
+{
+	if (_password.empty())
+		return true;
+	if (newPassword == _password)
+		return true;
+	return false;
+}
+
+void Channel::setPassword(const std::string &newPassword, const std::string &name)
+{
+	if (newPassword.length() < 2) //a gerer
+		return;
+	std::string::const_iterator it = newPassword.begin();
+	while (it != newPassword.end())
+	{
+		if (!isalnum(*it++))
+			return;
+	}
+	if (_password == "" || !isOperator(name))
+	{
+		_password = newPassword;
+		// send ok changing pass
+	}
+}

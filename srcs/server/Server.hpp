@@ -36,7 +36,7 @@ class Channel;
 class Server {
 public:
 	Server();
-	Server(int portNumber);
+	Server(int portNumber, std::string &password);
 	Server(const Server &src);
 	~Server();
 
@@ -52,11 +52,14 @@ public:
 	int	getEpollFd();
 
 	void	addClientToServer(Client &client);
+	bool	isProtected();
+	bool	passwordIsValid(std::string &password);
 
 private:
 	int	_serverSocket;
 	int	_epollFd;
 	int	_portNumber;
+	std::string _password;
 	struct sockaddr_in	_serverAddress;
 
 	bool	_serverUp;

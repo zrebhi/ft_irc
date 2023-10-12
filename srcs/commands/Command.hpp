@@ -35,6 +35,8 @@ public:
 	void	who();
 	void	whoChannel();
 	void	shutdown();
+	void	pass();
+	void	mode(std::map<std::string, Channel> &channels);
 
 private:
 	std::vector<std::string> _commandArray;

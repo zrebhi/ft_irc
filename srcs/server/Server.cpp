@@ -64,8 +64,14 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 	for (size_t i = 0; i < commands.size(); i++) {
 		std::vector <std::string> commandArray = ft_split(commands[i], ' ');
 		Command cmd = Command(commandArray, client, *this);
+		if (commandArray[0] == "PASS")
+			cmd.pass();
+		if (client.getRegistered() == false) // not logged
+			continue;
 		if (commandArray[0] == "NICK")
 			cmd.nick();
+		if (commandArray[0] == "MODE")
+			cmd.mode(this->_channels);
 		if (commandArray[0] == "USER")
 			cmd.user();
 		if (commandArray[0] == "JOIN")
@@ -77,4 +83,14 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 		if (commandArray[0] == "STOP")
 			cmd.shutdown();
 	}
+}
+
+bool Server::isProtected()
+{
+	return (_password.empty() == false);
+}
+
+bool Server::passwordIsValid(std::string &password)
+{
+	return (_password == password);
 }
