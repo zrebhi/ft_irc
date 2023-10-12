@@ -16,8 +16,11 @@ int	main(int argc, char **argv) {
 	if (invalidInput(argc, argv))
 		return 1;
 
+	std::string password = "";
 	int	portNumber = atoi(argv[1]);
-	Server	ircServ(portNumber);
+	if (argc == 3)
+		password = argv[2];
+	Server	ircServ(portNumber, password);
 
 	while (ircServ.serverRunning())
 		ircServ.listenToNewEvents();

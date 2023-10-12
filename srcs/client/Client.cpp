@@ -66,6 +66,16 @@ void Client::setPassword(std::string password) {
 	this->_password = password;
 }
 
+void Client::setRegistered()
+{
+	_registered = true;
+}
+
+bool Client::getRegistered()
+{
+	return _registered;
+}
+
 bool Client::operator==(std::string nickname) {
 	return this->_nickname == nickname;
 }

@@ -28,6 +28,8 @@ public:
 	void	addOperator(Client &user);
 
 	void	sendMessageToChannel(Client sender, std::string message);
+	bool checkPassword(const std::string &password);
+	void setPassword(const std::string &password, const std::string &name);
 
 	bool	isOperator(const std::string &nickname);
 
@@ -37,6 +39,7 @@ public:
 
 private:
 	std::string	_name;
+	std::string _password;
 	std::map<std::string, Client>	_users;
 	std::map<std::string, Client>	_operators;
 };

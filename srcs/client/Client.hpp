@@ -26,17 +26,20 @@ public:
 
 	int			getSocket() const;
 
+	bool	getRegistered();
 	std::string	getNickname() const;
 	std::string	getUsername() const;
 	std::string	getPassword() const;
 	std::string	getHostname() const;
 
+	void	setRegistered();
 	void	setNickname(std::string nickname);
 	void	setUsername(std::string username);
 	void	setPassword(std::string password);
 
 
 private:
+	bool _registered;
 	std::string _nickname;
 	std::string _password;
 	std::string _username;
