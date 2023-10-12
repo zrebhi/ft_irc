@@ -66,11 +66,11 @@ std::string Channel::userListString() {
 	return userList;
 }
 
-bool Channel::checkPassword(const std::string &newPassword)
+bool Channel::checkPassword(const std::string &clientPassword)
 {
 	if (_password.empty())
 		return true;
-	if (newPassword == _password)
+	if (clientPassword == _password)
 		return true;
 	return false;
 }

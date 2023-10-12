@@ -82,6 +82,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.who();
 		if (commandArray[0] == "STOP")
 			cmd.shutdown();
+		//PART pour quitter un channel
 	}
 }
 
