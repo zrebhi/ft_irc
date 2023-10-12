@@ -69,7 +69,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 		if (client.getRegistered() == false) // not logged
 			continue;
 		if (commandArray[0] == "NICK")
-			cmd.nick();
+			cmd.nick(_clients);
 		if (commandArray[0] == "MODE")
 			cmd.mode(this->_channels);
 		if (commandArray[0] == "USER")

@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <vector>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
@@ -28,7 +29,7 @@ public:
 	~Command();
 
 	void	user();
-	void	nick();
+	void	nick(std::map<int, Client> &clientList);
 	void	join(std::map<std::string, Channel> &channels);
 	void	list(std::map <std::string, Channel> &channels);
 	void	privmsg();

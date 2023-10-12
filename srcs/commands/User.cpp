@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Command.hpp"
+#include <map>
 
 void Command::user() {
 	this->_client.setUsername(this->_commandArray[1]);
@@ -19,7 +20,17 @@ void Command::user() {
 	ft_send(this->_client, reply);
 }
 
-void Command::nick() {
+void Command::nick(std::map<int, Client> &clientList) {
+	(void)clientList;
+	// std::map<int, Client>::iterator it = clientList.begin();
+	// while (it != clientList.end())
+	// {
+	// 	if (it->second.getNickname() == _client.getNickname())
+	// 		return; // send error
+	// std::cout << "pas nick ok" << std::endl;
+	// 	it++;
+	// }
+	// std::cout << "nick ok" << std::endl;
 	std::string oldNick = _client.getNickname();
 	if (oldNick.empty())
 		oldNick = '*';
