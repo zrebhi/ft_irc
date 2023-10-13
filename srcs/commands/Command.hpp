@@ -6,22 +6,16 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:34:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 20:29:04 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include "../client/Client.hpp"
-#include "../channels/Channel.hpp"
 #include "../server/Server.hpp"
 
-class Client;
-class Channel;
 class Server;
+class Channel;
 
 class Command {
 public:
@@ -29,8 +23,8 @@ public:
 	~Command();
 
 	void	user();
-	void	nick(std::map<int, Client> &clientList);
-	void	join(std::map<std::string, Channel> &channels);
+	void	nick();
+	void	join();
 	void	list(std::map <std::string, Channel> &channels);
 	void	privmsg();
 	void	who();
@@ -39,6 +33,8 @@ public:
 	void	pass();
 	void	mode(std::map<std::string, Channel> &channels);
 
+	bool	registerCheck();
+
 private:
 	std::vector<std::string> _commandArray;
 	Client&	_client;
@@ -46,6 +42,10 @@ private:
 
 	void	channelMessage();
 	void	privateMessage();
+
+	bool	nicknameAvailable(std::string nickname);
+	bool	nicknameIsValid(std::string nickname);
+
 	bool	channelExists(std::string channelName);
 	bool	IsChannelMember(std::string userNickname, std::string channelName);
 };

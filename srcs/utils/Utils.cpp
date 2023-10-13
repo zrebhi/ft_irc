@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 22:51:39 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 22:54:19 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 20:45:13 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ int	ft_send(Client user, std::string reply) {
 	return 0;
 }
 
-std::vector <std::string> ft_split(std::string string, char separator) {
+#include <cctype>  // Include for isprint function
+
+std::vector<std::string> ft_split(std::string string, char separator) {
 	std::vector<std::string> stringsVector;
 	std::string newString;
 
@@ -30,14 +32,13 @@ std::vector <std::string> ft_split(std::string string, char separator) {
 		if (string[i] == separator) {
 			stringsVector.push_back(newString);
 			newString.clear();
-		}
-		else if (i == string.length() - 1) {
-			stringsVector.push_back(newString);
-			newString.clear();
-		}
-		else
+		} else if (string[i] != '\r')
 			newString += string[i];
 	}
+	// Add the last substring if it's not empty
+	if (!newString.empty())
+		stringsVector.push_back(newString);
+
 	return stringsVector;
 }
 
@@ -46,4 +47,32 @@ std::string intToString(int number) {
 	oss << number;
 	std::string myString = oss.str();
 	return myString;
+}
+
+std::string firstWord(std::string commandLine) {
+	std::istringstream iss(commandLine);
+	std::string firstWord;
+	iss >> firstWord;
+	return firstWord;
+}
+
+std::vector<std::string> firstWordSplit(std::string &commandLine) {
+	std::vector<std::string> result;
+	result.push_back(firstWord(commandLine));
+
+	std::string restOfLine = commandLine.substr(firstWord(commandLine).size() + 1);
+	result.push_back(restOfLine);
+
+	return result;
+}
+
+std::vector<std::string>	ircCommandSplitter(std::string command) {
+	std::vector<std::string>	commandArray;
+
+	if (firstWord(command) == "NICK" || firstWord(command) == "PASS" || \
+	firstWord(command) == "USER")
+		commandArray = firstWordSplit(command);
+	else
+		commandArray = ft_split(command, ' ');
+	return commandArray;
 }

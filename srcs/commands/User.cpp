@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 00:13:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 19:01:04 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,38 @@
 
 void Command::user() {
 	this->_client.setUsername(this->_commandArray[1]);
-	std::string reply = ":IRC 001 " + this->_client.getNickname() + " :Welcome to the Internet Relay Network " +
-			this->_client.getNickname() + "!" + this->_client.getUsername() + "@" + this->_client.getHostname();
-	ft_send(this->_client, reply);
 }
 
-void Command::nick(std::map<int, Client> &clientList) {
-	(void)clientList;
-	// std::map<int, Client>::iterator it = clientList.begin();
-	// while (it != clientList.end())
-	// {
-	// 	if (it->second.getNickname() == _client.getNickname())
-	// 		return; // send error
-	// std::cout << "pas nick ok" << std::endl;
-	// 	it++;
-	// }
-	// std::cout << "nick ok" << std::endl;
-	std::string oldNick = _client.getNickname();
-	if (oldNick.empty())
-		oldNick = '*';
-	this->_client.setNickname(this->_commandArray[1]);
-	std::string reply = ":" + oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK :" + _client.getNickname();
-	ft_send(this->_client, reply);
-	//ajout de la confirmation de changement de nick
+void Command::nick() {
+	std::string newNickname = this->_commandArray[1];
+	std::string oldNickname = this->_client.getNickname();
+
+	if (oldNickname.empty())
+		this->_client.setNickname(newNickname);
+	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
+		this->_client.setNickname(newNickname);
+		ft_send(this->_client, ":" + oldNickname + " NICK :" + newNickname);
+	}
+}
+
+bool Command::nicknameAvailable(std::string nickname) {
+	std::map<int, Client> clientList = this->_ircServ.getClientList();
+	std::map<int, Client>::iterator it = clientList.begin();
+
+	for (; it != clientList.end(); ++it) {
+		if (it->second.getNickname() == nickname && it->first != this->_client.getSocket()) {
+			ft_send(this->_client, ERR_NICKNAMEINUSE(this->_client));
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Command::nicknameIsValid(std::string nickname) {
+	if (nickname.find(' ', 1) != nickname.npos || nickname.find('#') != nickname.npos || nickname.size() > 9) {
+		ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
+		return false;
+	}
+	else
+		return true;
 }

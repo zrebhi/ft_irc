@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 20:59:05 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 20:53:48 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/12 23:06:12 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,12 @@ bool Server::serverRunning() {
 		return true;
 	else
 		return false;
+}
+
+bool Server::isProtected() {
+	return (_password.empty() == false);
+}
+
+bool Server::passwordIsValid(std::string &password) {
+	return (_password == password);
 }

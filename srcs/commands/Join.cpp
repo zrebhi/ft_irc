@@ -12,7 +12,7 @@
 
 #include "Command.hpp"
 
-void Command::join(std::map <std::string, Channel> &channels) {
+void Command::join() {
 	std::string	channelName = this->_commandArray[1];
 	if (channelName.at(0) == '#')
 		channelName = channelName.substr(1);

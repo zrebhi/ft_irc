@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:14:00 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 20:46:04 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,23 @@ void Server::acceptConnection() {
 
 void Server::commandHandler(std::string bufferString, Client &client) {
 	std::vector <std::string> commands = ft_split(bufferString, '\n');
+	std::vector <std::string> commandArray;
 
 	for (size_t i = 0; i < commands.size(); i++) {
-		std::vector <std::string> commandArray = ft_split(commands[i], ' ');
+		commandArray = ircCommandSplitter(commands[i]);
 		Command cmd = Command(commandArray, client, *this);
 		if (commandArray[0] == "PASS")
 			cmd.pass();
-		if (client.getRegistered() == false) // not logged
-			continue;
-		if (commandArray[0] == "NICK")
-			cmd.nick(_clients);
-		if (commandArray[0] == "MODE")
-			cmd.mode(this->_channels);
 		if (commandArray[0] == "USER")
 			cmd.user();
+		if (commandArray[0] == "NICK")
+			cmd.nick();
+//		if (!client.isRegistered()) // not logged
+//			continue;
+		if (commandArray[0] == "MODE")
+			cmd.mode(this->_channels);
 		if (commandArray[0] == "JOIN")
-			cmd.join(this->_channels);
+			cmd.join();
 		if (commandArray[0]== "PRIVMSG")
 			cmd.privmsg();
 		if (commandArray[0] == "WHO")
@@ -85,14 +86,4 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.shutdown();
 		//PART pour quitter un channel
 	}
-}
-
-bool Server::isProtected()
-{
-	return (_password.empty() == false);
-}
-
-bool Server::passwordIsValid(std::string &password)
-{
-	return (_password == password);
 }

@@ -26,7 +26,7 @@ public:
 
 	int			getSocket() const;
 
-	bool	getRegistered();
+	bool	isRegistered();
 	std::string	getNickname() const;
 	std::string	getUsername() const;
 	std::string	getPassword() const;
