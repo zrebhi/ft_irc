@@ -7,12 +7,14 @@
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
 /*   Updated: 2023/10/13 11:13:00 by bgresse          ###   ########.fr       */
+/*   Updated: 2023/10/13 10:46:55 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <vector>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
@@ -28,7 +30,7 @@ public:
 	~Command();
 
 	void	user();
-	void	nick();
+	void	nick(std::map<int, Client> &clientList);
 	void	join(std::map<std::string, Channel> &channels);
 	void	kick(std::map<std::string, Channel> &channels);
 	void	list(std::map <std::string, Channel> &channels);
@@ -36,6 +38,9 @@ public:
 	void	who();
 	void	whoChannel();
 	void	shutdown();
+	void	pass();
+	void	mode(std::map<std::string, Channel> &channels);
+	void	names(Channel &channel);
 
 private:
 	std::vector<std::string> _commandArray;

@@ -6,11 +6,21 @@
 /*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2023/10/13 11:30:32 by bgresse          ###   ########.fr       */
+=======
+/*   Updated: 2023/10/13 12:36:22 by moboigui         ###   ########.fr       */
+>>>>>>> origin/moboigui
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include <cstdlib>
+
+#define ADD true
+#define REMOVE false
+#define MAX_CHAN_USERS 100
+#define MIN_CHAN_USERS 3
 
 Channel::Channel() {}
 
@@ -24,6 +34,10 @@ void Channel::addUser(Client &user) {
 
 void Channel::addOperator(Client &user) {
 	this->_operators.insert(std::make_pair(user.getNickname(), user));
+}
+
+void Channel::removeOperator(Client &user) {
+	this->_operators.erase(user.getNickname());
 }
 
 void	Channel::sendMessageToChannel(Client sender, std::string message) {
@@ -51,7 +65,7 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
-std::map<std::string, Client> Channel::getUsers() {
+std::map<std::string, Client> &Channel::getUsers() {
 	return this->_users;
 }
 
@@ -69,4 +83,84 @@ std::string Channel::userListString() {
 		userList.erase(userList.size() - 1); // Removes the space at the end.
 	}
 	return userList;
+}
+
+bool Channel::checkPassword(const std::string &clientPassword)
+{
+	if (_password.empty())
+		return true;
+	if (clientPassword == _password)
+		return true;
+	return false;
+}
+
+void Channel::setPassword(const std::string &newPassword, const std::string &name, bool addOrRemove)
+{
+	if (!isOperator(name))
+		return; //error + not right
+	if (addOrRemove == false)
+		_password = "";
+	else if (newPassword.length() < 4) //a gerer
+		return; //error + bad pass
+	else
+	{
+		std::string::const_iterator it = newPassword.begin();
+		while (it != newPassword.end())
+		{
+			if (!isalnum(*it++))
+				return; //error bad pass
+		}
+		_password = newPassword;
+		// send ok changing pass
+	}
+}
+
+void Channel::setInviteOnly(bool addOrRemove,  const std::string &name)
+{
+	if (!isOperator(name))
+		return; //error + not right
+	_inviteOnly = addOrRemove;
+}
+
+void Channel::setTopicLock(bool addOrRemove, const std::string &name)
+{
+	if (!isOperator(name))
+		return; //error + not right
+	_topicLocked = addOrRemove;
+}
+
+void Channel::setLimit(bool addOrRemove, const std::string &name, std::string limitStr)
+{
+	if (!isOperator(name))
+		return; //error + not right
+	if (addOrRemove == ADD)
+	{
+		int limitValue = stringToInt(limitStr);
+		if (limitValue < MIN_CHAN_USERS || limitValue > MAX_CHAN_USERS)
+			return; //error bad limits
+		else
+			_limit = limitValue;
+	}
+	else
+		_limit = 100;
+}
+
+void Channel::setTopic(const std::string &name, std::string &content)
+{
+	if (_topicLocked || !isOperator(name))
+		return; // no rights
+	size_t maxTopicLength = 50;
+	if (content.length() > maxTopicLength)
+	{
+		content.resize(maxTopicLength, 0);
+		content.append("...");
+	}
+	_topic = content;
+	std::string reply = "332 " + getName() + " :" + _topic;
+	sendMessageToChannel(_users[name], reply);
+}
+
+std::string &Channel::getTopic()
+{
+	return _topic;
 }

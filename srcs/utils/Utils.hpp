@@ -18,6 +18,7 @@
 std::vector<std::string>	ft_split(std::string string, char separator);
 
 std::string intToString(int number);
+int stringToInt(const std::string &str);
 
 int	ft_send(Client user, std::string reply);
 

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:12:48 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 23:42:55 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 12:51:27 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,16 @@ void Client::setUsername(std::string username) {
 
 void Client::setPassword(std::string password) {
 	this->_password = password;
+}
+
+void Client::setRegistered()
+{
+	_registered = true;
+}
+
+bool Client::getRegistered()
+{
+	return _registered;
 }
 
 bool Client::operator==(std::string nickname) {

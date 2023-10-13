@@ -14,7 +14,8 @@
 
 Server::Server() {}
 
-Server::Server(int portNumber) : _portNumber(portNumber), _serverUp(true) {
+Server::Server(int portNumber, std::string &password)
+	: _portNumber(portNumber), _password(password), _serverUp(true) {
 	Server::serverSetup();
 }
 
@@ -26,6 +27,7 @@ Server::Server(const Server &src) {
 	_channels = src._channels;
 	_serverAddress = src._serverAddress;
 	_portNumber = src._portNumber;
+	_password = src._password;
 }
 
 void	Server::serverSetup() {
