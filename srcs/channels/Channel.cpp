@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include <cstdlib>
 
 Channel::Channel() {}
 
@@ -46,7 +47,7 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
-std::map<std::string, Client> Channel::getUsers() {
+std::map<std::string, Client> &Channel::getUsers() {
 	return this->_users;
 }
 
@@ -89,5 +90,27 @@ void Channel::setPassword(const std::string &newPassword, const std::string &nam
 	{
 		_password = newPassword;
 		// send ok changing pass
+	}
+}
+
+void Channel::setInviteOnly(bool addOrRemove)
+{
+	_inviteOnly = addOrRemove;
+}
+
+void Channel::setTopicLock(bool addOrRemove)
+{
+	_topicLocked = addOrRemove;
+}
+
+void Channel::setLimit(bool addOrRemove, std::string limitStr)
+{
+	if (addOrRemove == true)
+	{
+		int limitValue = std::stoi(limitStr, NULL, 10);
+		if (limitValue < 2 || limitValue > 100)
+			return; //error bad limits
+		else
+			_limit = limitValue;
 	}
 }

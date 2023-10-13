@@ -30,16 +30,22 @@ public:
 	void	sendMessageToChannel(Client sender, std::string message);
 	bool checkPassword(const std::string &password);
 	void setPassword(const std::string &password, const std::string &name);
+	void setInviteOnly(bool addOrRemove);
+	void setTopicLock(bool addOrRemove);
+	void setLimit(bool addOrRemove, std::string limit);
 
 	bool	isOperator(const std::string &nickname);
 
 	std::string	getName() const;
-	std::map<std::string, Client> getUsers();
+	std::map<std::string, Client> &getUsers();
 	std::string	userListString();
 
 private:
 	std::string	_name;
 	std::string _password;
+	bool _inviteOnly;
+	bool _topicLocked;
+	int _limit;
 	std::map<std::string, Client>	_users;
 	std::map<std::string, Client>	_operators;
 };

@@ -21,16 +21,16 @@ void Command::user() {
 }
 
 void Command::nick(std::map<int, Client> &clientList) {
-	(void)clientList;
-	// std::map<int, Client>::iterator it = clientList.begin();
-	// while (it != clientList.end())
-	// {
-	// 	if (it->second.getNickname() == _client.getNickname())
-	// 		return; // send error
-	// std::cout << "pas nick ok" << std::endl;
-	// 	it++;
-	// }
-	// std::cout << "nick ok" << std::endl;
+	// (void)clientList;
+	std::map<int, Client>::iterator it = clientList.begin();
+	while (it != clientList.end())
+	{
+		std::cout << "check nick: "<< it->second.getNickname() << std::endl;
+		if (it->second.getNickname() == _commandArray[1])
+			return; // send error
+		it++;
+	}
+	std::cout << "nick ok" << std::endl;
 	std::string oldNick = _client.getNickname();
 	if (oldNick.empty())
 		oldNick = '*';
