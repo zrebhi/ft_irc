@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 11:30:07 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ public:
 	void	sendMessageToChannel(Client sender, std::string message);
 
 	bool	isOperator(const std::string &nickname);
+	bool	isUserInChannel(const std::string &nickname) const;
 
 	std::string	getName() const;
 	std::map<std::string, Client> getUsers();

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 11:30:32 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,11 @@ bool Channel::isOperator(const std::string &nickname) {
 		return true;
 	else
 		return false;
+}
+
+bool Channel::isUserInChannel(const std::string &nickname) const
+{
+    return _users.find(nickname) != _users.end();
 }
 
 std::string Channel::getName() const {
