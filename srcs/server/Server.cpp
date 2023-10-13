@@ -83,12 +83,9 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.who();
 		if (commandArray[0] == "STOP")
 			cmd.shutdown();
-<<<<<<< HEAD
 		if (commandArray[0] == "KICK")
 			cmd.kick(this->_channels);
-=======
 		//PART pour quitter un channel
->>>>>>> origin/moboigui
 	}
 }
 
