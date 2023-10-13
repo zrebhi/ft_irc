@@ -1,0 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Replies.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/12 23:19:53 by zrebhi            #+#    #+#             */
+/*   Updated: 2023/10/13 20:29:04 by zrebhi           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#pragma once
+
+#include "Server.hpp"
+
+/* 001 */ #define RPL_WELCOME(client) ":IRC 001 " + client.getNickname() + " :Welcome to the IRC network, " + client.getNickname() + "!"
+
+/* 432 */ #define ERR_ERRONEUSNICKNAME(nickname) ":IRC 432 * " + nickname + " :Erroneous nickname"
+/* 433 */ #define ERR_NICKNAMEINUSE(client) ":IRC 433 * " + client.getNickname() + " :Nickname is already in use"
+/* 461 */ #define ERR_NEEDMOREPARAMS(client, command) ":IRC 461 " + client.getNickname() + " " + command + " :Not enough parameters"
+/* 462 */ #define ERR_TOOMANYPARAMS(command) ":IRC 462 " + command + " :Too many parameters"
