@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:14:00 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 11:12:26 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,5 +77,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			cmd.who();
 		if (commandArray[0] == "STOP")
 			cmd.shutdown();
+		if (commandArray[0] == "KICK")
+			cmd.kick(this->_channels);
 	}
 }

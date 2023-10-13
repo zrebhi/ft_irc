@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:34:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 11:13:00 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ public:
 	void	user();
 	void	nick();
 	void	join(std::map<std::string, Channel> &channels);
+	void	kick(std::map<std::string, Channel> &channels);
 	void	list(std::map <std::string, Channel> &channels);
 	void	privmsg();
 	void	who();
