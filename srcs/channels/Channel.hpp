@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 12:36:42 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,21 @@ public:
 
 	void	addUser(Client &user);
 	void	addOperator(Client &user);
+	void removeOperator(Client &user);
 
 	void	sendMessageToChannel(Client sender, std::string message);
 	bool checkPassword(const std::string &password);
-	void setPassword(const std::string &password, const std::string &name);
-	void setInviteOnly(bool addOrRemove);
-	void setTopicLock(bool addOrRemove);
-	void setLimit(bool addOrRemove, std::string limit);
+	void setPassword(const std::string &password, const std::string &name, bool addOrRemove);
+	void setInviteOnly(bool addOrRemove, const std::string &name);
+	void setTopicLock(bool addOrRemove, const std::string &name);
+	void setLimit(bool addOrRemove, const std::string &name, std::string limit);
+	void setTopic(const std::string &name, std::string &content);
 
 	bool	isOperator(const std::string &nickname);
 
 	std::string	getName() const;
 	std::map<std::string, Client> &getUsers();
+	std::string &getTopic();
 	std::string	userListString();
 
 private:
@@ -46,6 +49,8 @@ private:
 	bool _inviteOnly;
 	bool _topicLocked;
 	int _limit;
+	std::string _topic;
 	std::map<std::string, Client>	_users;
 	std::map<std::string, Client>	_operators;
+	// std::map<std::string, Client&>	_invited;
 };

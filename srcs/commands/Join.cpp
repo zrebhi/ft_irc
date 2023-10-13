@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 20:04:19 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 12:49:23 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,22 @@ void Command::join(std::map <std::string, Channel> &channels) {
 	if (_commandArray.size() == 3)
 		password = _commandArray[2];
 	if (it == channels.end()) {
-		std::cout << "newChannel" << std::endl;
 		Channel	newChannel(channelName);
 		channels.insert(std::make_pair(channelName, newChannel));
 		channels[channelName].addOperator(this->_client);
 		if (_commandArray.size() == 3)
 		{
-			channels[channelName].setPassword(password, _client.getNickname());
-			std::cout << "newPassword" << password << std::endl;
+			channels[channelName].setPassword(password, _client.getNickname(), true);
 		}
 	}
 	if (channels[channelName].checkPassword(password))
 	{
-		std::cout << "ok checkPassword = " << password << std::endl;
 		channels[channelName].addUser(this->_client);
 		std::string joinMessage = ":" + this->_client.getNickname() + " JOIN :#" + channelName;
-		ft_send(this->_client, joinMessage);
+		std::map<std::string, Client>::iterator it = channels[channelName].getUsers().begin();
+		for (; it != channels[channelName].getUsers().end(); it++)
+			ft_send(it->second, joinMessage);
+		this->names(channels[channelName]);
 	}
 }
 

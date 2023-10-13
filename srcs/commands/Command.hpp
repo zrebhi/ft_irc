@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:34:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 10:46:55 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ public:
 	void	shutdown();
 	void	pass();
 	void	mode(std::map<std::string, Channel> &channels);
+	void	names(Channel &channel);
 
 private:
 	std::vector<std::string> _commandArray;

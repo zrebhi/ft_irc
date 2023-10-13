@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 00:13:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 12:49:01 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,18 @@ void Command::nick(std::map<int, Client> &clientList) {
 	std::map<int, Client>::iterator it = clientList.begin();
 	while (it != clientList.end())
 	{
-		std::cout << "check nick: "<< it->second.getNickname() << std::endl;
 		if (it->second.getNickname() == _commandArray[1])
+		{
+			std::string reply = ":IRC 433 " + _commandArray[1] + " :NICK in use.\n";
+			ft_send(this->_client, reply);
 			return; // send error
+		}
 		it++;
 	}
-	std::cout << "nick ok" << std::endl;
 	std::string oldNick = _client.getNickname();
 	if (oldNick.empty())
 		oldNick = '*';
 	this->_client.setNickname(this->_commandArray[1]);
 	std::string reply = ":" + oldNick + "!" + _client.getUsername() + "@" + _client.getHostname() + " NICK :" + _client.getNickname();
 	ft_send(this->_client, reply);
-	//ajout de la confirmation de changement de nick
 }

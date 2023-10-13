@@ -6,12 +6,17 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 12:36:22 by moboigui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 #include <cstdlib>
+
+#define ADD true
+#define REMOVE false
+#define MAX_CHAN_USERS 100
+#define MIN_CHAN_USERS 3
 
 Channel::Channel() {}
 
@@ -25,6 +30,10 @@ void Channel::addUser(Client &user) {
 
 void Channel::addOperator(Client &user) {
 	this->_operators.insert(std::make_pair(user.getNickname(), user));
+}
+
+void Channel::removeOperator(Client &user) {
+	this->_operators.erase(user.getNickname());
 }
 
 void	Channel::sendMessageToChannel(Client sender, std::string message) {
@@ -76,41 +85,73 @@ bool Channel::checkPassword(const std::string &clientPassword)
 	return false;
 }
 
-void Channel::setPassword(const std::string &newPassword, const std::string &name)
+void Channel::setPassword(const std::string &newPassword, const std::string &name, bool addOrRemove)
 {
-	if (newPassword.length() < 2) //a gerer
-		return;
-	std::string::const_iterator it = newPassword.begin();
-	while (it != newPassword.end())
+	if (!isOperator(name))
+		return; //error + not right
+	if (addOrRemove == false)
+		_password = "";
+	else if (newPassword.length() < 4) //a gerer
+		return; //error + bad pass
+	else
 	{
-		if (!isalnum(*it++))
-			return;
-	}
-	if (_password == "" || !isOperator(name))
-	{
+		std::string::const_iterator it = newPassword.begin();
+		while (it != newPassword.end())
+		{
+			if (!isalnum(*it++))
+				return; //error bad pass
+		}
 		_password = newPassword;
 		// send ok changing pass
 	}
 }
 
-void Channel::setInviteOnly(bool addOrRemove)
+void Channel::setInviteOnly(bool addOrRemove,  const std::string &name)
 {
+	if (!isOperator(name))
+		return; //error + not right
 	_inviteOnly = addOrRemove;
 }
 
-void Channel::setTopicLock(bool addOrRemove)
+void Channel::setTopicLock(bool addOrRemove, const std::string &name)
 {
+	if (!isOperator(name))
+		return; //error + not right
 	_topicLocked = addOrRemove;
 }
 
-void Channel::setLimit(bool addOrRemove, std::string limitStr)
+void Channel::setLimit(bool addOrRemove, const std::string &name, std::string limitStr)
 {
-	if (addOrRemove == true)
+	if (!isOperator(name))
+		return; //error + not right
+	if (addOrRemove == ADD)
 	{
-		int limitValue = std::stoi(limitStr, NULL, 10);
-		if (limitValue < 2 || limitValue > 100)
+		int limitValue = stringToInt(limitStr);
+		if (limitValue < MIN_CHAN_USERS || limitValue > MAX_CHAN_USERS)
 			return; //error bad limits
 		else
 			_limit = limitValue;
 	}
+	else
+		_limit = 100;
+}
+
+void Channel::setTopic(const std::string &name, std::string &content)
+{
+	if (_topicLocked || !isOperator(name))
+		return; // no rights
+	size_t maxTopicLength = 50;
+	if (content.length() > maxTopicLength)
+	{
+		content.resize(maxTopicLength, 0);
+		content.append("...");
+	}
+	_topic = content;
+	std::string reply = "332 " + getName() + " :" + _topic;
+	sendMessageToChannel(_users[name], reply);
+}
+
+std::string &Channel::getTopic()
+{
+	return _topic;
 }
