@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 20:51:51 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:30:29 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@
 #include "../utils/Utils.hpp"
 #include "ServerReplies.hpp"
 
+class Command;
+
+typedef void (Command::*CommandFunction)();
+
 class Server {
 public:
 	Server();
@@ -44,14 +48,15 @@ public:
 	bool	serverRunning();
 
 	std::map<std::string, Channel>	getChannelList() const;
-	Channel							getChannel(std::string channelName);
+	Channel&						getChannel(std::string channelName);
 	std::map<int, Client>			getClientList() const;
+	std::string						getServerPassword();
 	int								getServerSocket();
 	int								getEpollFd();
 
-	void	addClientToServer(Client &client);
+	void	addChannelToServer(Channel channel);
 	bool	isProtected();
-	bool	passwordIsValid(std::string &password);
+	bool	passwordIsValid(std::string password);
 
 private:
 	int			_portNumber;
@@ -65,6 +70,7 @@ private:
 
 	std::map<int, Client>			_clients;
 	std::map<std::string, Channel>	_channels;
+	std::map<std::string, CommandFunction>	_commandMap;
 
 	void	createSocket();
 	void	bindSocket();
@@ -78,6 +84,7 @@ private:
 
 	void	manageClientEvents(Client &client);
 	void	commandHandler(std::string bufferString, Client &client);
+	void	commandMapping();
 
 	Server	&operator=(const Server &rhs);
 };

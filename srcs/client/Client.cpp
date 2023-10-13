@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:12:48 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 20:47:02 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:42:41 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,11 @@ void Client::setPassword(std::string password) {
 	this->_password = password;
 }
 
-void Client::setRegistered()
-{
-	ft_send(*this, RPL_WELCOME((*this)));
-	_registered = true;
+void Client::setRegistered() {
+	if (!_registered) {
+		ft_send(*this, RPL_WELCOME((*this)));
+		_registered = true;
+	}
 }
 
 bool Client::isRegistered() {

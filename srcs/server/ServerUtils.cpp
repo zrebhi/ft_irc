@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 20:59:05 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/12 23:06:12 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 00:04:29 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,20 @@ void Server::addSocketToEpoll(int socket) {
 	}
 }
 
+void Server::addChannelToServer(Channel channel) {
+	this->_channels[channel.getName()] = channel;
+}
+
+std::string Server::getServerPassword() {
+	return _password;
+}
+
 std::map<std::string, Channel> Server::getChannelList() const {
 	return this->_channels;
 }
 
 // Must be used with channelExists;
-Channel Server::getChannel(std::string channelName) {
+Channel& Server::getChannel(std::string channelName) {
 	if (channelName[0] == '#')
 		channelName = channelName.substr(1);
 	std::map<std::string, Channel>::iterator	it = this->_channels.find(channelName);
@@ -60,8 +68,4 @@ bool Server::serverRunning() {
 
 bool Server::isProtected() {
 	return (_password.empty() == false);
-}
-
-bool Server::passwordIsValid(std::string &password) {
-	return (_password == password);
 }

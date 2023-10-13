@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 20:46:04 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:38:25 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,24 +66,11 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 	for (size_t i = 0; i < commands.size(); i++) {
 		commandArray = ircCommandSplitter(commands[i]);
 		Command cmd = Command(commandArray, client, *this);
-		if (commandArray[0] == "PASS")
-			cmd.pass();
-		if (commandArray[0] == "USER")
-			cmd.user();
-		if (commandArray[0] == "NICK")
-			cmd.nick();
-//		if (!client.isRegistered()) // not logged
-//			continue;
-		if (commandArray[0] == "MODE")
-			cmd.mode(this->_channels);
-		if (commandArray[0] == "JOIN")
-			cmd.join();
-		if (commandArray[0]== "PRIVMSG")
-			cmd.privmsg();
-		if (commandArray[0] == "WHO")
-			cmd.who();
-		if (commandArray[0] == "STOP")
-			cmd.shutdown();
-		//PART pour quitter un channel
-	}
+		if (!cmd.registerRequest() && !client.isRegistered())
+			continue;
+		if (_commandMap.find(commandArray[0]) != _commandMap.end()) {
+			CommandFunction function = _commandMap[commandArray[0]];
+			(cmd.*function)();
+		}
+}
 }

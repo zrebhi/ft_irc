@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 19:01:04 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 00:44:05 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ bool Command::nicknameAvailable(std::string nickname) {
 }
 
 bool Command::nicknameIsValid(std::string nickname) {
-	if (nickname.find(' ', 1) != nickname.npos || nickname.find('#') != nickname.npos || nickname.size() > 9) {
+	if (nickname.find(' ', 1) != nickname.npos || nickname.find('#') != nickname.npos || \
+	nickname.size() > 9 || nickname.size() < 2) {
 		ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
 		return false;
 	}

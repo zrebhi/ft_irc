@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:24:34 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 23:17:59 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,22 @@
 
 Channel::Channel() {}
 
+Channel::~Channel() {}
+
 Channel::Channel(const std::string &channelName) : _name(channelName) {}
 
-Channel::~Channel() {}
+Channel::Channel(const Channel &src) {
+	*this = src;
+}
+
+Channel &Channel::operator=(const Channel &rhs) {
+	this->_users = rhs._users;
+	this->_password = rhs._password;
+	this->_operators = rhs._operators;
+	this->_name = rhs._name;
+
+	return (*this);
+}
 
 void Channel::addUser(Client &user) {
 	this->_users.insert(std::make_pair(user.getNickname(), user));
@@ -68,9 +81,7 @@ std::string Channel::userListString() {
 
 bool Channel::checkPassword(const std::string &clientPassword)
 {
-	if (_password.empty())
-		return true;
-	if (clientPassword == _password)
+	if (_password.empty() || clientPassword == _password)
 		return true;
 	return false;
 }

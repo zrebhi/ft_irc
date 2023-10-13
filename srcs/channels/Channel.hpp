@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/12 23:22:50 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 22:40:08 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,19 @@ class Client;
 class Channel {
 public:
 	Channel();
-	Channel(const std::string &channelName);
 	~Channel();
+	Channel(const std::string &channelName);
+	Channel(const Channel &src);
+	Channel	&operator=(const Channel &rhs);
+
 
 	void	addUser(Client &user);
 	void	addOperator(Client &user);
 
 	void	sendMessageToChannel(Client sender, std::string message);
-	bool checkPassword(const std::string &password);
-	void setPassword(const std::string &password, const std::string &name);
+
+	bool	checkPassword(const std::string &password);
+	void	setPassword(const std::string &password, const std::string &name);
 
 	bool	isOperator(const std::string &nickname);
 

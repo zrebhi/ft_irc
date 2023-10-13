@@ -7,3 +7,4 @@ void Command::pass()
 	else
 		this->_client.setPassword(this->_commandArray[1]);
 }
+
