@@ -6,7 +6,7 @@
 /*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 11:30:07 by bgresse          ###   ########.fr       */
+/*   Updated: 2023/10/13 12:11:54 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ public:
 	~Channel();
 
 	void	addUser(Client &user);
+	void	removeUser(Client &user);
 	void	addOperator(Client &user);
 
 	void	sendMessageToChannel(Client sender, std::string message);
