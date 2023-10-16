@@ -25,3 +25,8 @@
 /* 462 */ #define ERR_TOOMANYPARAMS(command) ":IRC 462 " + command + " :Too many parameters"
 /* 464 */ #define ERR_PASSWDMISMATCH ":IRC 464 * :Password mismatch"
 /* 475 */ #define ERR_INCORRECTPASSWORD(client, channelName) ":IRC 475 " + client.getNickname() + " " + channelName + " :Incorrect password for " + channelName
+/* 472 */ #define ERR_UNKNOWNMODE(char) ":IRC 472 '" + char + "'" + " :is unknown mode char to me"
+/* 471 */ #define ERR_CHANNELISFULL(client, channelName) ":IRC 471 " + channelName + " :Channel is full (+l)."
+/* 482 */ #define ERR_CHANOPRIVSNEEDED(channelName) channelName + " :You're not channel operator"
+/* 442 */ #define ERR_NOTONCHANNEL(channelName) channelName + " :You're not on that channel"
+/* 473 */ #define ERR_INVITEONLYCHAN(channelName) channelName + " :Cannot join channel (+i)"

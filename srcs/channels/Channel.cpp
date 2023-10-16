@@ -11,12 +11,15 @@
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include <algorithm>
+#include <map>
+#include <string>
 
 Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) : _name(channelName) {}
+Channel::Channel(const std::string &channelName) : _name(channelName), _limit(-1) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -27,6 +30,7 @@ Channel &Channel::operator=(const Channel &rhs) {
 	this->_password = rhs._password;
 	this->_operators = rhs._operators;
 	this->_name = rhs._name;
+	this->_limit = rhs._limit;
 
 	return (*this);
 }
@@ -35,9 +39,6 @@ void Channel::addUser(Client &user) {
 	this->_users.insert(std::make_pair(user.getNickname(), user));
 }
 
-void Channel::addOperator(Client &user) {
-	this->_operators.insert(std::make_pair(user.getNickname(), user));
-}
 
 void	Channel::sendMessageToChannel(Client sender, std::string message) {
 	std::map<std::string, Client>::iterator it = this->_users.begin();
@@ -59,7 +60,7 @@ std::string Channel::getName() const {
 	return this->_name;
 }
 
-std::map<std::string, Client> Channel::getUsers() {
+std::map<std::string, Client> &Channel::getUsers() {
 	return this->_users;
 }
 
@@ -79,26 +80,29 @@ std::string Channel::userListString() {
 	return userList;
 }
 
-bool Channel::checkPassword(const std::string &clientPassword)
+bool Channel::isInvited(const std::string &clientName)
 {
-	if (_password.empty() || clientPassword == _password)
+	std::vector<std::string>::iterator it = std::find(_invitedList.begin(), _invitedList.end(), clientName);
+	if (it != _invitedList.end())
+	{
+		std::cout << "is invited" << std::endl;
 		return true;
+	}
+	std::cout << "is not invited" << std::endl;
 	return false;
 }
 
-void Channel::setPassword(const std::string &newPassword, const std::string &name)
+void Channel::deleteClient(const std::string &clientName, std::string &reply)
 {
-	if (newPassword.length() < 2) //a gerer
-		return;
-	std::string::const_iterator it = newPassword.begin();
-	while (it != newPassword.end())
+    std::map<std::string, Client>::iterator clientIt = _users.find(clientName);
+    if (clientIt != _users.end())
 	{
-		if (!isalnum(*it++))
-			return;
-	}
-	if (_password == "" || !isOperator(name))
-	{
-		_password = newPassword;
-		// send ok changing pass
+		std::map<std::string, Client>::iterator it = _users.begin();
+		for (; it != _users.end(); ++it)
+		{
+			if (send(it->second.getSocket(), reply.c_str(), reply.length(), 0) < 0)
+				std::cout << "Failed to send message" << std::endl;
+		}
+        _users.erase(clientIt);
 	}
 }

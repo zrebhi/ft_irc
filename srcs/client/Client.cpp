@@ -14,7 +14,7 @@
 
 Client::Client() {}
 
-Client::Client(int clientSocket) : _registered(false), _clientSocket(clientSocket) {}
+Client::Client(int clientSocket) : _clientSocket(clientSocket) {}
 
 Client::~Client() {}
 
@@ -68,15 +68,21 @@ void Client::setPassword(std::string password) {
 	this->_password = password;
 }
 
-void Client::setRegistered() {
-	if (!_registered) {
+void Client::setRegistered(bool type) {
+	// if (_registered.first && _registered.second)
+	// 	return;
+	if (type == NICK_REGISTRATION)
+		_registered.first = true;
+	else if (type == SERV_REGISTRATION)
+		_registered.second = true;
+	if (_registered.first && _registered.second)
 		ft_send(*this, RPL_WELCOME((*this)));
-		_registered = true;
-	}
 }
 
 bool Client::isRegistered() {
-	return _registered;
+	if (_registered.first && _registered.second)
+		return true;
+	return false;
 }
 
 bool Client::operator==(std::string nickname) {

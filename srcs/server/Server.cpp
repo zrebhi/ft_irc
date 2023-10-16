@@ -74,3 +74,8 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 		}
 	}
 }
+
+bool Server::passwordIsValid(const std::string &password)
+{
+	return (_password == password);
+}

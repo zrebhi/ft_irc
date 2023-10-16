@@ -25,9 +25,14 @@ void Command::join() {
 		createChannel(channelName, password);
 	else {
 		Channel& channel = this->_ircServ.getChannel(channelName);
-		if (!channel.checkPassword(password))
+		if (!channel.checkChannelPassword(password))
 			ft_send(this->_client, ERR_INCORRECTPASSWORD(this->_client, channelName));
+		else if (channel.isFull())
+			ft_send(this->_client, ERR_CHANNELISFULL(this->_client, channelName));
+		else if (channel.isInviteOnly() && !channel.isInvited(_client.getNickname()))
+			ft_send(this->_client, ERR_INVITEONLYCHAN(channelName));
 		else {
+			channel.setInvitedList(_client.getNickname(), REMOVE);
 			channel.addUser(this->_client);
 			ft_send(this->_client, RPL_JOIN(this->_client, channelName));
 		}
@@ -38,7 +43,7 @@ void Command::createChannel(std::string channelName, std::string password) {
 	this->_ircServ.addChannelToServer(Channel(channelName));
 	Channel&	newChannel = this->_ircServ.getChannel(channelName);
 
-	newChannel.setPassword(password, _client.getNickname());
+	newChannel.setChannelPassword(password, _client.getNickname(), true);
 	newChannel.addUser(this->_client);
 	newChannel.addOperator(this->_client);
 	ft_send(this->_client, RPL_JOIN(this->_client, channelName));

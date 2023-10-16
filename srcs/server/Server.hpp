@@ -49,14 +49,14 @@ public:
 
 	std::map<std::string, Channel>	getChannelList() const;
 	Channel&						getChannel(std::string channelName);
-	std::map<int, Client>			getClientList() const;
+	const std::map<int, Client>		&getClientList() const;
 	std::string						getServerPassword();
 	int								getServerSocket();
 	int								getEpollFd();
 
 	void	addChannelToServer(Channel channel);
 	bool	isProtected();
-	bool	passwordIsValid(std::string password);
+	bool	passwordIsValid(const std::string &password);
 
 private:
 	int			_portNumber;
