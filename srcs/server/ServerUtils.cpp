@@ -43,7 +43,7 @@ Channel& Server::getChannel(std::string channelName) {
 	return it->second;
 }
 
-std::map<int, Client>	Server::getClientList() const {
+const std::map<int, Client>	&Server::getClientList() const {
 	return this->_clients;
 }
 

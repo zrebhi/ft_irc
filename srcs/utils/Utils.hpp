@@ -16,6 +16,14 @@
 #include <cctype>
 #include "../server/Server.hpp"
 
+#define ADD true
+#define REMOVE false
+#define NICK_REGISTRATION true
+#define SERV_REGISTRATION false 
+#define MAX_CHAN_USERS 100
+#define MIN_CHAN_USERS 2
+
+
 std::vector<std::string>	ft_split(std::string string, char separator);
 
 std::string					firstWord(std::string commandLine);

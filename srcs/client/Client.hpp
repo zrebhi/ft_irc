@@ -14,6 +14,7 @@
 
 #include "../server/Server.hpp"
 #include <unistd.h>
+#include <utility>
 
 class Client {
 public:
@@ -32,14 +33,14 @@ public:
 	std::string	getPassword() const;
 	std::string	getHostname() const;
 
-	void	setRegistered();
+	void	setRegistered(bool type);
 	void	setNickname(std::string nickname);
 	void	setUsername(std::string username);
 	void	setPassword(std::string password);
 
 
 private:
-	bool _registered;
+	std::pair<bool, bool> _registered;
 	std::string _nickname;
 	std::string _password;
 	std::string _username;

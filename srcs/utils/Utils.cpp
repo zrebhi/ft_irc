@@ -14,7 +14,8 @@
 
 int	ft_send(Client user, std::string reply) {
 	std::cout << "-> " << reply << std::endl;
-	reply.append("\n");
+	if (reply.at(reply.length() - 1) != '\n')
+		reply.append("\n");
 	if (send(user.getSocket(), reply.c_str(), reply.length(), 0) == -1) {
 		std::cerr << "Failed to send JOIN message" << std::endl;
 		return 1;
@@ -24,6 +25,7 @@ int	ft_send(Client user, std::string reply) {
 
 #include <cctype>  // Include for isprint function
 
+//voir si il faut traiter tout ce qui vient apres un : comment une seule string
 std::vector<std::string> ft_split(std::string string, char separator) {
 	std::vector<std::string> stringsVector;
 	std::string newString;
@@ -33,7 +35,9 @@ std::vector<std::string> ft_split(std::string string, char separator) {
 			stringsVector.push_back(newString);
 			newString.clear();
 		} else if (string[i] != '\r')
+		{
 			newString += string[i];
+		}
 	}
 	// Add the last substring if it's not empty
 	if (!newString.empty())

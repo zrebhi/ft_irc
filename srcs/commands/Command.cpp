@@ -51,13 +51,10 @@ bool Command::IsChannelMember(std::string userNickname, std::string channelName)
 bool Command::registerRequest() {
 	if (this->_commandArray[0] == "PASS")
 		pass();
-	if (this->_commandArray[0] == "NICK")
+	else if (this->_commandArray[0] == "NICK")
 		nick();
-	if (validServerPassword() && nicknameAvailable(this->_client.getNickname()) && \
-	nicknameIsValid(this->_client.getNickname())) {
-		this->_client.setRegistered();
+	if (this->_client.isRegistered())
 		return true;
-	}
 	return false;
 }
 

@@ -44,6 +44,9 @@ void	Server::commandMapping() {
 	_commandMap["PRIVMSG"] = &Command::privmsg;
 	_commandMap["WHO"] = &Command::who;
 	_commandMap["STOP"] = &Command::shutdown;
+	_commandMap["MODE"] = &Command::mode;
+	_commandMap["PART"] = &Command::part;
+	_commandMap["INVITE"] = &Command::invite;
 }
 
 void Server::epollSetup() {

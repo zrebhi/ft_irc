@@ -1,0 +1,195 @@
+Réponses aux commandes.
+
+300 RPL_NONE
+Numéro de réponse bidon. Inutilisé.
+
+302 RPL_USERHOST
+":[<réponse>{<espace><réponse>}]"
+Format de réponse utilisé par USERHOST pour lister les réponses à la liste des requêtes. La chaîne de réponse est composée ainsi :
+<réponse> ::= <pseudo>['*'] '=' <'+'|'-'><hôte>
+Le '*' indique si le client est enregistré comme opérateur. Les caractères '-' ou '+' indiquent respectivement si le client a défini un message AWAY ou non.
+
+303 RPL_ISON
+":[<pseudo> {<espace><pseudo>}]"
+Format de réponse utilisé par ISON pour lister les réponses à la liste de requête.
+
+301 RPL_AWAY
+"<pseudo> :<message d'absence>"
+305 RPL_UNAWAY
+":You are no longer marked as being away"
+306 RPL_NOWAWAY
+":You have been marked as being away"
+Ces trois réponses sont utilisées avec la commande AWAY (si elle est autorisée). RPL_AWAY est envoyé à tout client qui envoie un PRIVMSG à un client absent. RPL_AWAY n'est envoyé que par le serveur sur lequel le client est connecté. Les réponses RPL_UNAWAY et RPL_NOWAWAY sont envoyées quand un client retire et définit un message AWAY.
+311 RPL_WHOISUSER
+"<pseudo> <utilisateur> <hôte> * :<vrai nom>"
+312 RPL_WHOISSERVER
+"<pseudo> <serveur> :<info serveur>"
+313 RPL_WHOISOPERATOR
+"<pseudo> :is an IRC operator"
+317 RPL_WHOISIDLE
+"<pseudo> <integer> :seconds idle"
+318 RPL_ENDOFWHOIS
+"<pseudo> :End of /WHOIS list"
+319 RPL_WHOISCHANNELS
+"<pseudo> :{[@|+]<canal><espace>}"
+Les réponses 311 à 313 et 317 à 319 sont toutes générées en réponse à un message WHOIS. S'il y a assez de paramètres, le serveur répondant doit soit formuler une réponse parmi les numéros ci-dessus (si le pseudo recherché a été trouvé) ou renvoyer un message d'erreur. Le '*' dans RPL_WHOISUSER est là en tant que littéral et non en tant que joker. Pour chaque jeu de réponses, seul RPL_WHOISCHANNELS peut apparaître plusieurs fois (pour les longues listes de noms de canaux). Les caractères '@' et '+' à côté du nom de canal indiquent si un client est opérateur de canal, ou si on l'a autorisé à parler dans un canal modéré. La réponse RPL_ENDOFWHOIS est utilisée pour marquer la fin de la réponse WHOIS.
+
+314 RPL_WHOWASUSER
+"<pseudo> <utilisateur> <hôte> * :<vrai nom>"
+369 RPL_ENDOFWHOWAS
+"<pseudo> :End of WHOWAS"
+Lorsqu'il répond à un message WHOWAS, un serveur doit utiliser RPL_WHOWASUSER, RPL_WHOISSERVER ou ERR_WASNOSUCHNICK pour chacun des pseudonymes de la liste fournie. A la fin de toutes les réponses, il doit y avoir un RPL_ENDOFWHOWAS (même s'il n'y a eu qu'une réponse, et que c'était une erreur).
+
+321 RPL_LISTSTART
+"Channel :Users Name"
+322 RPL_LIST
+"<canal> <# visible> :<sujet>"
+323 RPL_LISTEND
+":End of /LIST"
+Les réponses RPL_LISTSTART, RPL_LIST, RPL_LISTEND marquent le début, les réponses proprement dites, et la fin du traitement d'une commande LIST. S'il n'y a aucun canal disponible, seules les réponses de début et de fin sont envoyées.
+324 RPL_CHANNELMODEIS
+"<canal> <mode> <paramètres de mode>"
+331 RPL_NOTOPIC
+"<canal> :No topic is set"
+332 RPL_TOPIC
+"<canal> :<sujet>"
+Lors de l'envoi d'un message TOPIC pour déterminer le sujet d'un canal, une de ces deux réponses est envoyée. Si le sujet est défini, RPL_TOPIC est renvoyée, sinon c'est RPL_NOTOPIC.
+341 RPL_INVITING
+"<canal> <pseudo>"
+Renvoyé par un serveur pour indiquer que le message INVITE a été enregistré, et est en cours de transmission au client final.
+342 RPL_SUMMONING
+"<utilisateur> :Summoning user to IRC"
+Renvoyé par un serveur en réponse à un message SUMMON pour indiquer qu'il appelle cet utilisateur.
+
+351 RPL_VERSION
+"<version>.<debuglevel> <serveur> :<commentaires>"
+Réponse du serveur indiquant les détails de sa version. <version> est la version actuelle du programme utilisé (comprenant le numéro de mise à jour) et <debuglevel> est utilisé pour indiquer si le serveur fonctionne en mode débugage.
+Le champ <commentaire> peut contenir n'importe quel commentaire au sujet de la version, ou des détails supplémentaires sur la version.
+352 RPL_WHOREPLY
+"<canal> <utilisateur> <hôte> <serveur> <pseudo> <H|G>[*][@|+] :<compteur de distance> <vrai nom>"
+315 RPL_ENDOFWHO
+"<nom> :End of /WHO list"
+La paire RPL_WHOREPLY et RPL_ENDOFWHO est utilisée en réponse à un message WHO. Le RPL_WHOREPLY n'est envoyé que s'il y a une correspondance à la requête WHO. S'il y a une liste de paramètres fournie avec le message WHO, un RPL_ENDOFWHO doit être envoyé après le traitement de chaque élément de la liste, <nom> étant l'élément.
+
+353 RPL_NAMREPLY
+"<canal> :[[@|+]<pseudo> [[@|+]<pseudo> [...]]]"
+366 RPL_ENDOFNAMES
+"<canal> :End of /NAMES list"
+En réponse à un message NAMES, une paire consistant de RPL_NAMREPLY et RPL_ENDOFNAMES est renvoyée par le serveur au client. S'il n'y a pas de canal résultant de la requête, seul RPL_ENDOFNAMES est retourné. L'exception à cela est lorsqu'un message NAMES est envoyé sans paramètre et que tous les canaux et contenus visibles sont renvoyés en une suite de message RPL_NAMEREPLY avec un RPL_ENDOFNAMES indiquant la fin.
+
+364 RPL_LINKS
+"<masque> <serveur> :<compteur de distance> <info serveur>"
+365 RPL_ENDOFLINKS
+"<mask> :End of /LINKS list"
+En réponse à un message LINKS, un serveur doit répondre en utilisant le nombre RPL_LINKS, et indiquer la fin de la liste avec une réponse RPL_ENDOFLINKS.
+367 RPL_BANLIST
+"<canal> <identification de bannissement>"
+368 RPL_ENDOFBANLIST
+"<canal> :End of channel ban list"
+Quand il liste les bannissements actifs pour un canal donné, un serveur doit renvoyer la liste en utilisant les messages RPL_BANLIST et RPL_ENDOFBANLIST. Un RPL_BANLIST différent doit être utilisé pour chaque identification de bannissement. Après avoir listé les identifications de bannissement (s'il y en a), un RPL_ENDOFBANLIST doit être renvoyé.
+
+371 RPL_INFO
+":<chaîne>"
+374 RPL_ENDOFINFO
+":End of /INFO list"
+Un serveur répondant à un message INFO doit envoyer toute sa série d'info en une suite de réponses RPL_INFO, avec un RPL_ENDOFINFO pour indiquer la fin des réponses.
+
+375 RPL_MOTDSTART
+":- <serveur> Message of the day - "
+372 RPL_MOTD
+":- <texte>"
+376 RPL_ENDOFMOTD
+":End of /MOTD command"
+Lorsqu'il répond à un message MOTD et que le fichier MOTD est trouvé, le fichier est affiché ligne par ligne, chaque ligne ne devant pas dépasser 80 caractères, en utilisant des réponses au format RPL_MOTD. Celles-ci doivent être encadrées par un RPL_MOTDSTART (avant les RPL_MOTDs) et un RPL_ENDOFMOTD (après).
+
+381 RPL_YOUREOPER
+":You are now an IRC operator"
+RPL_YOUREOPER est renvoyé à un client qui vient d'émettre un message OPER et a obtenu le statut d'opérateur.
+
+382 RPL_REHASHING
+"<fichier de configuration> :Rehashing"
+Si l'option REHASH est activée et qu'un opérateur envoie un message REHASH, un RPL_REHASHING est renvoyé à l'opérateur.
+
+391 RPL_TIME
+"<serveur> :<chaîne indiquant l'heure locale du serveur>"
+Lorsqu'il répond à un message TIME, un serveur doit répondre en utilisant le format RPL_TIME ci-dessus. La chaîne montrant l'heure ne doit contenir que le jour et l'heure corrects. Il n'y a pas d'obligation supplémentaire.
+
+392 RPL_USERSSTART
+":UserID Terminal Hôte"
+393 RPL_USERS
+":%-8s %-9s %-8s"
+394 RPL_ENDOFUSERS
+":End of users"
+395 RPL_NOUSERS
+":Nobody logged in"
+Si le message USERS est géré par un serveur, les réponses RPL_USERSTART, RPL_USERS, RPL_ENDOFUSERS et RPL_NOUSERS sont utilisées. RPL_USERSSTART doit être envoyé en premier, suivi par soit une séquence de RPL_USERS soit un unique RPL_NOUSER. Enfin, vient un RPL_ENDOFUSERS.
+
+200 RPL_TRACELINK
+"Link <version & niveau de débugage> <destination> <serveur suivant>"
+201 RPL_TRACECONNECTING
+"Try. <classe> <serveur>"
+202 RPL_TRACEHANDSHAKE
+"H.S. <classe> <serveur>"
+203 RPL_TRACEUNKNOWN
+"???? <classe> [<adresse IP du client au format utilisant des points>]"
+204 RPL_TRACEOPERATOR
+"Oper <classe> <pseudo>"
+205 RPL_TRACEUSER
+"User <classe> <pseudo>"
+206 RPL_TRACESERVER
+"Serv <classe> <int>S <int>C <serveur> <pseudo!utilisateur|*!*>@<hôte|serveur>"
+208 RPL_TRACENEWTYPE
+"<nouveau type> 0 <nom du client>"
+261 RPL_TRACELOG
+"File <fichier log> <niveau de débugage>"
+Les RPL_TRACE* sont tous renvoyés par le serveur en réponse à un message TRACE. Le nombre de messages retournés dépend de la nature du message TRACE, et s'il a été envoyé par un opérateur ou non. Il n'y a pas d'ordre définissant lequel doit être le premier. Les réponses RPL_TRACEUNKNOWN, RPL_TRACECONNECTING et RPL_TRACEHANDSHAKE sont toutes utilisées pour des connexions qui n'ont pas été complètement établies, et sont soit inconnues, soit toujours en cours de connexion, soit dans la phase terminale de la 'poignée de main du serveur'. RPL_TRACELINK est envoyé par tout serveur qui traite un message TRACE et doit le transmettre à un autre serveur. La liste de RPL_TRACELINK envoyée en réponse à une commande TRACE traversant le réseau IRC devrait refléter la connectivité actuelle des serveurs le long du chemin. RPL_TRACENEWTYPE est utilisé pour toute connexion qui n'entre pas dans les autres catégories, mais qui est néanmoins affichée.
+
+211 RPL_STATSLINKINFO
+"<nom du lien> <sendq> <messages envoyés> <octets envoyés> <message reçus> <octets reçus> <temps de connexion>"
+212 RPL_STATSCOMMANDS
+"<commande> <compteur>"
+213 RPL_STATSCLINE
+"C <hôte> * <nom> <port> <classe>"
+214 RPL_STATSNLINE
+"N <hôte> * <nom> <port> <classe>"
+215 RPL_STATSILINE
+"I <hôte> * <hôte> <port> <classe>"
+216 RPL_STATSKLINE
+"K <hôte> * <nom d'utilisateur> <port> <classe>"
+218 RPL_STATSYLINE
+"Y <classe> <fréquence des PINGS> <fréquence de connexion> <sendq max>"
+219 RPL_ENDOFSTATS
+"<lettre de stats> :End of /STATS report"
+241 RPL_STATSLLINE
+"L <masque d'hôte> * <nom de serveur> <profondeur maxi>"
+242 RPL_STATSUPTIME
+":Server Up %d days %d:%02d:%02d"
+243 RPL_STATSOLINE
+"O <masque d'hôte> * <nom>"
+244 RPL_STATSHLINE
+"H <masque d'hôte> * <nom de serveur>"
+221 RPL_UMODEIS
+"<chaîne de mode utilisateur>"
+Pour répondre à une requête au sujet du mode du client, RPL_UMODEIS est renvoyé.
+251 RPL_LUSERCLIENT
+":There are <entier> users and <entier> invisible on <entier> servers"
+252 RPL_LUSEROP
+"<entier> :operator(s) online"
+253 RPL_LUSERUNKNOWN
+"<entier> :unknown connection(s)"
+254 RPL_LUSERCHANNELS
+"<entier> :channels formed"
+255 RPL_LUSERME
+":I have <entier> clients and <integer> servers"
+Lors du traitement d'un message LUSERS, le serveur envoie un lot de réponses parmi RPL_LUSERCLIENT, RPL_LUSEROP, RPL_USERUNKNOWN, RPL_LUSERCHANNELS et RPL_LUSERME. Lorsqu'il répond, un serveur doit envoyer RPL_LUSERCLIENT et RPL_LUSERME. Les autres réponses ne sont renvoyées que si le nombre trouvé n'est pas nul.
+
+256 RPL_ADMINME
+"<serveur> :Administrative info"
+257 RPL_ADMINLOC1
+":<info admin>"
+258 RPL_ADMINLOC2
+":<info admin>"
+259 RPL_ADMINEMAIL
+":<info admin>"
+Lorsqu'il répond à un message ADMIN, un serveur doit renvoyer les réponses RLP_ADMINME à RPL_ADMINEMAIL et fournir un texte de message avec chacune. Pour RPL_ADMINLOC1, on attend une description de la ville et de l'état où se trouve le serveur, suivie des détails de l'université et du département (RPL_ADMINLOC2), et finalement le contact administratif pour ce serveur (avec obligatoirement une adresse email) dans RPL_ADMINEMAIL.
+

@@ -10,6 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+<<<<<<< HEAD:src/main.cpp
+#include "../inc/CommonLibs.hpp"
+#include "../inc/Server.hpp"
+#include <iostream>
+
+int main()
+{
+	Server ircServ;
+	return 0;
+}
+=======
 #include "Command.hpp"
 
 void Command::shutdown() {
@@ -22,3 +33,4 @@ void Command::shutdown() {
 	close(this->_ircServ.getEpollFd());
 	this->_ircServ.serverShutdown();
 }
+>>>>>>> f876fee9e110419f61d4bcf99dfd4f79ae98e274:srcs/commands/Shutdown.cpp
