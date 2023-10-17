@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:40:23 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:38:25 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,5 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 			CommandFunction function = _commandMap[commandArray[0]];
 			(cmd.*function)();
 		}
-	}
+}
 }
