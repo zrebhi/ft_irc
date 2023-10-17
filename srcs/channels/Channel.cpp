@@ -6,7 +6,7 @@
 /*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 12:30:57 by bgresse          ###   ########.fr       */
+/*   Updated: 2023/10/17 19:29:24 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void Channel::addUser(Client &user) {
 	this->_users.insert(std::make_pair(user.getNickname(), user));
 }
 void Channel::removeUser(Client &user) {
+	
     std::map<std::string, Client>::iterator it = _users.find(user.getNickname());
     if (it != _users.end())
         _users.erase(it);

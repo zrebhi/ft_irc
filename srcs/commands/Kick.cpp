@@ -6,7 +6,7 @@
 /*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 11:11:30 by bgresse           #+#    #+#             */
-/*   Updated: 2023/10/13 12:54:45 by bgresse          ###   ########.fr       */
+/*   Updated: 2023/10/17 19:32:35 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,33 @@
 
 void Command::kick(std::map<std::string, Channel> &channels) {
     if (this->_commandArray.size() < 4) {
-        ft_send(this->_client, ":IRC 461 " + _client.getNickname() + " :Not enough parameters");
+        ft_send(this->_client, ":IRC 461 KICK :Not enough parameters");
         return;
     }
 
     std::string channelName = this->_commandArray[1];
+    ft_send(this->_client, channelName);
 
     if (channelName.empty() || channelName[0] != '#') {
-        ft_send(this->_client, ":IRC 476 " + _client.getNickname() + " " + channelName + " :Invalid channel mask");
+        ft_send(this->_client, ":IRC 476 " + channelName + " :Bad Channel Mask");
         return;
     }
 
-    std::map<std::string, Channel>::iterator channelIt = channels.find(channelName.substr());
+    std::map<std::string, Channel>::iterator channelIt = channels.find(channelName.substr(1));
     if (channelIt != channels.end()) {
         Channel &channel = channelIt->second;
 
         if (!channel.isUserInChannel(_client.getNickname())) {
-            ft_send(this->_client, ":IRC 442 " + _client.getNickname() + " " + channelName + " :You're not on that channel");
+            ft_send(this->_client, ":IRC 442 " + channelName + " :You're not on that channel");
             return;
         } else if (!channel.isOperator(_client.getNickname())) {
-            ft_send(this->_client, ":IRC 482 " + _client.getNickname() + " " + channelName + " :You're not channel operator");
+            ft_send(this->_client, ":IRC 482 " + channelName + " :You're not channel operator");
             return;
         } else {
             std::string targetNickname = this->_commandArray[2];
 
             if (!channel.isUserInChannel(targetNickname)) {
-                ft_send(this->_client, ":IRC 401 " + _client.getNickname() + " " + targetNickname + " :No such nick");
+                ft_send(this->_client, ":IRC 401 " + targetNickname + " :No such nick/channel");
                 return;
             }
 
@@ -50,13 +51,13 @@ void Command::kick(std::map<std::string, Channel> &channels) {
             if (targetUserIt != users.end())
                 targetUser = targetUserIt->second;
             
+            ft_send(channel.getUsers()[targetNickname], "you have been kicked from " + channelName + " by " + _client.getNickname());
+            ft_send(this->_client, _client.getNickname() + " has kicked " + targetNickname + " from " + channelName);
+            whoChannel();
             channel.removeUser(targetUser);
-
-            // Optionally, you can notify the target client that they were kicked
-            ft_send(channel.getUsers()[targetNickname], ":KICK " + channelName + " " + _client.getNickname());
         }
     } else {
-        ft_send(this->_client, ":IRC 403 " + _client.getNickname() + " " + channelName + " :No such channel");
+        ft_send(this->_client, ":IRC 403 " + channelName + " :No such channel");
         return;
     }
 }
