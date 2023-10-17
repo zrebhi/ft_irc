@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSetup.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:16:20 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 20:25:20 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	Server::commandMapping() {
 	_commandMap["MODE"] = &Command::mode;
 	_commandMap["PART"] = &Command::part;
 	_commandMap["INVITE"] = &Command::invite;
+	_commandMap["KICK"] = &Command::kick;
 }
 
 void Server::epollSetup() {

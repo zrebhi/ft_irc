@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:30:29 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 20:29:36 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ public:
 	void	serverShutdown();
 	bool	serverRunning();
 
-	std::map<std::string, Channel>	getChannelList() const;
+	std::map<std::string, Channel>	&getChannelList();
 	Channel&						getChannel(std::string channelName);
 	const std::map<int, Client>		&getClientList() const;
 	std::string						getServerPassword();

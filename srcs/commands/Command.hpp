@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:25:50 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 19:53:21 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ public:
 	void	mode();
 	void	part();
 	void	invite();
+	void	kick();
 
 	bool	registerRequest();
 

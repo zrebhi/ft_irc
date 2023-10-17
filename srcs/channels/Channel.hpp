@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 22:40:08 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 20:26:09 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ public:
 	void setInvitedList(const std::string &clientName, bool addOrRemove);
 	void setInviteOnly(bool addOrRemove, const std::string &name);
 	bool isLimitLocked();
+	bool isUserInChannel(const std::string &nickname) const;
 //
 	void deleteClient(const std::string &clientName, std::string &message);
 // 

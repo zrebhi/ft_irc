@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUtils.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 20:59:05 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 00:04:29 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 20:29:21 by bgresse          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ std::string Server::getServerPassword() {
 	return _password;
 }
 
-std::map<std::string, Channel> Server::getChannelList() const {
+std::map<std::string, Channel> &Server::getChannelList() {
 	return this->_channels;
 }
 
