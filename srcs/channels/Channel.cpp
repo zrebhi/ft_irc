@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 23:17:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 23:16:00 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,21 @@ void Channel::addUser(Client &user) {
 	this->_users.insert(std::make_pair(user.getNickname(), user));
 }
 
+void Channel::removeUser(std::string nickname) {
+	this->_users.erase(nickname);
+}
 
-void	Channel::sendMessageToChannel(Client sender, std::string message) {
+void	Channel::userMessageToChannel(Client sender, std::string message) {
 	std::map<std::string, Client>::iterator it = this->_users.begin();
 	for (; it != _users.end(); ++it) {
 		if (it->first != sender.getNickname())
+			ft_send(it->second, message);
+	}
+}
+
+void	Channel::serverMessageToChannel(std::string message) {
+	std::map<std::string, Client>::iterator it = this->_users.begin();
+	for (; it != _users.end(); ++it) {
 			ft_send(it->second, message);
 	}
 }
@@ -92,17 +102,20 @@ bool Channel::isInvited(const std::string &clientName)
 	return false;
 }
 
-void Channel::deleteClient(const std::string &clientName, std::string &reply)
+void Channel::deleteClient(const std::string &clientName, std::string reply)
 {
     std::map<std::string, Client>::iterator clientIt = _users.find(clientName);
     if (clientIt != _users.end())
 	{
 		std::map<std::string, Client>::iterator it = _users.begin();
+		_users.erase(clientIt);
 		for (; it != _users.end(); ++it)
 		{
-			if (send(it->second.getSocket(), reply.c_str(), reply.length(), 0) < 0)
-				std::cout << "Failed to send message" << std::endl;
+			ft_send(it->second, reply);
 		}
-        _users.erase(clientIt);
 	}
+}
+bool Channel::isUserInChannel(const std::string &nickname) const
+{
+	return _users.find(nickname) != _users.end();
 }

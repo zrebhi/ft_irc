@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 00:44:05 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 23:26:36 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,9 @@ void Command::nick() {
 		oldNickname = '*';
 	if (nicknameAvailable(newNickname) && nicknameIsValid(newNickname)) {
 		this->_client.setNickname(newNickname);
-		this->_client.setRegistered(NICK_REGISTRATION);
-		// ft_send(this->_client, ":" + oldNickname + " NICK :" + newNickname);
+		if (!this->_client.isRegistered())
+			this->_client.setRegistered(NICK_REGISTRATION);
+		changeNicknameInChannels(oldNickname);
 	}
 }
 
@@ -95,4 +96,18 @@ bool Command::nicknameIsValid(std::string nickname) {
 	// }
 	// else
 	// 	return true;
+}
+
+void Command::changeNicknameInChannels(std::string oldNickname) {
+	std::map <std::string, Channel> &channels = this->_ircServ.getChannelList();
+	std::map<std::string, Channel>::iterator it = channels.begin();
+
+	for (; it != channels.end(); ++it) {
+		if (it->second.isUserInChannel(oldNickname)) {
+			Channel	&channel = this->_ircServ.getChannel(it->first);
+			channel.addUser(this->_client);
+			channel.removeUser(oldNickname);
+			channel.serverMessageToChannel(NICK(oldNickname, this->_client.getNickname()));
+		}
+	}
 }

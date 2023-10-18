@@ -27,5 +27,5 @@ void Command::channelMessage() {
 			message.append(" ");
 	}
 	Channel channel = this->_ircServ.getChannel(this->_commandArray[1]);
-	channel.sendMessageToChannel(this->_client, message);
+	channel.userMessageToChannel(this->_client, message);
 }

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 22:51:39 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 20:45:13 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 20:19:01 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ std::vector<std::string> ft_split(std::string string, char separator) {
 		if (string[i] == separator) {
 			stringsVector.push_back(newString);
 			newString.clear();
-		} else if (string[i] != '\r')
-		{
+		} else if (string[i] != '\r') {
 			newString += string[i];
 		}
 	}

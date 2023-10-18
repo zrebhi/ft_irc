@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 20:59:05 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 00:04:29 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/17 20:12:37 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ std::string Server::getServerPassword() {
 	return _password;
 }
 
-std::map<std::string, Channel> Server::getChannelList() const {
+std::map<std::string, Channel>& Server::getChannelList() {
 	return this->_channels;
 }
 
@@ -60,10 +60,7 @@ void Server::serverShutdown() {
 }
 
 bool Server::serverRunning() {
-	if (this->_serverUp)
-		return true;
-	else
-		return false;
+	return this->_serverUp;
 }
 
 bool Server::isProtected() {

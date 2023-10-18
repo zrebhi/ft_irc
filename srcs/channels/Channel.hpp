@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 22:40:08 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 23:19:09 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,12 @@ public:
 
 
 	void	addUser(Client &user);
+	void	removeUser(std::string nickname);
 	void	addOperator(Client &user);
-	void removeOperator(Client &user);
+	void	removeOperator(Client &user);
 
-	void	sendMessageToChannel(Client sender, std::string message);
+	void	userMessageToChannel(Client sender, std::string message);
+	void	serverMessageToChannel(std::string message);
 // Mode related funcs
 	bool	checkChannelPassword(const std::string &password);
 	void setChannelPassword(const std::string &password, const std::string &name, bool addOrRemove);
@@ -47,9 +49,10 @@ public:
 	void setInviteOnly(bool addOrRemove, const std::string &name);
 	bool isLimitLocked();
 //
-	void deleteClient(const std::string &clientName, std::string &message);
+	void deleteClient(const std::string &clientName, std::string message);
 // 
 	bool	isOperator(const std::string &nickname);
+	bool	isUserInChannel(const std::string &nickname) const;
 
 	std::string	getName() const;
 	std::map<std::string, Client> &getUsers();

@@ -51,7 +51,7 @@ void Channel::setTopic(const std::string &name, std::string &content)
 	}
 	_topic = content;
 	std::string reply = "332 " + getName() + " :" + _topic;
-	sendMessageToChannel(_users[name], reply);
+	userMessageToChannel(_users[name], reply);
 }
 
 std::string &Channel::getTopic()

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:25:50 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 21:54:25 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ public:
 	void	join();
 	void	privmsg();
 	void	who();
-	void	whoChannel();
 	void	shutdown();
 	void	pass();
 	void	mode();
@@ -45,11 +44,19 @@ private:
 	Client&	_client;
 	Server&	_ircServ;
 
+	void	whoChannel(std::string channelName);
+
+	std::map<std::string, std::string> joinParser();
+	void	joinChannel(std::string channelName, std::string channelPassword);
+	bool	permissionToJoinChannel(Channel& channel, std::string channelName, std::string channelPassword);
+
 	void	channelMessage();
 	void	privateMessage();
 
 	bool	nicknameAvailable(std::string nickname);
 	bool	nicknameIsValid(std::string nickname);
+	void	changeNicknameInChannels(std::string oldNickname);
+
 	bool	validServerPassword();
 
 	void	createChannel(std::string channelName, std::string password);
