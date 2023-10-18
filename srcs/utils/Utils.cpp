@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 22:51:39 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 20:19:01 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 23:41:48 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,14 @@ std::string intToString(int number) {
 	oss << number;
 	std::string myString = oss.str();
 	return myString;
+}
+
+int stringToInt(const std::string& str) {
+	std::stringstream ss(str);
+	int result = 0;
+
+	ss >> result;
+	return result;
 }
 
 std::string firstWord(std::string commandLine) {

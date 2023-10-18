@@ -32,6 +32,7 @@ std::vector<std::string>	firstWordSplit(std::string &commandLine);
 std::vector<std::string>	ircCommandSplitter(std::string command);
 
 std::string					intToString(int number);
+int							stringToInt(const std::string& str);
 
 int							ft_send(Client user, std::string reply);
 

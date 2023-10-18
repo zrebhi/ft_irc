@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:52:11 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 01:40:20 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/18 23:42:23 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ int	main(int argc, char **argv) {
 	if (invalidInput(argc, argv))
 		return 1;
 
-	std::string password = "";
-	int	portNumber = atoi(argv[1]);
+	std::string password;
+	int	portNumber = stringToInt(argv[1]);
 	if (argc == 3)
 		password = argv[2];
 	//creer un checker de mot de passe (len + chara)
