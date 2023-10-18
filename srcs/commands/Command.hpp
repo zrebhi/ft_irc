@@ -32,6 +32,7 @@ public:
 	void	mode();
 	void	part();
 	void	invite();
+	void	kick();
 
 	bool	registerRequest();
 
