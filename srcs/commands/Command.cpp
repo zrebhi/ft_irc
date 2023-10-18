@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 18:10:57 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:06:56 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ bool Command::channelExists(std::string channelName) {
 	std::map<std::string, Channel> channelList = this->_ircServ.getChannelList();
 	std::map<std::string, Channel>::iterator it = channelList.find(channelName);
 	if (it == channelList.end()) {
-		std::string reply = ":IRC 403 " + this->_client.getNickname() + " " + channelName + " :No such channel";
-		ft_send(this->_client, reply);
+		if (this->_commandArray[0] != "JOIN")
+			ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 		return false;
 	}
 	else
@@ -46,4 +46,21 @@ bool Command::IsChannelMember(std::string userNickname, std::string channelName)
 	}
 	else
 		return true;
+}
+
+bool Command::registerRequest() {
+	if (this->_commandArray[0] == "PASS")
+		pass();
+	else if (this->_commandArray[0] == "NICK")
+		nick();
+	if (this->_client.isRegistered())
+		return true;
+	return false;
+}
+
+bool Command::validServerPassword() {
+	if (!this->_ircServ.isProtected() || this->_ircServ.getServerPassword() == this->_client.getPassword())
+		return true;
+	ft_send(this->_client, ERR_PASSWDMISMATCH);
+	return false;
 }

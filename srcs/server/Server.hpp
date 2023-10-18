@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:03:54 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:30:29 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,18 @@
 #include <vector>
 #include <sys/epoll.h>
 #include <cerrno>
+#include <sstream>
+#include <cctype>
+#include <iostream>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
 #include "../utils/Utils.hpp"
+#include "ServerReplies.hpp"
 
-class Client;
-class Channel;
+class Command;
+
+typedef void (Command::*CommandFunction)();
 
 class Server {
 public:
@@ -45,27 +50,30 @@ public:
 	void	serverShutdown();
 	bool	serverRunning();
 
-	std::map<std::string, Channel> getChannelList() const;
-	Channel	getChannel(std::string channelName);
-	std::map<int, Client>	getClientList() const;
-	int	getServerSocket();
-	int	getEpollFd();
+	std::map<std::string, Channel>	&getChannelList();
+	Channel							&getChannel(std::string channelName);
+	std::map<int, Client>			&getClientList();
+	std::string						getServerPassword();
+	int								getServerSocket();
+	int								getEpollFd();
 
-	void	addClientToServer(Client &client);
+	void	addChannelToServer(Channel channel);
 	bool	isProtected();
-	bool	passwordIsValid(std::string &password);
+	bool	passwordIsValid(const std::string &password);
 
 private:
-	int	_serverSocket;
-	int	_epollFd;
-	int	_portNumber;
-	std::string _password;
+	int			_portNumber;
+	std::string	_password;
+
+	int					_serverSocket;
+	int					_epollFd;
 	struct sockaddr_in	_serverAddress;
 
 	bool	_serverUp;
 
 	std::map<int, Client>			_clients;
 	std::map<std::string, Channel>	_channels;
+	std::map<std::string, CommandFunction>	_commandMap;
 
 	void	createSocket();
 	void	bindSocket();
@@ -79,6 +87,7 @@ private:
 
 	void	manageClientEvents(Client &client);
 	void	commandHandler(std::string bufferString, Client &client);
+	void	commandMapping();
 
 	Server	&operator=(const Server &rhs);
 };

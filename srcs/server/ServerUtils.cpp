@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 20:59:05 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 20:53:48 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 00:04:29 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,27 @@ void Server::addSocketToEpoll(int socket) {
 	}
 }
 
-std::map<std::string, Channel> Server::getChannelList() const {
+void Server::addChannelToServer(Channel channel) {
+	this->_channels[channel.getName()] = channel;
+}
+
+std::string Server::getServerPassword() {
+	return _password;
+}
+
+std::map<std::string, Channel> &Server::getChannelList() {
 	return this->_channels;
 }
 
 // Must be used with channelExists;
-Channel Server::getChannel(std::string channelName) {
+Channel& Server::getChannel(std::string channelName) {
 	if (channelName[0] == '#')
 		channelName = channelName.substr(1);
 	std::map<std::string, Channel>::iterator	it = this->_channels.find(channelName);
 	return it->second;
 }
 
-std::map<int, Client>	Server::getClientList() const {
+std::map<int, Client>	&Server::getClientList() {
 	return this->_clients;
 }
 
@@ -56,4 +64,8 @@ bool Server::serverRunning() {
 		return true;
 	else
 		return false;
+}
+
+bool Server::isProtected() {
+	return (_password.empty() == false);
 }

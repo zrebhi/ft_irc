@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 20:34:40 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:16:20 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,20 @@ void	Server::serverSetup() {
 	bindSocket();
 	setSocketToListen();
 	epollSetup();
+	commandMapping();
+}
+
+void	Server::commandMapping() {
+	_commandMap["USER"] = &Command::user;
+	_commandMap["JOIN"] = &Command::join;
+	_commandMap["PRIVMSG"] = &Command::privmsg;
+	_commandMap["WHO"] = &Command::who;
+	_commandMap["STOP"] = &Command::shutdown;
+	_commandMap["MODE"] = &Command::mode;
+	_commandMap["PART"] = &Command::part;
+	_commandMap["INVITE"] = &Command::invite;
+	_commandMap["KICK"] = &Command::kick;
+	_commandMap["QUIT"] = &Command::quit;
 }
 
 void Server::epollSetup() {

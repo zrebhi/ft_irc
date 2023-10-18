@@ -3,14 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 11:12:26 by bgresse          ###   ########.fr       */
+/*   Updated: 2023/10/14 01:40:23 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <string>
 
 void Server::listenToNewEvents() {
 	struct epoll_event events[10];
@@ -20,23 +24,28 @@ void Server::listenToNewEvents() {
 		if (events[i].data.fd == this->_serverSocket)
 			acceptConnection();
 		else {
-			Client &client = this->_clients.find(events[i].data.fd)->second;
-			manageClientEvents(client);
+			std::map<int, Client>::iterator clientIt = _clients.find(events[i].data.fd);
+			if (clientIt != _clients.end())
+				manageClientEvents(clientIt->second);
 		}
 	}
 }
 
 void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
+	memset(buffer, 0, sizeof(buffer));
 	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
-	if (bytesRead <= 0) {
-		std::cout << "CRASH" << std::endl;
+	if (bytesRead == 0 || (bytesRead == -1 && errno == ECONNRESET)) {
 		close(client.getSocket());
-		epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), NULL);
-		this->_clients.erase(client.getSocket());
+		if (epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), NULL))
+			std::cout << "failed to remove epoll" << std::endl;
+		std::string reply = "crash";
+		getClientList().erase(client.getSocket());
+		std::map<std::string, Channel>::iterator it = _channels.begin();
+		while (it != _channels.end())
+			it->second.deleteClient(client.getNickname(), reply);
 	}
 	else {
-		buffer[bytesRead] = '\0';  // Null-terminate the string
 		std::string bufferString(buffer);
 		std::cout << "<- " << bufferString << std::endl;
 		commandHandler(bufferString, client);
@@ -61,40 +70,21 @@ void Server::acceptConnection() {
 
 void Server::commandHandler(std::string bufferString, Client &client) {
 	std::vector <std::string> commands = ft_split(bufferString, '\n');
+	std::vector <std::string> commandArray;
 
 	for (size_t i = 0; i < commands.size(); i++) {
-		std::vector <std::string> commandArray = ft_split(commands[i], ' ');
+		commandArray = ircCommandSplitter(commands[i]);
 		Command cmd = Command(commandArray, client, *this);
-		if (commandArray[0] == "PASS")
-			cmd.pass();
-		if (client.getRegistered() == false) // not logged
+		if (!cmd.registerRequest() && !client.isRegistered())
 			continue;
-		if (commandArray[0] == "NICK")
-			cmd.nick(_clients);
-		if (commandArray[0] == "MODE")
-			cmd.mode(this->_channels);
-		if (commandArray[0] == "USER")
-			cmd.user();
-		if (commandArray[0] == "JOIN")
-			cmd.join(this->_channels);
-		if (commandArray[0]== "PRIVMSG")
-			cmd.privmsg();
-		if (commandArray[0] == "WHO")
-			cmd.who();
-		if (commandArray[0] == "STOP")
-			cmd.shutdown();
-		if (commandArray[0] == "KICK")
-			cmd.kick(this->_channels);
-		//PART pour quitter un channel
+		if (_commandMap.find(commandArray[0]) != _commandMap.end()) {
+			CommandFunction function = _commandMap[commandArray[0]];
+			(cmd.*function)();
+		}
 	}
 }
 
-bool Server::isProtected()
-{
-	return (_password.empty() == false);
-}
-
-bool Server::passwordIsValid(std::string &password)
+bool Server::passwordIsValid(const std::string &password)
 {
 	return (_password == password);
 }

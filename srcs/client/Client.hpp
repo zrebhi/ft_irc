@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:02:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/10 23:42:55 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/13 23:52:37 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include "../server/Server.hpp"
 #include <unistd.h>
+#include <utility>
 
 class Client {
 public:
@@ -26,20 +27,20 @@ public:
 
 	int			getSocket() const;
 
-	bool	getRegistered();
+	bool	isRegistered();
 	std::string	getNickname() const;
 	std::string	getUsername() const;
 	std::string	getPassword() const;
 	std::string	getHostname() const;
 
-	void	setRegistered();
+	void	setRegistered(bool type);
 	void	setNickname(std::string nickname);
 	void	setUsername(std::string username);
 	void	setPassword(std::string password);
 
 
 private:
-	bool _registered;
+	std::pair<bool, bool> _registered;
 	std::string _nickname;
 	std::string _password;
 	std::string _username;

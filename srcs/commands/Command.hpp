@@ -3,43 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   Command.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bgresse <bgresse@student.42.fr>            +#+  +:+       +#+        */
+/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/17 12:31:26 by bgresse           #+#    #+#             */
-/*   Updated: 2023/10/17 12:31:29 by bgresse          ###   ########.fr       */
+/*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
+/*   Updated: 2023/10/14 01:25:50 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include "../client/Client.hpp"
-#include "../channels/Channel.hpp"
 #include "../server/Server.hpp"
 
-class Client;
-class Channel;
 class Server;
+class Channel;
 
 class Command {
 public:
 	Command(const std::vector<std::string> &commandArray, Client &client, Server &ircServ);
 	~Command();
 
+	void	kick();
 	void	user();
-	void	nick(std::map<int, Client> &clientList);
-	void	join(std::map<std::string, Channel> &channels);
-	void	kick(std::map<std::string, Channel> &channels);
-	void	list(std::map <std::string, Channel> &channels);
+	void	nick();
+	void	join();
 	void	privmsg();
 	void	who();
 	void	whoChannel();
 	void	shutdown();
 	void	pass();
-	void	mode(std::map<std::string, Channel> &channels);
-	void	names(Channel &channel);
+	void	mode();
+	void	part();
+	void	invite();
+	void	quit();
+
+	bool	registerRequest();
+
+	void	setITKL_Modes(char letterMode, size_t &argIndex);
+	void	setO_Modes(size_t &argIndex);
+	void	currentModesStr();
 
 private:
 	std::vector<std::string> _commandArray;
@@ -48,6 +49,12 @@ private:
 
 	void	channelMessage();
 	void	privateMessage();
+
+	bool	nicknameAvailable(std::string nickname);
+	bool	nicknameIsValid(std::string nickname);
+	bool	validServerPassword();
+
+	void	createChannel(std::string channelName, std::string password);
 	bool	channelExists(std::string channelName);
 	bool	IsChannelMember(std::string userNickname, std::string channelName);
 };
