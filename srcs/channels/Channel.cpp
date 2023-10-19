@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 23:17:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 17:50:10 by ubuntu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void Channel::addUser(Client &user) {
 
 void	Channel::sendMessageToChannel(Client sender, std::string message) {
 	std::map<std::string, Client>::iterator it = this->_users.begin();
+	(void)sender;
 	for (; it != _users.end(); ++it) {
-		if (it->first != sender.getNickname())
 			ft_send(it->second, message);
 	}
 }

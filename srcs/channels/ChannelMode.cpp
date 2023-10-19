@@ -39,10 +39,10 @@ void Channel::setLimit(bool addOrRemove, const std::string &name, std::string li
 		_limit = 100;
 }
 
-void Channel::setTopic(const std::string &name, std::string &content)
+void Channel::setTopic(const std::string &channelName, const std::string &name, std::string &content)
 {
-	if (_topicLocked || !isOperator(name))
-		return; // no rights
+	// if (_topicLocked || !isOperator(name))
+	// 	return; // no rights
 	size_t maxTopicLength = 50;
 	if (content.length() > maxTopicLength)
 	{
@@ -50,7 +50,9 @@ void Channel::setTopic(const std::string &name, std::string &content)
 		content.append("...");
 	}
 	_topic = content;
-	std::string reply = "332 " + getName() + " :" + _topic;
+
+	std::string reply = ":IRC 332 " + name + " " + channelName + " :" + _topic;
+	std::cout << reply << std::endl;
 	sendMessageToChannel(_users[name], reply);
 }
 

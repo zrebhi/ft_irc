@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerSetup.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:16:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:16:20 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 17:28:58 by ubuntu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	Server::commandMapping() {
 	_commandMap["INVITE"] = &Command::invite;
 	_commandMap["KICK"] = &Command::kick;
 	_commandMap["QUIT"] = &Command::quit;
+	_commandMap["TOPIC"] = &Command::topic;
 }
 
 void Server::epollSetup() {
