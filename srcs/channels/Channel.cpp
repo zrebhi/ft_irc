@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 23:16:00 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 20:12:35 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) : _name(channelName), _limit(-1) {}
+Channel::Channel(const std::string &channelName) :
+_name(channelName), _inviteOnly(false), _topicLocked(false), _limit(-1) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -31,6 +32,9 @@ Channel &Channel::operator=(const Channel &rhs) {
 	this->_operators = rhs._operators;
 	this->_name = rhs._name;
 	this->_limit = rhs._limit;
+	this->_inviteOnly = rhs._inviteOnly;
+	this->_topicLocked = rhs._topicLocked;
+	this->_topic = rhs._topic;
 
 	return (*this);
 }

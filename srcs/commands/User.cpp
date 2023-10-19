@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 23:26:36 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 20:19:11 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void Command::nick() {
 		this->_client.setNickname(newNickname);
 		if (!this->_client.isRegistered())
 			this->_client.setRegistered(NICK_REGISTRATION);
+		ft_send(this->_client, NICK(oldNickname, newNickname));
 		changeNicknameInChannels(oldNickname);
 	}
 }
