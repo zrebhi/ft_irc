@@ -49,7 +49,7 @@ public:
 
 	std::map<std::string, Channel>&	getChannelList();
 	Channel&						getChannel(std::string channelName);
-	const std::map<int, Client>		&getClientList() const;
+	std::map<int, Client>		&getClientList();
 	std::string						getServerPassword();
 	int								getServerSocket();
 	int								getEpollFd();

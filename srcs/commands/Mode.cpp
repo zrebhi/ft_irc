@@ -19,7 +19,7 @@ void Command::currentModesStr()
 {
 	std::string channelName = _commandArray[1];
 	Channel &channel = _ircServ.getChannel(channelName);
-	std::string reply = ":IRC 324 " + _client.getNickname() + " #" + channel.getName() + " +n";
+	std::string reply = RPL_CHANNELMODEIS(_client, channel);
 
 	if (channel.isTopicLocked())
 		reply.append("t");

@@ -13,6 +13,8 @@
 #include "Utils.hpp"
 
 int	ft_send(Client user, std::string reply) {
+	if (reply.empty())
+		return 1;
 	std::cout << "-> " << reply << std::endl;
 	if (reply.at(reply.length() - 1) != '\n')
 		reply.append("\n");

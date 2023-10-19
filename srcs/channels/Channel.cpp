@@ -74,18 +74,19 @@ std::map<std::string, Client> &Channel::getUsers() {
 	return this->_users;
 }
 
-std::string Channel::userListString() {
+std::string Channel::userListString()
+{
 	std::string userList;
 	std::map<std::string, Client>::iterator it = _users.begin();
 
 	if (!_users.empty()) {
 		for (; it != _users.end(); ++it) {
+			if (it != _users.begin())
+				userList.append(" ");
 			if (isOperator(it->second.getNickname()))
 				userList.append("@");
 			userList.append(it->second.getNickname());
-			userList.append(" ");
 		}
-		userList.erase(userList.size() - 1); // Removes the space at the end.
 	}
 	return userList;
 }
@@ -95,10 +96,8 @@ bool Channel::isInvited(const std::string &clientName)
 	std::vector<std::string>::iterator it = std::find(_invitedList.begin(), _invitedList.end(), clientName);
 	if (it != _invitedList.end())
 	{
-		std::cout << "is invited" << std::endl;
 		return true;
 	}
-	std::cout << "is not invited" << std::endl;
 	return false;
 }
 
@@ -107,14 +106,13 @@ void Channel::deleteClient(const std::string &clientName, std::string reply)
     std::map<std::string, Client>::iterator clientIt = _users.find(clientName);
     if (clientIt != _users.end())
 	{
-		std::map<std::string, Client>::iterator it = _users.begin();
 		_users.erase(clientIt);
+		std::map<std::string, Client>::iterator it = _users.begin();
 		for (; it != _users.end(); ++it)
-		{
 			ft_send(it->second, reply);
-		}
 	}
 }
+
 bool Channel::isUserInChannel(const std::string &nickname) const
 {
 	return _users.find(nickname) != _users.end();

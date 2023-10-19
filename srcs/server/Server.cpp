@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <cstdio>
 
 void Server::listenToNewEvents() {
 	struct epoll_event events[10];
@@ -29,11 +30,23 @@ void Server::listenToNewEvents() {
 void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
 	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
+
 	if (bytesRead <= 0) {
-		std::cout << "CRASH" << std::endl;
+		std::map<std::string, Channel>::iterator it = getChannelList().begin();
+		struct epoll_event event;
+		event.events = 0;
+		event.data.fd = client.getSocket();
+		std::cout << "disconnected client: " << client.getNickname() << std::endl;
+		if (epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), &event) == -1)
+			perror("failed to remove socket from epoll");
 		close(client.getSocket());
-		epoll_ctl(this->_epollFd, EPOLL_CTL_DEL, client.getSocket(), NULL);
-		this->_clients.erase(client.getSocket());
+		for (;it != getChannelList().end(); it++)
+		{
+			std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
+				"@" + "IRC QUIT :left the server.";
+			it->second.deleteClient(client.getNickname(), reply);
+		}
+		getClientList().erase(client.getSocket());
 	}
 	else {
 		buffer[bytesRead] = '\0';  // Null-terminate the string

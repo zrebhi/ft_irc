@@ -33,6 +33,7 @@ public:
 	void	part();
 	void	invite();
 	void	kick();
+	void	quit();
 
 	bool	registerRequest();
 

@@ -16,11 +16,8 @@ void Server::addSocketToEpoll(int socket) {
 	struct epoll_event event = {};
 	event.events = EPOLLIN;
 	event.data.fd = socket;
-	if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, socket, &event) == -1) {
+	if (epoll_ctl(this->_epollFd, EPOLL_CTL_ADD, socket, &event) == -1)
 		perror("Failed to add server socket to epoll");
-		close(this->_epollFd);
-		return;
-	}
 }
 
 void Server::addChannelToServer(Channel channel) {
@@ -43,7 +40,7 @@ Channel& Server::getChannel(std::string channelName) {
 	return it->second;
 }
 
-const std::map<int, Client>	&Server::getClientList() const {
+std::map<int, Client>	&Server::getClientList() {
 	return this->_clients;
 }
 
