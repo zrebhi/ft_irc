@@ -64,3 +64,13 @@ bool Command::validServerPassword() {
 	ft_send(this->_client, ERR_PASSWDMISMATCH);
 	return false;
 }
+
+std::map<int, Client>::const_iterator Command::findClientOnServer(const std::string &nickname) {
+	std::map<int, Client>::const_iterator it;
+    for (it = _ircServ.getClientList().begin(); it != _ircServ.getClientList().end(); ++it)
+	{
+        if (it->second.getNickname() == nickname)
+            return it;
+    }
+    return _ircServ.getClientList().end();
+}

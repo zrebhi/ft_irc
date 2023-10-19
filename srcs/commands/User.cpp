@@ -11,20 +11,15 @@
 /* ************************************************************************** */
 
 #include "Command.hpp"
-#include <cctype>
-#include <iostream>
-#include <map>
 
 void Command::user() {
 	std::string &username = _commandArray[1];
 	size_t firstSpace = username.find(' ');
 
-	std::cout << "username: " << username << std::endl;
 	if (username.empty())
 		username = "guest";
 	else if (firstSpace != username.npos)
 		username = username.substr(0, firstSpace);
-	std::cout << "username: " << username << std::endl;
 	this->_client.setUsername(username);
 }
 
@@ -42,37 +37,13 @@ void Command::nick() {
 	}
 }
 
-bool Command::nicknameAvailable(std::string nickname) {
-	std::map<int, Client> clientList = this->_ircServ.getClientList();
-	std::map<int, Client>::iterator it = clientList.begin();
-
-	for (; it != clientList.end(); ++it) {
-		if (it->second.getNickname() == nickname && it->first != this->_client.getSocket()) {
-			ft_send(this->_client, ERR_NICKNAMEINUSE(this->_client));
-			return false;
-		}
-	}
-	return true;
+bool Command::nicknameAvailable(std::string nickname)
+{
+	if (findClientOnServer(nickname) == _ircServ.getClientList().end())
+		return true;
+	ft_send(this->_client, ERR_NICKNAMEINUSE(this->_client));
+	return false;
 }
-// bool isValidPassword(const std::string &password) {
-// 	std::string errorString = "Invalid password: Password should be between 2 
-// 	and 9 alphanumeric characters.\nPlease enter a new one:\t";
-
-//     if (password.length() < 2 || password.length() > 9)
-// 	{
-// 		std::cout << errorString << std::endl;
-//         return false;
-// 	}
-// 	for (size_t i = 0; i < password.length(); i++)
-// 	{
-// 		if (!isalnum(password.at(i)))
-// 		{
-// 			std::cout << errorString << std::endl;
-// 			return false;
-// 		}
-// 	}
-//     return true;
-// }
 
 bool Command::nicknameIsValid(std::string nickname) {
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
@@ -88,14 +59,6 @@ bool Command::nicknameIsValid(std::string nickname) {
 		}
 	}
 	return true;
-
-	// if (nickname.find(' ', 1) != nickname.npos || nickname.find('#') != nickname.npos ||
-	// nickname.size() > 9 || nickname.size() < 2) {
-	// 	ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
-	// 	return false;
-	// }
-	// else
-	// 	return true;
 }
 
 void Command::changeNicknameInChannels(std::string oldNickname) {
