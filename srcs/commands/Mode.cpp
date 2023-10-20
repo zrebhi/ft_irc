@@ -17,7 +17,7 @@ void	Command::mode()
 		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 	Channel &channel = _ircServ.getChannel(channelName);
 	if (!channel.isOperator(_client.getNickname()))
-		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
+		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
 	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
 		return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
 	size_t argIndex = 3;

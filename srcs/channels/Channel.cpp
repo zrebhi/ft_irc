@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 17:50:10 by ubuntu           ###   ########.fr       */
+/*   Updated: 2023/10/20 23:55:27 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) : _name(channelName), _limit(-1) {}
+Channel::Channel(const std::string &channelName) : _name(channelName), _inviteOnly(false),_topicLocked(false), _limit(-1) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -69,7 +69,7 @@ bool Channel::isOperator(const std::string &nickname) {
 		return false;
 }
 
-bool Channel::isUserInChannel(const std::string &nickname)
+bool Channel::isUserInChannel(const std::string &nickname) const
 {
     return _users.find(nickname) != _users.end();
 }
@@ -120,7 +120,3 @@ void Channel::deleteClient(const std::string &clientName, std::string reply)
 	}
 }
 
-bool Channel::isUserInChannel(const std::string &nickname) const
-{
-	return _users.find(nickname) != _users.end();
-}

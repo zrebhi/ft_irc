@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/20 22:32:31 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/21 01:20:49 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	Command::joinChannel(std::string channelName, std::string channelPassword) 
 		if (permissionToJoinChannel(channel, channelName, channelPassword)) {
 			channel.setInvitedList(_client.getNickname(), REMOVE);
 			channel.addUser(this->_client);
-			ft_send(this->_client, RPL_JOIN(this->_client, channelName));
+			channel.serverMessageToChannel(RPL_JOIN(this->_client.getNickname(), channelName));
 		}
 	}
 }
@@ -62,7 +62,7 @@ void Command::createChannel(std::string channelName, std::string channelPassword
 	newChannel.addUser(this->_client);
 	newChannel.addOperator(this->_client);
 	newChannel.setChannelPassword(channelPassword, _client.getNickname(), true);
-	ft_send(this->_client, RPL_JOIN(this->_client, channelName));
+	newChannel.serverMessageToChannel(RPL_JOIN(this->_client.getNickname(), channelName));
 }
 
 bool Command::permissionToJoinChannel(Channel& channel, std::string channelName, std::string channelPassword) {

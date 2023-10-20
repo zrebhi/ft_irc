@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 22:40:08 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 23:46:15 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ public:
 	bool isChannelLocked();
 	void setTopicLock(bool addOrRemove, const std::string &name);
 	void setLimit(bool addOrRemove, const std::string &name, std::string limit);
-	void setTopic(const std::string &channelName, const std::string &name, std::string &content);
+	void setTopic(const std::string &name, std::string &content);
 	bool isTopicLocked();
 	int isFull();
 	bool isInviteOnly();

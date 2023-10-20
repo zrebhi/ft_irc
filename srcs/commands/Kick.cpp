@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 19:51:53 by bgresse           #+#    #+#             */
-/*   Updated: 2023/10/20 23:30:26 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/21 01:27:27 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ void Command::kick() {
 	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
 		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 
-	if (_commandArray[1] == "IRC")
+	if (_commandArray[1] == "IRC") {
 		_commandArray.erase(_commandArray.begin() + 1);
+		_commandArray[2] = _commandArray[2].substr(1);
+	}
 	std::map<std::string, Channel> &channels = this->_ircServ.getChannelList();
 	std::string channelName = this->_commandArray[1];
 
@@ -25,25 +27,34 @@ void Command::kick() {
 		 return ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
 
 	channelName = formatChannelName(channelName);
+
 	std::map<std::string, Channel>::iterator channelIt = channels.find(channelName);
 	if (channelIt != channels.end()) {
 		 Channel &channel = channelIt->second;
 
 		 if (!channel.isUserInChannel(_client.getNickname()))
 			 return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
-		 else if (!channel.isOperator(_client.getNickname()))
-			  return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
-		 else {
-			  std::string targetNickname = this->_commandArray[2];
+		 if (!channel.isOperator(_client.getNickname()))
+			  return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
 
-			if (!channel.isUserInChannel(targetNickname))
-					return ft_send(this->_client, ERR_NOSUCHNICK(targetNickname));
+		  std::string targetNickname = this->_commandArray[2];
+		  std::map<int, Client>::const_iterator it = findClientOnServer(targetNickname);
+		  Client target = it->second;
 
-			ft_send(channel.getUsers()[targetNickname], RPL_KICK_USER(_client, channelName));
-			std::string kickMessage = RPL_KICK_CHANNEL(_client, channelName, targetNickname, (_commandArray.size() >= 4 ? _commandArray[3] : ""));
-			channel.deleteClient(targetNickname, kickMessage);
-			whoChannel(channelName);
-		 }
+		  std::string reason;
+		  if (_commandArray.size() >= 4) {
+			  for (size_t i = 3; i < this->_commandArray.size(); i++) {
+				  reason.append(this->_commandArray[i]);
+				  if (i < this->_commandArray.size() - 1)
+				 	 reason.append(" ");
+			  }
+		  }
+
+		if (!channel.isUserInChannel(targetNickname))
+				return ft_send(this->_client, ERR_NOSUCHNICK(targetNickname));
+
+		std::string kickMessage = RPL_KICK(_client.getNickname(), channelName, targetNickname, reason);
+		channel.deleteClient(targetNickname, kickMessage);
 	} else {
 		 ft_send(this->_client, ERR_NOSUCHCHANNEL(_client, channelName));
 		 return;

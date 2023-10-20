@@ -17,7 +17,7 @@ void Command::invite()
 		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 	Channel &channel = _ircServ.getChannel(channelName);
 	if (channel.isChannelLocked() && !channel.isOperator(targetName))
-		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
+		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
 	if (targetClientIt == _ircServ.getClientList().end())
 		return (void)ft_send(this->_client, ERR_NOSUCHNICK(targetName));
 	if (channel.isUserInChannel(targetName))
