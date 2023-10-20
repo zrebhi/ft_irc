@@ -46,9 +46,10 @@ void	Server::commandMapping() {
 	_commandMap["STOP"] = &Command::shutdown;
 	_commandMap["MODE"] = &Command::mode;
 	_commandMap["PART"] = &Command::part;
-	_commandMap["QUIT"] = &Command::quit;
 	_commandMap["INVITE"] = &Command::invite;
 	_commandMap["KICK"] = &Command::kick;
+	_commandMap["QUIT"] = &Command::quit;
+	_commandMap["TOPIC"] = &Command::topic;
 }
 
 void Server::epollSetup() {

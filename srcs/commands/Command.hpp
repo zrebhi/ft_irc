@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/20 22:18:14 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/14 01:25:50 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ public:
 	Command(const std::vector<std::string> &commandArray, Client &client, Server &ircServ);
 	~Command();
 
+	void	kick();
 	void	user();
 	void	nick();
 	void	join();
@@ -34,6 +35,7 @@ public:
 	void	invite();
 	void	kick();
 	void	quit();
+	void	topic();
 
 	bool	registerRequest();
 

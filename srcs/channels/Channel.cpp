@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 20:12:35 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 17:50:10 by ubuntu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) :
-_name(channelName), _inviteOnly(false), _topicLocked(false), _limit(-1) {}
+Channel::Channel(const std::string &channelName) : _name(channelName), _limit(-1) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -70,6 +69,10 @@ bool Channel::isOperator(const std::string &nickname) {
 		return false;
 }
 
+bool Channel::isUserInChannel(const std::string &nickname)
+{
+    return _users.find(nickname) != _users.end();
+}
 std::string Channel::getName() const {
 	return this->_name;
 }
@@ -110,10 +113,10 @@ void Channel::deleteClient(const std::string &clientName, std::string reply)
     std::map<std::string, Client>::iterator clientIt = _users.find(clientName);
     if (clientIt != _users.end())
 	{
-		_users.erase(clientIt);
 		std::map<std::string, Client>::iterator it = _users.begin();
 		for (; it != _users.end(); ++it)
 			ft_send(it->second, reply);
+        _users.erase(clientIt);
 	}
 }
 
