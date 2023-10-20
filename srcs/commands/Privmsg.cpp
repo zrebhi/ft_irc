@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 21:40:45 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 21:31:43 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 23:02:25 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,13 @@ void Command::privmsg() {
 
 void Command::channelMessage()
 {
-	if (!IsChannelMember(this->_client.getNickname(), this->_commandArray[1]))
-		ft_send(_client, ERR_NOTONCHANNEL(_commandArray[1]));
-	else if (!channelExists(_commandArray[1]))
-		ft_send(_client, ERR_NOSUCHCHANNEL(_client, _commandArray[1]));
+	std::string channelName = "#" + formatChannelName(this->_commandArray[1]);
+	if (!validChannelName(channelName))
+		return ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
+	if (!IsChannelMember(this->_client.getNickname(), channelName))
+		ft_send(_client, ERR_NOTONCHANNEL(channelName));
+	else if (!channelExists(channelName))
+		ft_send(_client, ERR_NOSUCHCHANNEL(_client, channelName));
 	else
 	{
 		std::string message;
@@ -36,8 +39,8 @@ void Command::channelMessage()
 			message.append(" ");
 			message.append(this->_commandArray[i]);
 		}
-		message = RPL_PRIVMSG(_client, _commandArray[1], message);
-		Channel channel = this->_ircServ.getChannel(this->_commandArray[1]);
+		message = RPL_PRIVMSG(_client, channelName, message);
+		Channel channel = this->_ircServ.getChannel(channelName);
 		channel.userMessageToChannel(this->_client, message);
 	}
 }

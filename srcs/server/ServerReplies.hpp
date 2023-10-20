@@ -22,9 +22,10 @@
 /* 001 */ #define RPL_WELCOME(client) ":IRC 001 " + client.getNickname() + " :Welcome to the IRC network, " + client.getNickname() + "!"
 
 /* 302 */ #define NICK(oldNickname, newNickname) ":" + oldNickname + " NICK :" + newNickname
-#define RPL_CHANNELMODEIS(client, channel) ":IRC 324 " + client.getNickname() + " #" + channel.getName() + " +n"
+/* 324 */ #define RPL_CHANNELMODEIS(client, channel) ":IRC 324 " + client.getNickname() + " #" + channel.getName() + " +n"
 /* 341 */ #define RPL_INVITING(channelName, targetName) "IRC 341 #" +channelName + " " + targetName
 /* 353 */ #define RPL_NAMERPLY(client, channel) ":IRC 353 " + client.getNickname() + " = #" + channel.getName() + " :" + channel.userListString()
+
 /* 401 */ #define ERR_NOSUCHNICK(targetName) "IRC 401 " + targetName + " :No such nick/channel"
 /* 403 */ #define ERR_NOSUCHCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :No such channel"
 /* 403 */ #define ERR_INVALIDCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :Invalid channel name"

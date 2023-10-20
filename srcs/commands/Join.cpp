@@ -55,25 +55,6 @@ void	Command::joinChannel(std::string channelName, std::string channelPassword) 
 	}
 }
 
-bool Command::validChannelName(std::string channelName) {
-	if (channelName[0] != '#' || channelName.size() < 2)
-		return false;
-	std::string allowedSpecialChars = "-[]`^{}\'\"";
-	for (size_t i = 1; i < channelName.size(); i++) {
-		if (!std::isalnum(channelName[i]) && allowedSpecialChars.find(channelName[i]) == allowedSpecialChars.npos)
-			return false;
-	}
-	return true;
-}
-
-std::string Command::formatChannelName(std::string channelName) {
-	channelName = channelName.substr(1);
-	for (size_t i = 0; i < channelName.size(); i++) {
-		channelName[i] = std::tolower(channelName[i]);
-	}
-	return channelName;
-}
-
 void Command::createChannel(std::string channelName, std::string channelPassword) {
 	this->_ircServ.addChannelToServer(Channel(channelName));
 	Channel&	newChannel = this->_ircServ.getChannel(channelName);

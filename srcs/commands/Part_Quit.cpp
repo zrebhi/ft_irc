@@ -23,14 +23,14 @@ void Command::part()
 	for (std::vector<std::string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
 	{
 		std::string channelName = *it;
-		if (channelName.empty() || channelName.at(0) != '#')
-			return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-		channelName = channelName.substr(1);
+		if (!validChannelName(channelName))
+			return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		channelName = formatChannelName(channelName);
 		if (!channelExists(channelName))
-			return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+			ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 		Channel &channel = _ircServ.getChannel(channelName);
 		if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
-			return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+			return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
 		std::string reply = ":" + _client.getNickname() + "!" + _client.getUsername() + \
 			"@" + "IRC PART #" + channelName + " :" + partMessage;
 		channel.deleteClient(_client.getNickname(), reply);
