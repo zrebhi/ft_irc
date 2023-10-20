@@ -1,28 +1,41 @@
 #include "Command.hpp"
+#include <cstddef>
 #include <string>
+#include <vector>
 
 void Command::part()
 {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
-
-	std::string channelName = _commandArray[1];
-	if (channelName.empty() || channelName.at(0) != '#')
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	channelName = channelName.substr(1);
-	if (!channelExists(channelName))
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	Channel &channel = _ircServ.getChannel(channelName);
-	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
-		return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
-	std::string reply = ":" + _client.getNickname() + "!" + _client.getUsername() + \
-		"@" + "IRC QUIT :";
-	if (_commandArray.size() == 3)
-		reply.append(_commandArray[2]);
-	else
-		reply.append("leaving.");
-	reply.push_back('\n');
-	channel.deleteClient(_client.getNickname(), reply);
+	std::vector<std::string> channelNames = ft_split(_commandArray[1], ',');
+	std::string partMessage;
+	for(size_t i = 2; i < _commandArray.size(); i++)
+	{
+		if (i != 2)
+			partMessage.push_back(' ');
+		partMessage.append(_commandArray[i]);
+	}
+	if (partMessage.empty())
+		partMessage = "no reason given.";
+	if (partMessage.at(0) == ':')
+		partMessage = partMessage.substr(1);
+	partMessage.push_back('\n');
+	for (std::vector<std::string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
+	{
+		std::string channelName = *it;
+		if (channelName.empty() || channelName.at(0) != '#')
+			return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		channelName = channelName.substr(1);
+		if (!channelExists(channelName))
+			return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		Channel &channel = _ircServ.getChannel(channelName);
+		if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
+			return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+		std::string reply = ":" + _client.getNickname() + "!" + _client.getUsername() + \
+			"@" + "IRC PART #" + channelName + " :" + partMessage;
+		channel.deleteClient(_client.getNickname(), reply);
+		ft_send(_client, reply);
+	}
 }
 
 void Command::quit()
