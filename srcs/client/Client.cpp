@@ -88,3 +88,19 @@ bool Client::isRegistered() {
 bool Client::operator==(std::string nickname) {
 	return this->_nickname == nickname;
 }
+
+std::string Client::getBuffer() {
+	return this->_buffer;
+}
+
+void Client::setBuffer(std::string string) {
+	_buffer = string;
+}
+
+void Client::appendBuffer(std::string string) {
+	_buffer.append(string);
+}
+
+void Client::clearBuffer() {
+	_buffer.clear();
+}

@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:02:50 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/13 23:52:37 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 19:57:28 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,11 @@ public:
 	void	setUsername(std::string username);
 	void	setPassword(std::string password);
 
+	std::string	getBuffer();
+	void		setBuffer(std::string string);
+	void		appendBuffer(std::string string);
+	void		clearBuffer();
+
 
 private:
 	std::pair<bool, bool> _registered;
@@ -45,6 +50,7 @@ private:
 	std::string _password;
 	std::string _username;
 	std::string _hostname;
+	std::string _buffer;
 
 	int	_clientSocket;
 };

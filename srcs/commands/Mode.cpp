@@ -1,5 +1,36 @@
 #include "Command.hpp"
-#include <string>
+
+void	Command::mode()
+{
+	if (_commandArray.size() == 2 && !_commandArray[1].empty())
+		return currentModesStr();
+	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
+
+	std::string itkolModes = "itkol";
+	std::string channelName = _commandArray[1];
+	std::string modes = _commandArray[2];
+	if (channelName.empty() || channelName.at(0) != '#')
+		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+	channelName = channelName.substr(1);
+	if (!channelExists(channelName))
+		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+	Channel &channel = _ircServ.getChannel(channelName);
+	if (!channel.isOperator(_client.getNickname()))
+		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
+	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
+		return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+	size_t argIndex = 3;
+	for (size_t i = 1; i < modes.length(); i++)
+	{
+		if (modes.at(i) == 'o')
+			this->setO_Modes(argIndex);
+		if (modes[i] == 'i' || modes[i] == 't' || modes[i] == 'k' || modes[i] == 'l')
+			this->setITKL_Modes(modes.at(i), argIndex);
+		else
+			ft_send(_client, ERR_UNKNOWNMODE(modes.substr(i, 1)));
+	}
+}
 
 bool isValidModes(std::string &inputModes)
 {
@@ -18,6 +49,8 @@ bool isValidModes(std::string &inputModes)
 void Command::currentModesStr()
 {
 	std::string channelName = _commandArray[1];
+	if (!channelExists(channelName))
+		ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 	Channel &channel = _ircServ.getChannel(channelName);
 	std::string reply = RPL_CHANNELMODEIS(_client, channel);
 
@@ -37,7 +70,7 @@ void Command::setITKL_Modes(char letterMode, size_t &argIndex)
 	bool addOrRemoveMode;
 	std::string channelName = _commandArray[1];
 	Channel &channel = _ircServ.getChannel(channelName);
-	std::string modes = _commandArray[2]; 
+	std::string modes = _commandArray[2];
 
 	addOrRemoveMode = (modes.at(0) == '+') ? ADD : REMOVE;
 	if (letterMode == 'i')
@@ -61,7 +94,7 @@ void Command::setO_Modes(size_t &argIndex)
 	bool addOrRemoveMode;
 	std::string channelName = _commandArray[1];
 	Channel &channel = _ircServ.getChannel(channelName);
-	std::string modes = _commandArray[2]; 
+	std::string modes = _commandArray[2];
 	std::map<std::string, Client> &users = channel.getUsers();
 	if (argIndex >= _commandArray.size())
 		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
@@ -82,33 +115,4 @@ void Command::setO_Modes(size_t &argIndex)
 	}
 	else
 		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE no user"));
-}
-
-void	Command::mode()
-{
-	if (_commandArray.size() == 2)
-		return currentModesStr();
-	std::string itkolModes = "itkol";
-	std::string channelName = _commandArray[1];
-	std::string modes = _commandArray[2]; 
-	if (channelName.empty() || channelName.at(0) != '#')
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	channelName = channelName.substr(1);
-	if (!channelExists(channelName))
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	Channel &channel = _ircServ.getChannel(channelName);
-	if (!channel.isOperator(_client.getNickname()))
-		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
-	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
-		return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
-	size_t argIndex = 3;
-	for (size_t i = 1; i < modes.length(); i++)
-	{
-		if (modes.at(i) == 'o')
-			this->setO_Modes(argIndex);
-		if (modes[i] == 'i' || modes[i] == 't' || modes[i] == 'k' || modes[i] == 'l')
-			this->setITKL_Modes(modes.at(i), argIndex);
-		else
-			ft_send(_client, ERR_UNKNOWNMODE(modes.substr(i, 1)));
-	}
 }

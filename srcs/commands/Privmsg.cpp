@@ -6,11 +6,21 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 21:40:45 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/11 21:34:38 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 21:31:43 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
+
+void Command::privmsg() {
+	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+
+	if (_commandArray[1].at(0) == '#')
+		channelMessage();
+	else
+		privateMessage();
+}
 
 void Command::channelMessage()
 {
@@ -32,6 +42,7 @@ void Command::channelMessage()
 	}
 }
 
+
 void Command::privateMessage()
 {
 	const std::map<int, Client>::const_iterator it = findClientOnServer(_commandArray[1]);
@@ -47,18 +58,5 @@ void Command::privateMessage()
 		}
 		ft_send(it->second, RPL_PRIVMSG(_client, it->second.getNickname(), message));
 	}
-}
-
-
-void Command::privmsg() {
-	if (_commandArray.size() < 3)
-	{
-		ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
-		return;
-	}
-	if (_commandArray[1].at(0) == '#')
-			channelMessage();
-	else
-			privateMessage();
 }
 

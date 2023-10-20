@@ -3,8 +3,9 @@
 
 void Command::part()
 {
-	if (_commandArray.size() < 2)
-		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "PART"));
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+
 	std::string channelName = _commandArray[1];
 	if (channelName.empty() || channelName.at(0) != '#')
 		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));

@@ -6,15 +6,15 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 22:38:22 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 22:32:31 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
 void Command::join() {
-	if (_commandArray.size() < 2)
-		return;
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 
 	std::map<std::string, std::string> joinMap = joinParser();
 	std::map<std::string, std::string>::iterator it = joinMap.begin();
@@ -39,13 +39,10 @@ std::map<std::string, std::string>	Command::joinParser() {
 }
 
 void	Command::joinChannel(std::string channelName, std::string channelPassword) {
-	if (channelName.at(0) == '#')
-		channelName = channelName.substr(1);
-	else {
-		ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
-		return;
-	}
+	if (!validChannelName(channelName))
+		return ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
 
+	channelName = formatChannelName(channelName);
 	if (!channelExists(channelName))
 		createChannel(channelName, channelPassword);
 	else {
@@ -56,6 +53,25 @@ void	Command::joinChannel(std::string channelName, std::string channelPassword) 
 			ft_send(this->_client, RPL_JOIN(this->_client, channelName));
 		}
 	}
+}
+
+bool Command::validChannelName(std::string channelName) {
+	if (channelName[0] != '#' || channelName.size() < 2)
+		return false;
+	std::string allowedSpecialChars = "-[]`^{}\'\"";
+	for (size_t i = 1; i < channelName.size(); i++) {
+		if (!std::isalnum(channelName[i]) && allowedSpecialChars.find(channelName[i]) == allowedSpecialChars.npos)
+			return false;
+	}
+	return true;
+}
+
+std::string Command::formatChannelName(std::string channelName) {
+	channelName = channelName.substr(1);
+	for (size_t i = 0; i < channelName.size(); i++) {
+		channelName[i] = std::tolower(channelName[i]);
+	}
+	return channelName;
 }
 
 void Command::createChannel(std::string channelName, std::string channelPassword) {

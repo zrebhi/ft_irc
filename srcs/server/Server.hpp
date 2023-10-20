@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/17 19:59:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 20:48:29 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ public:
 
 	std::map<std::string, Channel>&	getChannelList();
 	Channel&						getChannel(std::string channelName);
-	std::map<int, Client>		&getClientList();
+	std::map<int, Client>			&getClientList();
 	std::string						getServerPassword();
 	int								getServerSocket();
 	int								getEpollFd();
 
 	void	addChannelToServer(Channel channel);
+	void	removeClientFromServer(Client &client);
+
 	bool	isProtected();
 	bool	passwordIsValid(const std::string &password);
 

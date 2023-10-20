@@ -13,27 +13,27 @@
 #include "Command.hpp"
 
 void Command::kick() {
-   if (this->_commandArray.size() < 3)
-	return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(_client, "KICK"));
+	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 std::map<std::string, Channel> &channels = this->_ircServ.getChannelList();
    std::string channelName = this->_commandArray[1];
 
    if (channelName.empty() || channelName[0] != '#')
-       return (void)ft_send(this->_client, ERR_BADCHANNELMASK(channelName));
+       return ft_send(this->_client, ERR_BADCHANNELMASK(channelName));
 
    std::map<std::string, Channel>::iterator channelIt = channels.find(channelName.substr(1));
    if (channelIt != channels.end()) {
        Channel &channel = channelIt->second;
 
        if (!channel.isUserInChannel(_client.getNickname()))
-           return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+           return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
        else if (!channel.isOperator(_client.getNickname()))
-           return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
+           return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName));
        else {
            std::string targetNickname = this->_commandArray[2];
 
            if (!channel.isUserInChannel(targetNickname))
-               return (void)ft_send(this->_client, ERR_NOSUCHNICK(targetNickname));
+               return ft_send(this->_client, ERR_NOSUCHNICK(targetNickname));
 
            ft_send(channel.getUsers()[targetNickname], RPL_KICK_USER(_client, channelName));
 		std::string kickMessage = RPL_KICK_CHANNEL(_client, channelName, targetNickname, (_commandArray.size() >= 4 ? _commandArray[3] : ""));

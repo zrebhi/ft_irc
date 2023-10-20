@@ -6,13 +6,16 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 20:19:11 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 21:14:57 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
 void Command::user() {
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+
 	std::string &username = _commandArray[1];
 	size_t firstSpace = username.find(' ');
 
@@ -24,6 +27,9 @@ void Command::user() {
 }
 
 void Command::nick() {
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+
 	std::string newNickname = this->_commandArray[1];
 	std::string oldNickname = this->_client.getNickname();
 

@@ -3,8 +3,8 @@
 
 void Command::invite()
 {
-	if (_commandArray.size() < 3)
-		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "INVITE"));
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 
 	const std::string &targetName = _commandArray[1];
 	std::string &channelName = _commandArray[2];
