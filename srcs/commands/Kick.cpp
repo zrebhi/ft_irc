@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/17 19:51:53 by bgresse           #+#    #+#             */
-/*   Updated: 2023/10/21 01:27:27 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 18:53:12 by ubuntu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ void Command::kick() {
 			  return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
 
 		  std::string targetNickname = this->_commandArray[2];
-		  std::map<int, Client>::const_iterator it = findClientOnServer(targetNickname);
-		  Client target = it->second;
+
+		if (!channel.isUserInChannel(targetNickname))
+				return ft_send(this->_client, ERR_NOSUCHNICKCHAN(_client, channelName, targetNickname, "KICK"));
 
 		  std::string reason;
 		  if (_commandArray.size() >= 4) {
@@ -50,8 +51,6 @@ void Command::kick() {
 			  }
 		  }
 
-		if (!channel.isUserInChannel(targetNickname))
-				return ft_send(this->_client, ERR_NOSUCHNICK(targetNickname));
 
 		std::string kickMessage = RPL_KICK(_client.getNickname(), channelName, targetNickname, reason);
 		channel.deleteClient(targetNickname, kickMessage);
