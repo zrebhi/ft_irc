@@ -48,7 +48,7 @@ void Command::channelMessage()
 
 void Command::privateMessage()
 {
-	const std::map<int, Client>::const_iterator it = findClientOnServer(_commandArray[1]);
+	std::map<int, Client>::iterator it = findClientOnServer(_commandArray[1]);
 	if (it == _ircServ.getClientList().end())
 		ft_send(_client, ERR_NOSUCHNICK(_commandArray[1]));
 	else

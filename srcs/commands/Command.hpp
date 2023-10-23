@@ -40,7 +40,7 @@ public:
 
 	void	setITKL_Modes(char letterMode, size_t &argIndex);
 	void	setO_Modes(size_t &argIndex);
-	void	currentModesStr();
+	std::string	currentModesStr();
 
 private:
 	std::vector<std::string> _commandArray;
@@ -68,5 +68,5 @@ private:
 	void	createChannel(std::string channelName, std::string password);
 	bool	channelExists(std::string channelName);
 	bool	IsChannelMember(std::string userNickname, std::string channelName);
-	std::map<int, Client>::const_iterator findClientOnServer(const std::string &nickname);
+	std::map<int, Client>::iterator findClientOnServer(const std::string &nickname);
 };

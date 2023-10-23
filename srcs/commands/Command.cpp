@@ -55,6 +55,8 @@ bool Command::registerRequest() {
 		nick();
 	if (this->_client.isRegistered())
 		return true;
+	ft_send(_client, ERR_NOTREGISTERED);
+	ft_send(_client, "you need to enter your NICK and USER content");
 	return false;
 }
 
@@ -65,8 +67,8 @@ bool Command::validServerPassword() {
 	return false;
 }
 
-std::map<int, Client>::const_iterator Command::findClientOnServer(const std::string &nickname) {
-	std::map<int, Client>::const_iterator it;
+std::map<int, Client>::iterator Command::findClientOnServer(const std::string &nickname) {
+	std::map<int, Client>::iterator it;
     for (it = _ircServ.getClientList().begin(); it != _ircServ.getClientList().end(); ++it)
 	{
         if (it->second.getNickname() == nickname)

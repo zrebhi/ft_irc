@@ -19,7 +19,7 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) : _name(channelName), _inviteOnly(false),_topicLocked(false), _limit(-1) {}
+Channel::Channel(const std::string &channelName) : _name(channelName), _inviteOnly(false),_topicLocked(false), _limit(MAX_CHAN_USERS) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -46,7 +46,7 @@ void Channel::removeUser(std::string nickname) {
 	this->_users.erase(nickname);
 }
 
-void	Channel::userMessageToChannel(Client sender, std::string message) {
+void	Channel::userMessageToChannel(Client &sender, std::string message) {
 	std::map<std::string, Client>::iterator it = this->_users.begin();
 	for (; it != _users.end(); ++it) {
 		if (it->first != sender.getNickname())

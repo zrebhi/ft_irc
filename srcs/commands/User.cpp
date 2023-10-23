@@ -11,19 +11,25 @@
 /* ************************************************************************** */
 
 #include "Command.hpp"
+#include <iostream>
 
 void Command::user() {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 
-	std::string &username = _commandArray[1];
-	size_t firstSpace = username.find(' ');
+	std::string &userCommand = _commandArray[1];
+	size_t firstSpace = userCommand.find(' ');
 
-	if (username.empty())
-		username = "guest";
-	else if (firstSpace != username.npos)
-		username = username.substr(0, firstSpace);
-	this->_client.setUsername(username);
+	if (firstSpace == userCommand.npos)
+		this->_client.setUsername("guestUser");
+	else 
+		this->_client.setUsername(userCommand.substr(0, firstSpace));
+
+	size_t lastColon = userCommand.find_last_of(':');
+	if (lastColon == userCommand.npos || lastColon == userCommand.length() - 1)
+		this->_client.setRealname("notGiven");
+	else
+		this->_client.setRealname(userCommand.substr(lastColon + 1));
 }
 
 void Command::nick() {
@@ -33,9 +39,12 @@ void Command::nick() {
 	std::string newNickname = this->_commandArray[1];
 	std::string oldNickname = this->_client.getNickname();
 
+	if (oldNickname == newNickname)
+		return ft_send(this->_client, NICK(oldNickname, newNickname));
+
 	if (oldNickname.empty())
-		oldNickname = '*';
-	if (nicknameAvailable(newNickname) && nicknameIsValid(newNickname)) {
+		oldNickname = "notSet";
+	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
 		this->_client.setNickname(newNickname);
 		if (!this->_client.isRegistered())
 			this->_client.setRegistered(NICK_REGISTRATION);
@@ -48,14 +57,22 @@ bool Command::nicknameAvailable(std::string nickname)
 {
 	if (findClientOnServer(nickname) == _ircServ.getClientList().end())
 		return true;
-	ft_send(this->_client, ERR_NICKNAMEINUSE(this->_client));
+	ft_send(this->_client, ERR_NICKNAMEINUSE(nickname));
 	return false;
 }
 
 bool Command::nicknameIsValid(std::string nickname) {
+	// std::string oldNickname = _client.getNickname();
+
+	// if (oldNickname.empty())
+	// 	oldNickname = "notSet";
+
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
-	if (nickname.at(0) == '-')
+	if (nickname.at(0) == '-' || nickname.length() < 3 || nickname.length() > 12)
+	{
+		ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
 		return false;
+	}
 	for (size_t i = 0; i < nickname.length(); i++)
 	{
 		char letter = nickname.at(i);

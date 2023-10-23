@@ -14,12 +14,17 @@
 
 Client::Client() {}
 
-Client::Client(int clientSocket) : _clientSocket(clientSocket) {}
+Client::Client(int clientSocket) : _clientSocket(clientSocket) {
+	//double construction lors de nick - a verifier
+	std::cout << "constructeur client :" << clientSocket << std::endl;
+}
 
 Client::~Client() {}
 
 Client &Client::operator=(const Client &rhs) {
 	this->_nickname = rhs._nickname;
+	this->_username = rhs._username;
+	this->_realname= rhs._realname;
 	this->_password = rhs._password;
 	this->_clientSocket = rhs._clientSocket;
 	this->_registered = rhs._registered;
@@ -28,6 +33,8 @@ Client &Client::operator=(const Client &rhs) {
 
 Client::Client(const Client &src) {
 	this->_nickname = src._nickname;
+	this->_username = src._username;
+	this->_realname= src._realname;
 	this->_password = src._password;
 	this->_clientSocket = src._clientSocket;
 	this->_registered = src._registered;
@@ -43,6 +50,10 @@ std::string Client::getNickname() const {
 
 std::string Client::getUsername() const {
 	return this->_username;
+}
+
+std::string Client::getRealname() const {
+	return this->_realname;
 }
 
 std::string Client::getPassword() const {
@@ -64,13 +75,15 @@ void Client::setUsername(std::string username) {
 	this->_username = username;
 }
 
+void Client::setRealname(std::string realname) {
+	this->_realname = realname;
+}
+
 void Client::setPassword(std::string password) {
 	this->_password = password;
 }
 
 void Client::setRegistered(bool type) {
-	// if (_registered.first && _registered.second)
-	// 	return;
 	if (type == NICK_REGISTRATION)
 		_registered.first = true;
 	else if (type == SERV_REGISTRATION)

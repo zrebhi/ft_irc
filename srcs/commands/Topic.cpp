@@ -13,36 +13,47 @@
 #include "Command.hpp"
 
 void Command::topic() {
-	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
-		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+	if (_commandArray.size() < 2)
+		return ft_send(_client, ":IRC 461 " + this->_client.getNickname() + " TOPIC :Not enough parameters");
 
 	std::string channelName = this->_commandArray[1];
-
-	if (!validChannelName(channelName))
-		return ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
-
 	channelName = formatChannelName(channelName);
 
 	if (!channelExists(channelName))
-		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client,channelName));
+		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 
 	Channel &channel = this->_ircServ.getChannel(channelName);
 
-	if (!channel.isUserInChannel(this->_client.getNickname()))
-		return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
 
+    if (!channel.isUserInChannel(this->_client.getNickname())) {
+        ft_send(this->_client, ":IRC 442 " + this->_client.getNickname() + " " + channelName + " :You're not on that channel");
+        return;
+    }
 
-	std::string topicText;
-	for (size_t i = 2; i < this->_commandArray.size(); ++i) {
-		topicText += this->_commandArray[i];
-		if (i < this->_commandArray.size() - 1)
-			topicText += " ";
-	}
+    if (this->_commandArray.size() == 2 && channel.getTopic().empty()) {
+		ft_send(this->_client, ":IRC 331 " + _client.getNickname() + " " + _commandArray[1] + " :No topic is set");
+        return;
+    }
 
-	if (!channel.isOperator(this->_client.getNickname()))
-		return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
+    if (this->_commandArray.size() == 2) {
+		ft_send(this->_client, ":IRC 332 " + this->_client.getNickname() + " " + channelName + " " + channel.getTopic());
+        return;
+    }
 
-	channel.setTopic(this->_client.getNickname(), topicText);
+    if (channel.isTopicLocked() && !channel.isOperator(this->_client.getNickname())) {
+        ft_send(this->_client, ":IRC 482 " + this->_client.getNickname() + " #" + channelName + " :You're not a channel operator");
+		ft_send(_client, ":IRC 332 " + _client.getNickname() + " #" + channelName + " " + channel.getTopic());
+        return;
+    }
 
-	ft_send(this->_client, RPL_TOPIC(this->_client, channelName, topicText));
+    std::string topicText;
+    for (size_t i = 2; i < this->_commandArray.size(); ++i) {
+        topicText += this->_commandArray[i];
+        if (i < this->_commandArray.size() - 1)
+            topicText += " ";
+    }
+	if (topicText == ":")
+		topicText = "";
+
+    channel.setTopic(this->_client.getNickname(), topicText);
 }

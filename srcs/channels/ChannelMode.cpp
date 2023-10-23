@@ -12,46 +12,44 @@ void Channel::removeOperator(Client &user) {
 void Channel::setInviteOnly(bool addOrRemove,  const std::string &name)
 {
 	if (!isOperator(name))
-		return; //error + not right
+		return;
 	_inviteOnly = addOrRemove;
 }
 
 void Channel::setTopicLock(bool addOrRemove, const std::string &name)
 {
 	if (!isOperator(name))
-		return; //error + not right
+		return;
 	_topicLocked = addOrRemove;
 }
 
-void Channel::setLimit(bool addOrRemove, const std::string &name, std::string limitStr)
+void Channel::setLimit(bool addOrRemove, Client &client, std::string limitStr)
 {
-	if (!isOperator(name))
-		return; //error + not right
 	if (addOrRemove == ADD)
 	{
 		int limitValue = atoi(limitStr.c_str());
-		if (limitValue < MIN_CHAN_USERS || limitValue > MAX_CHAN_USERS)
-			return; //error bad limits
+		if (!isValidNumber(limitStr) || limitValue < MIN_CHAN_USERS || limitValue > MAX_CHAN_USERS)
+			ft_send(client, ERR_BADLIMIT(client, getName(), limitStr));
 		else
 			_limit = limitValue;
 	}
 	else
-		_limit = 100;
+		_limit = MAX_CHAN_USERS;
 }
 
-void Channel::setTopic(const std::string &name, std::string &content)
+void Channel::setTopic(const std::string &clientName, std::string &content)
 {
-	if (_topicLocked || !isOperator(name))
-		return; // no rights
-	size_t maxTopicLength = 50;
-	if (content.length() > maxTopicLength)
+	if (content.length() > MAX_TOPIC_LENGTH)
 	{
-		content.resize(maxTopicLength, 0);
+		content.resize(MAX_TOPIC_LENGTH, 0);
 		content.append("...");
 	}
 	_topic = content;
-	std::string reply = "332 " + getName() + " :" + _topic;
-	userMessageToChannel(_users[name], reply);
+	
+	serverMessageToChannel(RPL_TOPIC(_users[clientName], getName(), _topic));
+
+	if (_topic.empty())
+		ft_send(_users[clientName], ":IRC 331 " + clientName + " #" + this->getName() + " :No topic set.");
 }
 
 std::string &Channel::getTopic()
@@ -64,18 +62,18 @@ bool Channel::isTopicLocked()
 	return _topicLocked;
 }
 
-bool Channel::isLimitLocked()
+int Channel::isLimitLocked()
 {
-	return _limit > 0;
+	if (_limit != MAX_CHAN_USERS)
+		return _limit;
+	return 0;
 }
 
 int Channel::isFull()
 {
-	if (_limit < 0)
-		return false;
-	if ((int)_users.size() >= _limit)
+	if (_users.size() >= _limit)
 		return true;
-	return true;
+	return false;
 }
 
 bool Channel::isChannelLocked()
@@ -101,27 +99,21 @@ void Channel::setChannelPassword(const std::string &newPassword, const std::stri
 		return;
 	if (addOrRemove == false)
 		_password = "";
-	else if (newPassword.length() < 4) //a gerer
-		return; //error + bad pass
 	else
 	{
 		for (size_t i = 0; i < newPassword.length(); i++)
 		{
 			if (!isalnum(newPassword.at(i)))
-				return; //error bad pass
+				return;
 		}
 		_password = newPassword;
-		std::string reply = ":IRC 324 #" + getName() + " +k New channel password.\n";
-		std::map<std::string, Client>::iterator it = this->_users.begin();
-		for (; it != _users.end(); ++it)
-			send(it->second.getSocket(), reply.c_str(), reply.length(), 0);
 	}
 }
 
 void Channel::setInvitedList(const std::string &clientName, bool addOrRemove)
 {
 	if (_users.find(clientName) != _users.end())
-		return; //no such client
+		return;
 	if (addOrRemove == ADD)
 		_invitedList.push_back(clientName);
 	else

@@ -1,36 +1,5 @@
 #include "Command.hpp"
-
-void	Command::mode()
-{
-	if (_commandArray.size() == 2 && !_commandArray[1].empty())
-		return currentModesStr();
-	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
-		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
-
-	std::string itkolModes = "itkol";
-	std::string channelName = _commandArray[1];
-	std::string modes = _commandArray[2];
-	if (channelName.empty() || channelName.at(0) != '#')
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	channelName = channelName.substr(1);
-	if (!channelExists(channelName))
-		return (void)ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
-	Channel &channel = _ircServ.getChannel(channelName);
-	if (!channel.isOperator(_client.getNickname()))
-		return (void)ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
-	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
-		return (void)ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
-	size_t argIndex = 3;
-	for (size_t i = 1; i < modes.length(); i++)
-	{
-		if (modes.at(i) == 'o')
-			this->setO_Modes(argIndex);
-		if (modes[i] == 'i' || modes[i] == 't' || modes[i] == 'k' || modes[i] == 'l')
-			this->setITKL_Modes(modes.at(i), argIndex);
-		else
-			ft_send(_client, ERR_UNKNOWNMODE(modes.substr(i, 1)));
-	}
-}
+#include <cctype>
 
 bool isValidModes(std::string &inputModes)
 {
@@ -46,23 +15,28 @@ bool isValidModes(std::string &inputModes)
 	return true;
 }
 
-void Command::currentModesStr()
+std::string Command::currentModesStr()
 {
 	std::string channelName = _commandArray[1];
 	if (!channelExists(channelName))
-		ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		return ERR_NOSUCHCHANNEL(this->_client, channelName);
 	Channel &channel = _ircServ.getChannel(channelName);
 	std::string reply = RPL_CHANNELMODEIS(_client, channel);
 
 	if (channel.isTopicLocked())
 		reply.append("t");
-	if (channel.isLimitLocked())
-		reply.append("l");
 	if (channel.isChannelLocked())
 		reply.append("k");
 	if (channel.isInviteOnly())
 		reply.append("i");
-	ft_send(this->_client, reply);
+	if (channel.isLimitLocked())
+	{
+		reply.append("l - limited to ");
+		reply.append(intToString(channel.isLimitLocked()));
+		reply.append(" users");
+
+	}
+	return reply;
 }
 
 void Command::setITKL_Modes(char letterMode, size_t &argIndex)
@@ -70,7 +44,7 @@ void Command::setITKL_Modes(char letterMode, size_t &argIndex)
 	bool addOrRemoveMode;
 	std::string channelName = _commandArray[1];
 	Channel &channel = _ircServ.getChannel(channelName);
-	std::string modes = _commandArray[2];
+	std::string modes = _commandArray[2]; 
 
 	addOrRemoveMode = (modes.at(0) == '+') ? ADD : REMOVE;
 	if (letterMode == 'i')
@@ -78,15 +52,21 @@ void Command::setITKL_Modes(char letterMode, size_t &argIndex)
 	else if (letterMode == 't')
 		channel.setTopicLock(addOrRemoveMode, _client.getNickname());
 	else if (letterMode == 'l')
-		channel.setLimit(addOrRemoveMode, _client.getNickname(), _commandArray[argIndex++]);
+	{
+		if (addOrRemoveMode == ADD && argIndex < _commandArray.size())
+			channel.setLimit(addOrRemoveMode, _client, _commandArray[argIndex++]);
+		else
+			channel.setLimit(addOrRemoveMode, _client, "empty");
+	}
 	else if (letterMode == 'k')
 	{
+		std::string password = "";
 		if (addOrRemoveMode == ADD && _commandArray.size() < 4)
-			return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
-		std::string password = _commandArray[3];
+			return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
+		if (_commandArray.size() && argIndex < _commandArray.size())
+			password = _commandArray[argIndex++];
 		channel.setChannelPassword(password, _client.getNickname(), addOrRemoveMode);
 	}
-	currentModesStr();
 }
 
 void Command::setO_Modes(size_t &argIndex)
@@ -94,10 +74,10 @@ void Command::setO_Modes(size_t &argIndex)
 	bool addOrRemoveMode;
 	std::string channelName = _commandArray[1];
 	Channel &channel = _ircServ.getChannel(channelName);
-	std::string modes = _commandArray[2];
+	std::string modes = _commandArray[2]; 
 	std::map<std::string, Client> &users = channel.getUsers();
 	if (argIndex >= _commandArray.size())
-		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
 	std::string argument = _commandArray[argIndex];
 
 	addOrRemoveMode = (modes.at(0) == '+') ? ADD : REMOVE;
@@ -114,5 +94,39 @@ void Command::setO_Modes(size_t &argIndex)
 		argIndex++;
 	}
 	else
-		return (void)ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE no user"));
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
+}
+
+void	Command::mode()
+{
+	int modeHasChange = 0;
+	if (_commandArray.size() == 2)
+		return ft_send(_client, currentModesStr());
+	if (_commandArray.size() < 2)
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
+	std::string itkolModes = "itkol";
+	std::string channelName = _commandArray[1];
+	std::string modes = _commandArray[2]; 
+	if (channelName.empty() || channelName.at(0) != '#')
+		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+	channelName = channelName.substr(1);
+	if (!channelExists(channelName))
+		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+	Channel &channel = _ircServ.getChannel(channelName);
+	if (!channel.isOperator(_client.getNickname()))
+		return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
+	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
+		return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+	size_t argIndex = 3;
+	for (size_t i = 1; i < modes.length(); i++)
+	{
+		if (modes.at(i) == 'o')
+			this->setO_Modes(argIndex);
+		if (strchr("itkol", modes.at(i)) && ++modeHasChange)
+			this->setITKL_Modes(modes.at(i), argIndex);
+		else
+			ft_send(_client, ERR_UNKNOWNMODE(modes.substr(i, 1), channelName));
+	}
+	if (modeHasChange)
+		channel.serverMessageToChannel(currentModesStr());
 }

@@ -34,10 +34,10 @@ void Server::manageClientEvents(Client &client) {
 	if (bytesRead <= 0)
 		removeClientFromServer(client);
 	else {
-		buffer[bytesRead] = '\0';  // Null-terminate the string
+		buffer[bytesRead] = '\0';
 		client.appendBuffer(buffer);
 		if (client.getBuffer().at(client.getBuffer().size() - 1) == '\n') {
-			std::cout << "<- " << client.getBuffer() << std::endl;
+			std::cout << "<- \033[1;31m" << client.getBuffer() << "\033[0m" << std::endl;
 			commandHandler(client.getBuffer(), client);
 			client.clearBuffer();
 		}
@@ -59,6 +59,8 @@ void Server::removeClientFromServer(Client &client) {
 		std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
 				"@" + "IRC QUIT :left the server.";
 		it->second.deleteClient(client.getNickname(), reply);
+		if (it->second.getUsers().empty())
+			getChannelList().erase(it->first);
 	}
 	getClientList().erase(client.getSocket());
 }

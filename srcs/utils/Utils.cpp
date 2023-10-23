@@ -12,7 +12,7 @@
 
 #include "Utils.hpp"
 
-void	ft_send(Client user, std::string reply) {
+void	ft_send(Client &user, std::string reply) {
 	if (reply.empty())
 		return;
 	std::cout << "-> " << reply << std::endl;
@@ -93,4 +93,14 @@ std::vector<std::string>	ircCommandSplitter(std::string command) {
 	else
 		commandArray = ft_split(command, ' ');
 	return commandArray;
+}
+
+bool isValidNumber(const std::string &nbStr)
+{
+	for (size_t i = 0; i < nbStr.length(); i++)
+	{
+		if (!isdigit(nbStr.at(i)))
+			return false;
+	}
+	return true;
 }

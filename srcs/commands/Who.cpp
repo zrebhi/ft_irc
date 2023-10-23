@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Command.hpp"
+#include <ostream>
 
 void	Command::who() {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
@@ -27,6 +28,7 @@ void Command::whoChannel(std::string channelName) {
 	std::map<std::string, Client>::iterator	it = channelUsers.begin();
 
 	for (; it != channelUsers.end(); it++) {
-		ft_send(it->second.getSocket(), RPL_NAMERPLY(it->second, channel));
+		ft_send(it->second, RPL_NAMERPLY(it->second, channel));
+		ft_send(it->second, RPL_ENDOFNAMES(channelName));
 	}
 }

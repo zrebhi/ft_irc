@@ -16,25 +16,34 @@ void Command::part()
 		partMessage.append(_commandArray[i]);
 	}
 	if (partMessage.empty())
-		partMessage = "no reason given.";
-	if (partMessage.at(0) == ':')
-		partMessage = partMessage.substr(1);
+		partMessage = ":no reason given.";
 	partMessage.push_back('\n');
 	for (std::vector<std::string>::iterator it = channelNames.begin(); it != channelNames.end(); it++)
 	{
 		std::string channelName = *it;
 		if (!validChannelName(channelName))
-			return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		{
+			ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+			continue;
+		}
 		channelName = formatChannelName(channelName);
 		if (!channelExists(channelName))
+		{
 			ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+			continue;
+		}
 		Channel &channel = _ircServ.getChannel(channelName);
-		if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
-			return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+		if (!channel.isUserInChannel(_client.getNickname()))
+		{
+			ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+			continue;
+		}
 		std::string reply = ":" + _client.getNickname() + "!" + _client.getUsername() + \
-			"@" + "IRC PART #" + channelName + " :" + partMessage;
+			"@" + "IRC PART #" + channelName + " " + partMessage;
 		channel.deleteClient(_client.getNickname(), reply);
 		ft_send(_client, reply);
+		if (channel.getUsers().empty())
+			_ircServ.getChannelList().erase(channelName);
 	}
 }
 
@@ -57,5 +66,9 @@ void Command::quit()
 		reply.append(":leaving the channel.");
 	reply.push_back('\n');
 	for (;it != _ircServ.getChannelList().end(); it++)
+	{
 		it->second.deleteClient(_client.getNickname(), reply);
+		if (it->second.getUsers().empty())
+			_ircServ.getChannelList().erase(it->first);
+	}
 }

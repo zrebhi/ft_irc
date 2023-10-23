@@ -20,8 +20,9 @@
 #define REMOVE false
 #define NICK_REGISTRATION true
 #define SERV_REGISTRATION false 
-#define MAX_CHAN_USERS 100
+#define MAX_CHAN_USERS 10000
 #define MIN_CHAN_USERS 2
+#define MAX_TOPIC_LENGTH 50
 
 
 std::vector<std::string>	ft_split(std::string string, char separator);
@@ -34,7 +35,8 @@ std::vector<std::string>	ircCommandSplitter(std::string command);
 std::string					intToString(int number);
 int							stringToInt(const std::string& str);
 
-void						ft_send(Client user, std::string reply);
+void						ft_send(Client &user, std::string reply);
 
 bool						checkPortNumber(char *portNumber);
 bool						invalidInput(int argc, char **argv);
+bool						isValidNumber(const std::string &nbStr);
