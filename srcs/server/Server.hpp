@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 20:48:29 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:04:49 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ private:
 	void	manageClientEvents(Client &client);
 	void	commandHandler(std::string bufferString, Client &client);
 	void	commandMapping();
+
+	bool	validBufferInput(ssize_t bytesRead, std::string bufferInput);
 
 	Server	&operator=(const Server &rhs);
 };

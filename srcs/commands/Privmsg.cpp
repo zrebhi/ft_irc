@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 21:40:45 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/20 23:02:25 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 21:36:11 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ void Command::channelMessage()
 	else
 	{
 		std::string message;
-		for (size_t i = 2; i < this->_commandArray.size(); i++)
-		{
+		for (size_t i = 2; i < this->_commandArray.size(); i++) {
 			message.append(" ");
 			message.append(this->_commandArray[i]);
 		}
+		if (message.size() >= 300)
+			return ft_send(_client, ERR_TOOMANYMATCHES(_client));
 		message = RPL_PRIVMSG(_client, channelName, message);
 		Channel channel = this->_ircServ.getChannel(channelName);
 		channel.userMessageToChannel(this->_client, message);
@@ -59,6 +60,8 @@ void Command::privateMessage()
 			message.append(" ");
 			message.append(this->_commandArray[i]);
 		}
+		if (message.size() >= 300)
+			return ft_send(_client, ERR_TOOMANYMATCHES(_client));
 		ft_send(it->second, RPL_PRIVMSG(_client, it->second.getNickname(), message));
 	}
 }

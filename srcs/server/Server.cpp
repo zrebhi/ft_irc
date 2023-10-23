@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/20 20:24:24 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 22:50:15 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <cstdio>
 
 void Server::listenToNewEvents() {
-	struct epoll_event events[10];
-	int numEvents = epoll_wait(this->_epollFd, events, 10, -1);
+	struct epoll_event events[this->_clients.size() + 1];
+	int numEvents = epoll_wait(this->_epollFd, events, this->_clients.size() + 1, -1);
 
 	for (int i = 0; i < numEvents; ++i) {
 		if (events[i].data.fd == this->_serverSocket)
@@ -27,14 +27,33 @@ void Server::listenToNewEvents() {
 	}
 }
 
+void Server::acceptConnection() {
+	struct sockaddr_in clientAddress;
+	int newSocket;
+	socklen_t clientAddressLength = sizeof(clientAddress);
+	newSocket = accept(this->_serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
+	if (newSocket == -1) {
+		perror("Failed to accept incoming connection");
+		close(this->_serverSocket);
+		exit(1);
+	}
+	this->_clients.insert(std::make_pair(newSocket, Client(newSocket)));
+	addSocketToEpoll(newSocket);
+	std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":"
+			  << ntohs(clientAddress.sin_port) << std::endl;
+}
+
 void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
-	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
 
+	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
+	std::cout << "bytesRead: " << bytesRead << std::endl;
 	if (bytesRead <= 0)
 		removeClientFromServer(client);
 	else {
 		buffer[bytesRead] = '\0';
+		if (!validBufferInput(bytesRead, buffer))
+			return ft_send(client, ERR_TOOMANYMATCHES(client));
 		client.appendBuffer(buffer);
 		if (client.getBuffer().at(client.getBuffer().size() - 1) == '\n') {
 			std::cout << "<- \033[1;31m" << client.getBuffer() << "\033[0m" << std::endl;
@@ -65,20 +84,14 @@ void Server::removeClientFromServer(Client &client) {
 	getClientList().erase(client.getSocket());
 }
 
-void Server::acceptConnection() {
-	struct sockaddr_in clientAddress;
-	int newSocket;
-	socklen_t clientAddressLength = sizeof(clientAddress);
-	newSocket = accept(this->_serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
-	if (newSocket == -1) {
-		perror("Failed to accept incoming connection");
-		close(this->_serverSocket);
-		exit(1);
+bool	Server::validBufferInput(ssize_t bytesRead, std::string bufferInput) {
+	if (bytesRead >= 512)
+		return false;
+	for (size_t i = 0; i < bufferInput.size(); i++) {
+		if (!std::isprint(bufferInput[i]) && bufferInput[i] != '\r' && bufferInput[i] != '\n')
+			return false;
 	}
-	this->_clients.insert(std::make_pair(newSocket, Client(newSocket)));
-	addSocketToEpoll(newSocket);
-	std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":"
-			  << ntohs(clientAddress.sin_port) << std::endl;
+	return true;
 }
 
 void Server::commandHandler(std::string bufferString, Client &client) {

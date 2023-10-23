@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerReplies.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 23:19:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 19:14:27 by ubuntu           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:16:39 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@
 /* 401 */ #define ERR_NOSUCHNICKCHAN(client, channelName, targetName, command) ":" + client.getNickname() + " PRIVMSG #" + channelName + " :Error " + command + ": No such nick (" + targetName + ")"
 /* 403 */ #define ERR_NOSUCHCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :No such channel"
 /* 403 */ #define ERR_INVALIDCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :Invalid channel name"
+/* 416 */ #define ERR_TOOMANYMATCHES(client) ":IRC 416 " + client.getNickname() + " :Command or message too long"
+/* 421 */ #define ERR_UNKNOWNCOMMAND(command) ":IRC 421 " + command + " :Unknown command"
 /* 432 */ #define ERR_ERRONEUSNICKNAME(nickname) ":IRC 432 Error " + nickname + " :Erroneous nickname"
 /* 433 */ #define ERR_NICKNAMEINUSE(clientName) ":IRC 433 * " + clientName + " :Nickname is already in use"
 /* 441 */ #define ERR_USERNOTINCHANNEL(client, targetName, channelName) ":IRC 441 " + client.getNickname() + " #" + channelName + " " + targetName + " :They aren't on that channel"
 /* 442 */ #define ERR_NOTONCHANNEL(channelName) channelName + " :You're not on that channel"
 /* 443 */ #define ERR_USERONCHANNEL(targetName, channelName) ":IRC 443 " + targetName + " #" + channelName + " :is already on channel"
+/* 451 */ #define ERR_NOTREGISTERED(client) ":IRC 451 " + client.getNickname() + " :You have not registered"
 /* 461 */ #define ERR_NEEDMOREPARAMS(client, command) ":IRC 461 " + client.getNickname() + " " + command + " :Not enough parameters"
 /* 462 */ #define ERR_TOOMANYPARAMS(command) ":IRC 462 " + command + " :Too many parameters"
 /* 462 */ #define ERR_ALREADYREGISTRED(clientName) ":IRC 462 " + clientName + " :Already registered"
@@ -49,5 +52,4 @@
 /* 476 */ #define ERR_BADCHANNELMASK(channelName) ":IRC 476 #" + channelName + " :Bad Channel Mask"
 /* 476 */ #define ERR_BADLIMIT(client, channelName, input) ":IRC 476 " + client.getNickname() + " #" + channelName + " :Bad limit input (" + input + ")."
 /* 482 */ #define ERR_CHANOPRIVSNEEDED(channelName, client) ":IRC 482 #" + client.getNickname() + " #" + channelName + " :You're not channel operator"
-/* 421 */ #define ERR_UNKNOWNCOMMAND(command) ":IRC 421 " + command + " :Unknown command"
-/* 451 */ #define ERR_NOTREGISTERED ":IRC 451 :You have not registered"
+

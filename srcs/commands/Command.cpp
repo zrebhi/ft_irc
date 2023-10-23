@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:06:56 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:55:28 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ bool Command::registerRequest() {
 		nick();
 	if (this->_client.isRegistered())
 		return true;
-	ft_send(_client, ERR_NOTREGISTERED);
-	ft_send(_client, "you need to enter your NICK and USER content");
+	ft_send(_client, ERR_NOTREGISTERED(this->_client));
+	ft_send(_client, "You need to enter your NICK and USER content");
 	return false;
 }
 

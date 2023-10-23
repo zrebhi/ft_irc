@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:12:48 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:42:41 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:14:16 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Client::Client() {}
 
-Client::Client(int clientSocket) : _clientSocket(clientSocket) {
+Client::Client(int clientSocket) :  _nickname("*"), _clientSocket(clientSocket) {
 	//double construction lors de nick - a verifier
 	std::cout << "constructeur client :" << clientSocket << std::endl;
 }
