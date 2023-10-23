@@ -6,7 +6,7 @@
 /*   By: ubuntu <ubuntu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 23:19:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 18:51:46 by ubuntu           ###   ########.fr       */
+/*   Updated: 2023/10/23 19:14:27 by ubuntu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 /* 302 */ #define NICK(oldNickname, newNickname) ":" + oldNickname + " NICK :" + newNickname
 /* 315 */ #define RPL_ENDOFWHO(client) ":IRC 315 " + client.getNickname() + " :End of WHO list"
 /* 324 */ #define RPL_CHANNELMODEIS(client, channel) ":IRC 324 " + client.getNickname() + " #" + channel.getName() + " +n"
+/* 331 */ #define RPL_NOTOPIC(channelName) ":IRC 331 " + channelName + " :No topic is set"
 /* 332 */ #define RPL_TOPIC(client, channelName, topicText) ":IRC 332 " + client.getNickname() + " #" + channelName + " " + topicText
 /* 341 */ #define RPL_INVITING(channelName, targetName) ":IRC 341 #" + channelName + " " + targetName
 /* 353 */ #define RPL_NAMERPLY(client, channel) ":IRC 353 " + client.getNickname() + " = #" + channel.getName() + " :" + channel.userListString()
