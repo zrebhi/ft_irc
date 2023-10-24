@@ -4,6 +4,7 @@ void	Command::mode()
 {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
+
 	std::string channelName = _commandArray[1];
 	if (!validChannelName(channelName))
 		return ft_send(this->_client, ERR_INVALIDCHANNEL(_client, channelName));
