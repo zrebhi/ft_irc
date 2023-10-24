@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 23:19:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 20:16:39 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/24 22:59:06 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "Server.hpp"
 
-#define RPL_INVITE_RCV(client, channelName, targetName) ":" + client.getNickname() + " INVITE " + targetName + " " + channelName
+#define RPL_INVITE_RCV(client, channelName, targetName) ":" + client.getNickname() + " INVITE " + targetName + " :#" + channelName
 #define RPL_JOIN(nickname, channelName) ":" + nickname + " JOIN :#" + channelName
 #define RPL_PRIVMSG(client, targetName, message) ":" + client.getNickname() + "!" + client.getUsername() + "@IRC PRIVMSG " + targetName + message
 #define RPL_KICK(senderNick, channelName, targetNick, reason) ":" + senderNick + " KICK #" + channelName + " " + targetNick + " " + reason
