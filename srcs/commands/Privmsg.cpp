@@ -13,7 +13,7 @@
 #include "Command.hpp"
 
 void Command::privmsg() {
-	if (_commandArray.size() < 3 || _commandArray[1].empty() || _commandArray[2].empty())
+	if (_commandArray.size() < 3 || _commandArray[1].empty())
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 
 	if (_commandArray[1].at(0) == '#')
