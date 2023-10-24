@@ -2,10 +2,8 @@
 
 void	Command::mode()
 {
-	int modeHasChange = 0;
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
-	std::string itkolModes = "itkol";
 	std::string channelName = _commandArray[1];
 	if (!validChannelName(channelName))
 		return ft_send(this->_client, ERR_INVALIDCHANNEL(_client, channelName));
@@ -14,12 +12,15 @@ void	Command::mode()
 		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 	if (_commandArray.size() == 2 || _commandArray[2].empty())
 		return ft_send(_client, currentModesStr(channelName));
+
 	std::string modes = _commandArray[2];
 	Channel &channel = _ircServ.getChannel(channelName);
 	if (!channel.isOperator(_client.getNickname()))
 		return ft_send(this->_client, ERR_CHANOPRIVSNEEDED(channelName, _client));
 	if (channel.getUsers().find(_client.getNickname()) == channel.getUsers().end())
 		return ft_send(this->_client, ERR_NOTONCHANNEL(channelName));
+
+	int modeHasChange = 0;
 	size_t argIndex = 3;
 	for (size_t i = 1; i < modes.length(); i++)
 	{
