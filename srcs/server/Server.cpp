@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 22:50:15 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 01:44:26 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,11 @@ void Server::manageClientEvents(Client &client) {
 		if (!validBufferInput(bytesRead, buffer))
 			return ft_send(client, ERR_TOOMANYMATCHES(client));
 		client.appendBuffer(buffer);
+		if (client.getBuffer().size() > 512 || client.getBuffer().size() < 1)
+			return client.clearBuffer();
 		if (client.getBuffer().at(client.getBuffer().size() - 1) == '\n') {
 			std::cout << "<- \033[1;31m" << client.getBuffer() << "\033[0m" << std::endl;
 			commandHandler(client.getBuffer(), client);
-			client.clearBuffer();
 		}
 	}
 }
@@ -107,14 +108,16 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 		Command cmd = Command(commandArray, client, *this);
 		if (!cmd.registerRequest() && !client.isRegistered())
 			continue;
+		if (commandArray[0] == "QUIT")
+			return cmd.quit();
 		if (_commandMap.find(commandArray[0]) != _commandMap.end()) {
 			CommandFunction function = _commandMap[commandArray[0]];
 			(cmd.*function)();
 		}
-}
+	}
+	client.clearBuffer();
 }
 
-bool Server::passwordIsValid(const std::string &password)
-{
+bool Server::passwordIsValid(const std::string &password) {
 	return (_password == password);
 }

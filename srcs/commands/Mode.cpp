@@ -78,7 +78,14 @@ void Command::setITKL_Modes(char letterMode, size_t &argIndex)
 	Channel &channel = _ircServ.getChannel(channelName);
 	std::string modes = _commandArray[2]; 
 
-	addOrRemoveMode = (modes.at(0) == '+') ? ADD : REMOVE;
+	if (modes.size() < 2)
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, "MODE"));
+	if (modes.at(0) == '+')
+		addOrRemoveMode = ADD;
+	else if (modes.at(0) == '-')
+		addOrRemoveMode = REMOVE;
+	else
+		return;
 	if (letterMode == 'i')
 		channel.setInviteOnly(addOrRemoveMode, _client.getNickname());
 	else if (letterMode == 't')
@@ -112,9 +119,19 @@ void Command::setO_Modes(size_t &argIndex)
 		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, "MODE"));
 	std::string argument = _commandArray[argIndex];
 
-	addOrRemoveMode = (modes.at(0) == '+') ? ADD : REMOVE;
+	if (modes.size() < 2)
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, "MODE"));
+	if (modes.at(0) == '+')
+		addOrRemoveMode = ADD;
+	else if (modes.at(0) == '-')
+		addOrRemoveMode = REMOVE;
+	else
+		return;
 	if (!argument.empty() && users.find(argument) != users.end())
 	{
+		if ((addOrRemoveMode == ADD && channel.isOperator(argument)) || \
+		(addOrRemoveMode == REMOVE && !channel.isOperator(argument)))
+			return;
 		if (addOrRemoveMode == ADD)
 			channel.addOperator(users.find(argument)->second);
 		if (addOrRemoveMode == REMOVE)

@@ -28,10 +28,7 @@ void Command::part()
 		}
 		channelName = formatChannelName(channelName);
 		if (!channelExists(channelName))
-		{
-			ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
 			continue;
-		}
 		Channel &channel = _ircServ.getChannel(channelName);
 		if (!channel.isUserInChannel(_client.getNickname()))
 		{
@@ -41,7 +38,6 @@ void Command::part()
 		std::string reply = ":" + _client.getNickname() + "!" + _client.getUsername() + \
 			"@" + "IRC PART #" + channelName + " " + partMessage;
 		channel.deleteClient(_client.getNickname(), reply);
-		ft_send(_client, reply);
 		if (channel.getUsers().empty())
 			_ircServ.getChannelList().erase(channelName);
 	}
@@ -65,10 +61,15 @@ void Command::quit()
 	else
 		reply.append(":leaving the channel.");
 	reply.push_back('\n');
-	for (;it != _ircServ.getChannelList().end(); it++)
-	{
+	while (it != _ircServ.getChannelList().end()) {
 		it->second.deleteClient(_client.getNickname(), reply);
-		if (it->second.getUsers().empty())
-			_ircServ.getChannelList().erase(it->first);
+
+		if (it->second.getUsers().empty()) {
+			std::map<std::string, Channel>::iterator eraseIt = it;
+			++it;  // increment before erasing
+			_ircServ.getChannelList().erase(eraseIt);
+		} else
+			++it;  // increment here
 	}
+	this->_ircServ.removeClientFromServer(_client);
 }

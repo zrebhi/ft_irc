@@ -20,7 +20,7 @@ void Command::topic() {
 	channelName = formatChannelName(channelName);
 
 	if (!channelExists(channelName))
-		return ft_send(this->_client, ERR_NOSUCHCHANNEL(this->_client, channelName));
+		return;
 
 	Channel &channel = this->_ircServ.getChannel(channelName);
 

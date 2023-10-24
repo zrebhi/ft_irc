@@ -18,6 +18,4 @@ void Command::pass()
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 	if (_ircServ.passwordIsValid(_commandArray[1]))
 		return _client.setRegistered(SERV_REGISTRATION);
-	else
-		ft_send(_client, ERR_PASSWDMISMATCH);
 }
