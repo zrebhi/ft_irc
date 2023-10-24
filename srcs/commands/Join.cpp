@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/21 01:20:49 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/24 20:33:10 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void Command::join() {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
-		ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 
 	std::map<std::string, std::string> joinMap = joinParser();
 	std::map<std::string, std::string>::iterator it = joinMap.begin();
@@ -57,7 +57,7 @@ void	Command::joinChannel(std::string channelName, std::string channelPassword) 
 		else
 			return;
 	}
-	ft_send(_client, currentModesStr());
+	ft_send(_client, currentModesStr(channelName));
 }
 
 void Command::createChannel(std::string channelName, std::string channelPassword) {

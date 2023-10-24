@@ -38,6 +38,8 @@ void Server::acceptConnection() {
 		exit(1);
 	}
 	this->_clients.insert(std::make_pair(newSocket, Client(newSocket)));
+	if (!this->isProtected())
+		this->_clients[newSocket].setRegistered(SERV_REGISTRATION);
 	addSocketToEpoll(newSocket);
 	std::cout << "Connection accepted from " << inet_ntoa(clientAddress.sin_addr) << ":"
 			  << ntohs(clientAddress.sin_port) << std::endl;

@@ -40,7 +40,7 @@ public:
 
 	void	setITKL_Modes(char letterMode, size_t &argIndex);
 	void	setO_Modes(size_t &argIndex);
-	std::string	currentModesStr();
+	std::string	currentModesStr(std::string channelName);
 
 private:
 	std::vector<std::string> _commandArray;
