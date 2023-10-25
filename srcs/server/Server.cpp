@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/25 01:44:26 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 20:23:19 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,8 @@ void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
 
 	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
-	if (isUserBanned(client.getUsername()))
-		ft_send(client, "You are banned for flooding.");
-	else if (bytesRead <= 0)
-		removeClientFromServer(client, "Leave the server.");
-	else if (isFlooding(client))
-	{
-		removeClientFromServer(client, "Ejected from server - Flooding.");
-		_bannedUsers.push_back(client.getUsername());
-	}
+	if (bytesRead <= 0)
+		removeClientFromServer(client);
 	else {
 		buffer[bytesRead] = '\0';
 		if (!validBufferInput(bytesRead, buffer))
@@ -76,7 +69,7 @@ void Server::manageClientEvents(Client &client) {
 	}
 }
 
-void Server::removeClientFromServer(Client &client, std::string message) {
+void Server::removeClientFromServer(Client &client) {
 	struct epoll_event event;
 	event.events = 0;
 	event.data.fd = client.getSocket();
@@ -89,7 +82,7 @@ void Server::removeClientFromServer(Client &client, std::string message) {
 	for (;it != getChannelList().end(); it++)
 	{
 		std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
-				"@" + "IRC QUIT :" + message;
+				"@" + "IRC QUIT :Leaving";
 		it->second.deleteClient(client.getNickname(), reply);
 		if (it->second.getUsers().empty())
 			getChannelList().erase(it->first);
@@ -128,7 +121,8 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 	client.clearBuffer();
 }
 
-bool Server::passwordIsValid(const std::string &password) {
+bool Server::passwordIsValid(const std::string &password)
+{
 	return (_password == password);
 }
 

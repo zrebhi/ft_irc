@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 20:55:28 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 20:27:19 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,10 @@ bool Command::registerRequest() {
 	else if (this->_commandArray[0] != "CAP") {
 		if (_client.isRegistered() == SERV_REGISTRATION)
 			ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter your password (ex: /PASS myPassword)"));
-		if (_client.isRegistered() == NICK_REGISTRATION)
-			ft_send(_client,
-					ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
-		if (_client.isRegistered() == USER_REGISTRATION)
-			ft_send(_client, ERR_NOTREGISTERED_MSG(_client,
-												   "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
+		else if (_client.isRegistered() == NICK_REGISTRATION)
+			ft_send(_client,ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
+		else if (_client.isRegistered() == USER_REGISTRATION)
+			ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
 	}
 	return false;
 }

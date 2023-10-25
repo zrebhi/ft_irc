@@ -57,7 +57,7 @@ public:
 	int								getEpollFd();
 
 	void	addChannelToServer(Channel channel);
-	void	removeClientFromServer(Client &client, std::string message);
+	void	removeClientFromServer(Client &client);
 
 	bool	isProtected();
 	bool	passwordIsValid(const std::string &password);
