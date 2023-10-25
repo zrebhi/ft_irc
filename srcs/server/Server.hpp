@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
+#include <ctime>
 #include <map>
 #include <vector>
 #include <sys/epoll.h>
@@ -55,10 +56,12 @@ public:
 	int								getEpollFd();
 
 	void	addChannelToServer(Channel channel);
-	void	removeClientFromServer(Client &client);
+	void	removeClientFromServer(Client &client, std::string message);
 
 	bool	isProtected();
 	bool	passwordIsValid(const std::string &password);
+
+	bool isFlooding(Client &client);
 
 private:
 	int			_portNumber;
@@ -73,6 +76,9 @@ private:
 	std::map<int, Client>			_clients;
 	std::map<std::string, Channel>	_channels;
 	std::map<std::string, CommandFunction>	_commandMap;
+	std::vector<std::string> _bannedUsers;
+
+	bool isUserBanned(const std::string& str);
 
 	void	createSocket();
 	void	bindSocket();

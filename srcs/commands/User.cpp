@@ -46,8 +46,8 @@ void Command::nick() {
 		oldNickname = "notSet";
 	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
 		this->_client.setNickname(newNickname);
-		if (!this->_client.isRegistered())
-			this->_client.setRegistered(NICK_REGISTRATION);
+		if (_client.isRegistered() != NICK_REGISTRATION || _client.isRegistered() != FULL_REGISTRATION )
+			_client.setRegistered(NICK_REGISTRATION);
 		ft_send(this->_client, NICK(oldNickname, newNickname));
 		changeNicknameInChannels(oldNickname);
 	}

@@ -53,10 +53,13 @@ bool Command::registerRequest() {
 		pass();
 	else if (this->_commandArray[0] == "NICK")
 		nick();
-	if (this->_client.isRegistered())
+	if (this->_client.isRegistered() == FULL_REGISTRATION)
 		return true;
 	ft_send(_client, ERR_NOTREGISTERED(this->_client));
-	ft_send(_client, "You need to enter your NICK and USER content");
+	if (this->_client.isRegistered() != SERV_REGISTRATION)
+		ft_send(_client, "You need to enter your password (ex: /PASS myPassword)");
+	if (this->_client.isRegistered() != NICK_REGISTRATION)
+		ft_send(_client, "You need to enter a valid nickname (ex: /NICK myNickname)");
 	return false;
 }
 

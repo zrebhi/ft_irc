@@ -28,7 +28,7 @@
 /* 332 */ #define RPL_TOPIC(client, channelName, topicText) ":IRC 332 " + client.getNickname() + " #" + channelName + " " + topicText
 /* 341 */ #define RPL_INVITING(channelName, targetName) ":IRC 341 #" + channelName + " " + targetName
 /* 353 */ #define RPL_NAMERPLY(client, channel) ":IRC 353 " + client.getNickname() + " = #" + channel.getName() + " :" + channel.userListString()
-/* 366 */ #define RPL_ENDOFNAMES(channelName) ":IRC 366 " + channelName + " :End of NAMES list"
+/* 366 */ #define RPL_ENDOFNAMES(channelName) ":IRC 366 " + channelName /* + " :End of NAMES list" */
 /* 401 */ #define ERR_NOSUCHNICK(targetName) ":IRC 401 " + targetName + " :No such nick/channel"
 /* 401 */ #define ERR_NOSUCHNICKCHAN(client, channelName, targetName, command) ":" + client.getNickname() + " PRIVMSG #" + channelName + " :Error " + command + ": No such nick (" + targetName + ")"
 /* 403 */ #define ERR_NOSUCHCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :No such channel"
