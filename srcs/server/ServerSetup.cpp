@@ -76,6 +76,20 @@ void	Server::createSocket() {
 		close(this->_serverSocket);
 		exit(1);
 	}
+
+	// Set the socket as non-blocking
+	int flags = fcntl(this->_serverSocket, F_GETFL, 0);
+	if (flags == -1) {
+		perror("Error getting socket flags");
+		close(this->_serverSocket);
+		exit(1);
+	}
+
+	if (fcntl(this->_serverSocket, F_SETFL, flags | O_NONBLOCK) == -1) {
+		perror("Error setting socket as non-blocking");
+		close(this->_serverSocket);
+		exit(1);
+	}
 }
 
 void	Server::bindSocket() {

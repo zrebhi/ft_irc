@@ -25,6 +25,7 @@
 #include <vector>
 #include <sys/epoll.h>
 #include <cerrno>
+#include <fcntl.h>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
