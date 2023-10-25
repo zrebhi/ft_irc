@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/25 20:38:30 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 22:34:39 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,27 +51,29 @@ bool Command::IsChannelMember(std::string userNickname, std::string channelName)
 bool Command::registerRequest() {
 	if (this->_commandArray[0] == "PASS")
 		pass();
+	else if (this->_commandArray[0] == "QUIT")
+		quit();
+
+	else if (this->_client.isRegistered() == SERV_REGISTRATION)
+		return false;
 	else if (this->_commandArray[0] == "NICK")
 		nick();
 	else if (this->_commandArray[0] == "USER")
 		user();
-	if (_client.isRegistered() == FULL_REGISTRATION)
+	else if (_client.isRegistered() == FULL_REGISTRATION)
 		return true;
-	else if (this->_commandArray[0] != "CAP") {
-		if (_client.isRegistered() == SERV_REGISTRATION)
-			ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter your password (ex: /PASS myPassword)"));
-		if (_client.isRegistered() == NICK_REGISTRATION)
-			ft_send(_client,ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
-		if (_client.isRegistered() == USER_REGISTRATION)
-			ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
-	}
+	else if (_client.isRegistered() == SERV_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter your password (ex: /PASS myPassword)"));
+	else if (_client.isRegistered() == NICK_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
+	else if (_client.isRegistered() == USER_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
 	return false;
 }
 
 bool Command::validServerPassword() {
 	if (!this->_ircServ.isProtected() || this->_ircServ.getServerPassword() == this->_client.getPassword())
 		return true;
-	ft_send(this->_client, ERR_PASSWDMISMATCH);
 	return false;
 }
 

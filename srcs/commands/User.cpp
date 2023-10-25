@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 21:14:57 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 22:38:53 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,7 @@ void Command::nick() {
 		oldNickname = "notSet";
 	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
 		this->_client.setNickname(newNickname);
-		if (!this->_client.isRegistered())
-			this->_client.setRegistered(NICK_REGISTRATION);
+		this->_client.setRegistered(NICK_REGISTRATION);
 		ft_send(this->_client, NICK(oldNickname, newNickname));
 		changeNicknameInChannels(oldNickname);
 	}
@@ -75,7 +74,7 @@ bool Command::nicknameAvailable(std::string nickname)
 
 bool Command::nicknameIsValid(std::string nickname) {
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
-	if (nickname.at(0) == '-' || nickname.length() < 3 || nickname.length() > 12)
+	if (!std::isalpha(nickname.at(0)) || nickname.length() < 3 || nickname.length() > 12)
 	{
 		ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
 		return false;

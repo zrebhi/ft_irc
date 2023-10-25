@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:12:48 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/23 20:14:16 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 22:28:56 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 Client::Client() {}
 
 Client::Client(int clientSocket)
-	: _nickname("*"), _clientSocket(clientSocket), _floodClock(std::time(NULL)), _floodCounter(-1) {
-	for(int i = 0; i < 3; i++)
-		_registered.push_back(false);
+	: _nickname("*"), _clientSocket(clientSocket) {
+	_registered.push_back(false);
+	_registered.push_back(false);
+	_registered.push_back(false);
 }
 
 Client::~Client() {}
@@ -100,18 +101,14 @@ void Client::setRegistered(int type) {
 }
 
 int Client::isRegistered() {
-	for (size_t i = 0; i < _registered.size(); i++)
-	{
-		if (!_registered.at(i))
-			break;
+	if (_registered[0] && _registered[1] && _registered[2])
 		return FULL_REGISTRATION;
-	}
 	if (!_registered.at(SERV_REGISTRATION))
 		return SERV_REGISTRATION;
-	if (!_registered.at(NICK_REGISTRATION))
-		return NICK_REGISTRATION;
 	if (!_registered.at(USER_REGISTRATION))
 		return USER_REGISTRATION;
+	if (!_registered.at(NICK_REGISTRATION))
+		return NICK_REGISTRATION;
 	return 0;
 }
 

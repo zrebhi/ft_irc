@@ -39,7 +39,6 @@ void	Server::serverSetup() {
 }
 
 void	Server::commandMapping() {
-	_commandMap["USER"] = &Command::user;
 	_commandMap["JOIN"] = &Command::join;
 	_commandMap["PRIVMSG"] = &Command::privmsg;
 	_commandMap["WHO"] = &Command::who;
