@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 21:14:57 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 17:35:24 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,6 @@ bool Command::nicknameAvailable(std::string nickname)
 }
 
 bool Command::nicknameIsValid(std::string nickname) {
-	// std::string oldNickname = _client.getNickname();
-
-	// if (oldNickname.empty())
-	// 	oldNickname = "notSet";
-
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
 	if (nickname.at(0) == '-' || nickname.length() < 3 || nickname.length() > 12)
 	{
@@ -95,6 +90,10 @@ void Command::changeNicknameInChannels(std::string oldNickname) {
 			channel.addUser(this->_client);
 			channel.removeUser(oldNickname);
 			channel.serverMessageToChannel(NICK(oldNickname, this->_client.getNickname()));
+			if (channel.isOperator(oldNickname)) {
+				channel.removeOperator(this->_client);
+				channel.addOperator(this->_client);
+			}
 		}
 	}
 }
