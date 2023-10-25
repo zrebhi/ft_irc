@@ -18,6 +18,7 @@
 
 #define ADD true
 #define REMOVE false
+#define USER_REGISTRATION 0
 #define SERV_REGISTRATION 1 
 #define NICK_REGISTRATION 2
 #define FULL_REGISTRATION 3

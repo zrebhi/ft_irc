@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <unistd.h>
 #include <utility>
+#include <vector>
 
 class Client {
 public:
@@ -52,7 +53,7 @@ public:
 
 
 private:
-	std::pair<bool, bool> _registered;
+	std::vector<bool> _registered;
 	std::string _nickname;
 	std::string _password;
 	std::string _username;

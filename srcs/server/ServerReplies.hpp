@@ -14,7 +14,7 @@
 
 #include "Server.hpp"
 
-#define RPL_INVITE_RCV(client, channelName, targetName) ":" + client.getNickname() + " INVITE " + targetName + " " + channelName
+#define RPL_INVITE_RCV(client, channelName, targetName) ":" + client.getNickname() + " INVITE " + targetName + " #" + channelName
 #define RPL_JOIN(nickname, channelName) ":" + nickname + " JOIN :#" + channelName
 #define RPL_PRIVMSG(client, targetName, message) ":" + client.getNickname() + "!" + client.getUsername() + "@IRC PRIVMSG " + targetName + message
 #define RPL_KICK(senderNick, channelName, targetNick, reason) ":" + senderNick + " KICK #" + channelName + " " + targetNick + " " + reason
@@ -41,6 +41,7 @@
 /* 442 */ #define ERR_NOTONCHANNEL(channelName) channelName + " :You're not on that channel"
 /* 443 */ #define ERR_USERONCHANNEL(targetName, channelName) ":IRC 443 " + targetName + " #" + channelName + " :is already on channel"
 /* 451 */ #define ERR_NOTREGISTERED(client) ":IRC 451 " + client.getNickname() + " :You have not registered"
+/* 451 */ #define ERR_NOTREGISTERED_MSG(client, message) ":IRC 451 " + client.getNickname() + " :" + message
 /* 461 */ #define ERR_NEEDMOREPARAMS(client, command) ":IRC 461 " + client.getNickname() + " " + command + " :Not enough parameters"
 /* 462 */ #define ERR_TOOMANYPARAMS(command) ":IRC 462 " + command + " :Too many parameters"
 /* 462 */ #define ERR_ALREADYREGISTRED(clientName) ":IRC 462 " + clientName + " :Already registered"

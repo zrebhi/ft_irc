@@ -14,22 +14,32 @@
 #include <iostream>
 
 void Command::user() {
+	std::cout << "enter user" << std::endl;
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 
 	std::string &userCommand = _commandArray[1];
 	size_t firstSpace = userCommand.find(' ');
-
-	if (firstSpace == userCommand.npos)
-		this->_client.setUsername("guestUser");
-	else 
-		this->_client.setUsername(userCommand.substr(0, firstSpace));
-
 	size_t lastColon = userCommand.find_last_of(':');
-	if (lastColon == userCommand.npos || lastColon == userCommand.length() - 1)
-		this->_client.setRealname("notGiven");
-	else
+
+	if (firstSpace != userCommand.npos && (lastColon != userCommand.npos \
+		&& lastColon != userCommand.length() - 1))
+	{
+		this->_client.setUsername(userCommand.substr(0, firstSpace));
 		this->_client.setRealname(userCommand.substr(lastColon + 1));
+		_client.setRegistered(USER_REGISTRATION);
+	}
+	else
+	{
+		ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+		std::cout << "one condition failed" << std::endl;
+		if (firstSpace != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.length() - 1)
+			std::cout << "true" << std::endl;
+	}
 }
 
 void Command::nick() {
@@ -46,8 +56,7 @@ void Command::nick() {
 		oldNickname = "notSet";
 	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
 		this->_client.setNickname(newNickname);
-		if (_client.isRegistered() != NICK_REGISTRATION || _client.isRegistered() != FULL_REGISTRATION )
-			_client.setRegistered(NICK_REGISTRATION);
+		_client.setRegistered(NICK_REGISTRATION);
 		ft_send(this->_client, NICK(oldNickname, newNickname));
 		changeNicknameInChannels(oldNickname);
 	}
@@ -62,10 +71,6 @@ bool Command::nicknameAvailable(std::string nickname)
 }
 
 bool Command::nicknameIsValid(std::string nickname) {
-	// std::string oldNickname = _client.getNickname();
-
-	// if (oldNickname.empty())
-	// 	oldNickname = "notSet";
 
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
 	if (nickname.at(0) == '-' || nickname.length() < 3 || nickname.length() > 12)

@@ -16,8 +16,8 @@ Client::Client() {}
 
 Client::Client(int clientSocket)
 	: _nickname("*"), _clientSocket(clientSocket), _floodClock(std::time(NULL)), _floodCounter(-1) {
-	//double construction lors de nick - a verifier
-	std::cout << "constructeur client :" << clientSocket << std::endl;
+	for(int i = 0; i < 3; i++)
+		_registered.push_back(false);
 }
 
 Client::~Client() {}
@@ -87,33 +87,31 @@ void Client::setPassword(std::string password) {
 }
 
 void Client::setRegistered(int type) {
-	if (type == NICK_REGISTRATION)
-		_registered.first = true;
-	else if (type == SERV_REGISTRATION)
-		_registered.second = true;
-	if (_registered.first && _registered.second)
+	bool greetings = false;
+	if (_registered.at(type) == false)
+		_registered.at(type) = greetings = true;
+	for (size_t i = 0; i < _registered.size(); i++)
 	{
-		if (_username.empty() || _realname.empty())
-		{
-			std::string nb;
-			for (int i = 0; i < 10; i++)
-				nb.push_back(rand() % 10 + '0');
-			if (_username.empty())
-				_username = "Guest" + nb;
-			if (_realname.empty())
-				_realname = "Name" + nb;
-		}
-		ft_send(*this, RPL_WELCOME((*this)));
+		if (_registered.at(i) == false)
+			return;
 	}
+	if (greetings)
+		ft_send(*this, RPL_WELCOME((*this)));
 }
 
 int Client::isRegistered() {
-	if (_registered.first && _registered.second)
+	for (size_t i = 0; i < _registered.size(); i++)
+	{
+		if (_registered.at(i) == false)
+			break;
 		return FULL_REGISTRATION;
-	if (_registered.first)
-		return NICK_REGISTRATION;
-	if (_registered.second)
+	}
+	if (!_registered.at(SERV_REGISTRATION))
 		return SERV_REGISTRATION;
+	if (!_registered.at(NICK_REGISTRATION))
+		return NICK_REGISTRATION;
+	if (!_registered.at(USER_REGISTRATION))
+		return USER_REGISTRATION;
 	return 0;
 }
 

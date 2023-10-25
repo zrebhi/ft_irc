@@ -57,7 +57,7 @@ void Server::manageClientEvents(Client &client) {
 		removeClientFromServer(client, "Leave the server.");
 	else if (isFlooding(client))
 	{
-		removeClientFromServer(client, "Eject from server - Flooding.");
+		removeClientFromServer(client, "Ejected from server - Flooding.");
 		_bannedUsers.push_back(client.getUsername());
 	}
 	else {
@@ -110,7 +110,7 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 
 	for (size_t i = 0; i < commands.size(); i++) {
 		commandArray = ircCommandSplitter(commands[i]);
-		if (commandArray.empty())
+		if (commandArray.empty() || strncmp(commands[i].c_str(), "CAP ", 4) == 0)
 			continue;
 		Command cmd = Command(commandArray, client, *this);
 		if (!cmd.registerRequest() && client.isRegistered() != FULL_REGISTRATION)
@@ -130,10 +130,10 @@ bool Server::passwordIsValid(const std::string &password)
 bool Server::isFlooding(Client &client)
 {
 	std::time_t currentTime = std::time(NULL);
-	std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << " vs " << currentTime << " ---> " << currentTime - client.getFloodClock() << std::endl;
+	// std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << " vs " << currentTime << " ---> " << currentTime - client.getFloodClock() << std::endl;
 	client.setFloodCounter(ADD);
 
-	if (client.getFloodCounter() > FLOOD_MAX_MSG \
+	if (client.getFloodCounter() >= FLOOD_MAX_MSG \
 		&& client.getFloodClock() + FLOOD_TIME < currentTime)
 			return true;
 	if (currentTime - client.getFloodClock() > FLOOD_TIME)
