@@ -102,7 +102,7 @@ void Client::setRegistered(int type) {
 int Client::isRegistered() {
 	for (size_t i = 0; i < _registered.size(); i++)
 	{
-		if (_registered.at(i) == false)
+		if (!_registered.at(i))
 			break;
 		return FULL_REGISTRATION;
 	}
