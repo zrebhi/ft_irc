@@ -47,8 +47,8 @@ public:
 	void		clearBuffer();
 	void setFloodCounter(bool increaseOrReset);
 	void setFloodClock();
-	size_t getFloodCounter();
-	long long getFloodClock();
+	int getFloodCounter();
+	time_t getFloodClock();
 
 
 private:
@@ -62,7 +62,7 @@ private:
 
 	int	_clientSocket;
 
-	time_t	_floodClock;
-	size_t	_floodCounter;
+	std::time_t	_floodClock;
+	int 	_floodCounter;
 };
 

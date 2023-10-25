@@ -15,7 +15,7 @@
 Client::Client() {}
 
 Client::Client(int clientSocket)
-	: _nickname("*"), _clientSocket(clientSocket), _floodClock(0), _floodCounter(0) {
+	: _nickname("*"), _clientSocket(clientSocket), _floodClock(std::time(NULL)), _floodCounter(-1) {
 	//double construction lors de nick - a verifier
 	std::cout << "constructeur client :" << clientSocket << std::endl;
 }
@@ -29,6 +29,7 @@ Client &Client::operator=(const Client &rhs) {
 	this->_password = rhs._password;
 	this->_clientSocket = rhs._clientSocket;
 	this->_registered = rhs._registered;
+	this->_floodClock = rhs._floodClock;
 	return *this;
 }
 
@@ -39,6 +40,7 @@ Client::Client(const Client &src) {
 	this->_password = src._password;
 	this->_clientSocket = src._clientSocket;
 	this->_registered = src._registered;
+	this->_floodClock = src._floodClock;
 }
 
 int Client::getSocket() const {
@@ -140,7 +142,10 @@ void Client::setFloodCounter(bool increaseOrReset)
 	if (increaseOrReset == ADD)
 		_floodCounter++;
 	else if (increaseOrReset == REMOVE)
+	{
 		_floodCounter = 0;
+		setFloodClock();
+	}
 }
 
 void Client::setFloodClock()
@@ -148,12 +153,12 @@ void Client::setFloodClock()
 	_floodClock = std::time(NULL);
 }
 
-size_t Client::getFloodCounter()
+int Client::getFloodCounter()
 {
 	return _floodCounter;
 }
 
-long long Client::getFloodClock()
+time_t Client::getFloodClock()
 {
 	return _floodClock;
 }

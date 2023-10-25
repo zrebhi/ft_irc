@@ -129,20 +129,14 @@ bool Server::passwordIsValid(const std::string &password)
 
 bool Server::isFlooding(Client &client)
 {
-	std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << std::endl;
-	if (!client.getFloodClock())
-	{
-		client.setFloodClock();
-		return false;
-	}
-
 	std::time_t currentTime = std::time(NULL);
+	std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << " vs " << currentTime << " ---> " << currentTime - client.getFloodClock() << std::endl;
 	client.setFloodCounter(ADD);
 
-	if (client.getFloodClock() + FLOOD_TIME < currentTime \
-		&& client.getFloodCounter() > FLOOD_MAX_MSG)
+	if (client.getFloodCounter() > FLOOD_MAX_MSG \
+		&& client.getFloodClock() + FLOOD_TIME < currentTime)
 			return true;
-	if (client.getFloodClock() + 30 > currentTime)
+	if (currentTime - client.getFloodClock() > FLOOD_TIME)
 		client.setFloodCounter(REMOVE);
 	return false;
 }
