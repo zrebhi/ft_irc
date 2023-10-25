@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 23:19:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/24 22:59:06 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:16:39 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 /* 332 */ #define RPL_TOPIC(client, channelName, topicText) ":IRC 332 " + client.getNickname() + " #" + channelName + " " + topicText
 /* 341 */ #define RPL_INVITING(channelName, targetName) ":IRC 341 #" + channelName + " " + targetName
 /* 353 */ #define RPL_NAMERPLY(client, channel) ":IRC 353 " + client.getNickname() + " = #" + channel.getName() + " :" + channel.userListString()
-/* 366 */ #define RPL_ENDOFNAMES(channelName) ":IRC 366 " + channelName + " :End of NAMES list"
+/* 366 */ #define RPL_ENDOFNAMES(channelName) ":IRC 366 " + channelName /* + " :End of NAMES list" */
 /* 401 */ #define ERR_NOSUCHNICK(targetName) ":IRC 401 " + targetName + " :No such nick/channel"
 /* 401 */ #define ERR_NOSUCHNICKCHAN(client, channelName, targetName, command) ":" + client.getNickname() + " PRIVMSG #" + channelName + " :Error " + command + ": No such nick (" + targetName + ")"
 /* 403 */ #define ERR_NOSUCHCHANNEL(client, channelName) ":IRC 403 " + client.getNickname() + " " + channelName + " :No such channel"
@@ -41,6 +41,7 @@
 /* 442 */ #define ERR_NOTONCHANNEL(channelName) channelName + " :You're not on that channel"
 /* 443 */ #define ERR_USERONCHANNEL(targetName, channelName) ":IRC 443 " + targetName + " #" + channelName + " :is already on channel"
 /* 451 */ #define ERR_NOTREGISTERED(client) ":IRC 451 " + client.getNickname() + " :You have not registered"
+/* 451 */ #define ERR_NOTREGISTERED_MSG(client, message) ":IRC 451 " + client.getNickname() + " :" + message
 /* 461 */ #define ERR_NEEDMOREPARAMS(client, command) ":IRC 461 " + client.getNickname() + " " + command + " :Not enough parameters"
 /* 462 */ #define ERR_TOOMANYPARAMS(command) ":IRC 462 " + command + " :Too many parameters"
 /* 462 */ #define ERR_ALREADYREGISTRED(clientName) ":IRC 462 " + clientName + " :Already registered"

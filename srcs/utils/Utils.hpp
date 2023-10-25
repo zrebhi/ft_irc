@@ -18,11 +18,16 @@
 
 #define ADD true
 #define REMOVE false
-#define NICK_REGISTRATION true
-#define SERV_REGISTRATION false 
+#define USER_REGISTRATION 0
+#define SERV_REGISTRATION 1 
+#define NICK_REGISTRATION 2
+#define FULL_REGISTRATION 3
 #define MAX_CHAN_USERS 10000
 #define MIN_CHAN_USERS 2
 #define MAX_TOPIC_LENGTH 50
+#define FLOOD_TIME 30 //in seconds
+#define FLOOD_MAX_MSG 10
+
 
 
 std::vector<std::string>	ft_split(std::string string, char separator);

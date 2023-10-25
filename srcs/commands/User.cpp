@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/25 17:40:09 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 21:14:57 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,31 @@ void Command::user() {
 	if (_commandArray.size() < 2 || _commandArray[1].empty())
 		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 
-	if (_client.isRegistered())
+	if (_client.isRegistered() == FULL_REGISTRATION)
 		return ft_send(_client, ERR_ALREADYREGISTRED(_client.getNickname()));
 
 	std::string &userCommand = _commandArray[1];
 	size_t firstSpace = userCommand.find(' ');
-
-	if (firstSpace == userCommand.npos)
-		this->_client.setUsername("guestUser");
-	else 
-		this->_client.setUsername(userCommand.substr(0, firstSpace));
-
 	size_t lastColon = userCommand.find_last_of(':');
-	if (lastColon == userCommand.npos || lastColon == userCommand.length() - 1)
-		this->_client.setRealname("notGiven");
-	else
+
+	if (firstSpace != userCommand.npos && (lastColon != userCommand.npos \
+		&& lastColon != userCommand.length() - 1))
+	{
+		this->_client.setUsername(userCommand.substr(0, firstSpace));
 		this->_client.setRealname(userCommand.substr(lastColon + 1));
+		_client.setRegistered(USER_REGISTRATION);
+	}
+	else
+	{
+		ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+		std::cout << "one condition failed" << std::endl;
+		if (firstSpace != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.length() - 1)
+			std::cout << "true" << std::endl;
+	}
 }
 
 void Command::nick() {

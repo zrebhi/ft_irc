@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/24 21:33:54 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:55:28 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,17 @@ bool Command::registerRequest() {
 		nick();
 	else if (this->_commandArray[0] == "USER")
 		user();
-	else if (this->_client.isRegistered())
+	else if (_client.isRegistered() == FULL_REGISTRATION)
 		return true;
 	else if (this->_commandArray[0] != "CAP") {
-		ft_send(_client, ERR_NOTREGISTERED(this->_client));
-		ft_send(_client, "You need to enter correct NICK, USER and PASS content");
+		if (_client.isRegistered() == SERV_REGISTRATION)
+			ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter your password (ex: /PASS myPassword)"));
+		if (_client.isRegistered() == NICK_REGISTRATION)
+			ft_send(_client,
+					ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
+		if (_client.isRegistered() == USER_REGISTRATION)
+			ft_send(_client, ERR_NOTREGISTERED_MSG(_client,
+												   "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
 	}
 	return false;
 }

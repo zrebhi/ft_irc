@@ -13,8 +13,10 @@
 #pragma once
 
 #include "../server/Server.hpp"
+#include <cstddef>
 #include <unistd.h>
 #include <utility>
+#include <vector>
 
 class Client {
 public:
@@ -27,14 +29,14 @@ public:
 
 	int			getSocket() const;
 
-	bool		isRegistered();
+	int			isRegistered();
 	std::string	getNickname() const;
 	std::string	getUsername() const;
 	std::string	getRealname() const;
 	std::string	getPassword() const;
 	std::string	getHostname() const;
 
-	void	setRegistered(bool type);
+	void	setRegistered(int type);
 	void	setNickname(std::string nickname);
 	void	setUsername(std::string username);
 	void	setRealname(std::string realname);
@@ -44,10 +46,14 @@ public:
 	void		setBuffer(std::string string);
 	void		appendBuffer(std::string string);
 	void		clearBuffer();
+	void setFloodCounter(bool increaseOrReset);
+	void setFloodClock();
+	int getFloodCounter();
+	time_t getFloodClock();
 
 
 private:
-	std::pair<bool, bool> _registered;
+	std::vector<bool> _registered;
 	std::string _nickname;
 	std::string _password;
 	std::string _username;
@@ -56,4 +62,8 @@ private:
 	std::string _buffer;
 
 	int	_clientSocket;
+
+	std::time_t	_floodClock;
+	int 	_floodCounter;
 };
+

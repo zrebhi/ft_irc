@@ -11,7 +11,11 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <cctype>
 #include <cstdio>
+#include <ctime>
+#include <string>
+#include <vector>
 
 void Server::listenToNewEvents() {
 	struct epoll_event events[this->_clients.size() + 1];
@@ -49,9 +53,15 @@ void Server::manageClientEvents(Client &client) {
 	char buffer[1024];
 
 	ssize_t bytesRead = recv(client.getSocket(), buffer, sizeof(buffer) - 1, 0);
-	std::cout << "bytesRead: " << bytesRead << std::endl;
-	if (bytesRead <= 0)
-		removeClientFromServer(client);
+	if (isUserBanned(client.getUsername()))
+		ft_send(client, "You are banned for flooding.");
+	else if (bytesRead <= 0)
+		removeClientFromServer(client, "Leave the server.");
+	else if (isFlooding(client))
+	{
+		removeClientFromServer(client, "Ejected from server - Flooding.");
+		_bannedUsers.push_back(client.getUsername());
+	}
 	else {
 		buffer[bytesRead] = '\0';
 		if (!validBufferInput(bytesRead, buffer))
@@ -66,7 +76,7 @@ void Server::manageClientEvents(Client &client) {
 	}
 }
 
-void Server::removeClientFromServer(Client &client) {
+void Server::removeClientFromServer(Client &client, std::string message) {
 	struct epoll_event event;
 	event.events = 0;
 	event.data.fd = client.getSocket();
@@ -79,7 +89,7 @@ void Server::removeClientFromServer(Client &client) {
 	for (;it != getChannelList().end(); it++)
 	{
 		std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
-				"@" + "IRC QUIT :left the server.";
+				"@" + "IRC QUIT :" + message;
 		it->second.deleteClient(client.getNickname(), reply);
 		if (it->second.getUsers().empty())
 			getChannelList().erase(it->first);
@@ -103,10 +113,10 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 
 	for (size_t i = 0; i < commands.size(); i++) {
 		commandArray = ircCommandSplitter(commands[i]);
-		if (commandArray.empty())
+		if (commandArray.empty() || strncmp(commands[i].c_str(), "CAP ", 4) == 0)
 			continue;
 		Command cmd = Command(commandArray, client, *this);
-		if (!cmd.registerRequest() && !client.isRegistered())
+		if (!cmd.registerRequest() && client.isRegistered() != FULL_REGISTRATION)
 			continue;
 		if (commandArray[0] == "QUIT")
 			return cmd.quit();
@@ -120,4 +130,27 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 
 bool Server::passwordIsValid(const std::string &password) {
 	return (_password == password);
+}
+
+bool Server::isFlooding(Client &client)
+{
+	std::time_t currentTime = std::time(NULL);
+	// std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << " vs " << currentTime << " ---> " << currentTime - client.getFloodClock() << std::endl;
+	client.setFloodCounter(ADD);
+
+	if (client.getFloodCounter() >= FLOOD_MAX_MSG \
+		&& client.getFloodClock() + FLOOD_TIME < currentTime)
+			return true;
+	if (currentTime - client.getFloodClock() > FLOOD_TIME)
+		client.setFloodCounter(REMOVE);
+	return false;
+}
+
+bool Server::isUserBanned(const std::string& str) {
+	std::vector<std::string>::const_iterator it = _bannedUsers.begin();
+    for (; it != _bannedUsers.end(); ++it) {
+        if (*it == str)
+            return true;
+    }
+    return false;
 }
