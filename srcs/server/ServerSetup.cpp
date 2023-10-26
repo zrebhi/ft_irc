@@ -76,7 +76,7 @@ void	Server::createSocket() {
 		exit(1);
 	}
 
-	if (fcntl(this->_serverSocket, F_SETFL, F_SETFL | O_NONBLOCK) == -1) {
+	if (fcntl(this->_serverSocket, F_SETFL, O_NONBLOCK) == -1) {
 		perror("Error setting socket as non-blocking");
 		close(this->_serverSocket);
 		exit(1);

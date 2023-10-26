@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/25 20:23:19 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/26 16:58:48 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,11 @@ void Server::acceptConnection() {
 	newSocket = accept(this->_serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
 	if (newSocket == -1) {
 		perror("Failed to accept incoming connection");
+		close(this->_serverSocket);
+		exit(1);
+	}
+	if (fcntl(newSocket, F_SETFL, O_NONBLOCK) == -1) {
+		perror("Error setting socket as non-blocking");
 		close(this->_serverSocket);
 		exit(1);
 	}
@@ -115,10 +120,10 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 		if (commandArray.empty() || strncmp(commands[i].c_str(), "CAP ", 4) == 0)
 			continue;
 		Command cmd = Command(commandArray, client, *this);
-		if (!cmd.registerRequest() && client.isRegistered() != FULL_REGISTRATION)
-			continue;
 		if (commandArray[0] == "QUIT")
 			return cmd.quit();
+		if (!cmd.registerRequest() && client.isRegistered() != FULL_REGISTRATION)
+			continue;
 		if (_commandMap.find(commandArray[0]) != _commandMap.end()) {
 			CommandFunction function = _commandMap[commandArray[0]];
 			(cmd.*function)();
