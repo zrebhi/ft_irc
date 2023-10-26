@@ -20,7 +20,7 @@ int	main(int argc, char **argv) {
 	int	portNumber = stringToInt(argv[1]);
 	if (argc == 3)
 		password = argv[2];
-	//creer un checker de mot de passe (len + chara)
+
 	Server	ircServ(portNumber, password);
 
 	while (ircServ.serverRunning())

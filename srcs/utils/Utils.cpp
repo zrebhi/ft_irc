@@ -25,8 +25,6 @@ void	ft_send(Client &user, std::string reply) {
 	return;
 }
 
-#include <cctype>  // Include for isprint function
-
 std::vector<std::string> ft_split(std::string string, char separator) {
 	std::vector<std::string> stringsVector;
 	std::string newString;

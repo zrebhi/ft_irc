@@ -46,11 +46,6 @@ public:
 	void		setBuffer(std::string string);
 	void		appendBuffer(std::string string);
 	void		clearBuffer();
-	void setFloodCounter(bool increaseOrReset);
-	void setFloodClock();
-	int getFloodCounter();
-	time_t getFloodClock();
-
 
 private:
 	std::vector<bool> _registered;

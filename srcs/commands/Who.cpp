@@ -29,6 +29,5 @@ void Command::whoChannel(std::string channelName) {
 
 	for (; it != channelUsers.end(); it++) {
 		ft_send(it->second, RPL_NAMERPLY(it->second, channel));
-		// ft_send(it->second, RPL_ENDOFNAMES(channel.getName()));
 	}
 }

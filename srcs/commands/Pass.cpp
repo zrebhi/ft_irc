@@ -2,8 +2,6 @@
 
 void Command::pass()
 {
-	//mettre isProtected en premier pour qu'il ne calcule pas la commande
-	//si le serveur n'est pas protege par un mot de passe
 	if (_client.isRegistered()  == FULL_REGISTRATION)
 		return ft_send(_client, ERR_ALREADYREGISTRED(_client.getNickname()));
 	if (!_ircServ.isProtected()) 

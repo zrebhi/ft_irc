@@ -131,30 +131,3 @@ void Client::appendBuffer(std::string string) {
 void Client::clearBuffer() {
 	_buffer.clear();
 }
-
-void Client::setFloodCounter(bool increaseOrReset)
-{
-	if (increaseOrReset == ADD)
-		_floodCounter++;
-	else if (increaseOrReset == REMOVE)
-	{
-		_floodCounter = 0;
-		setFloodClock();
-	}
-}
-
-void Client::setFloodClock()
-{
-	_floodClock = std::time(NULL);
-}
-
-int Client::getFloodCounter()
-{
-	return _floodCounter;
-}
-
-time_t Client::getFloodClock()
-{
-	return _floodClock;
-}
-

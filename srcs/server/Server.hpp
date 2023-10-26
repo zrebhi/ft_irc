@@ -62,8 +62,6 @@ public:
 	bool	isProtected();
 	bool	passwordIsValid(const std::string &password);
 
-	bool isFlooding(Client &client);
-
 private:
 	int			_portNumber;
 	std::string	_password;

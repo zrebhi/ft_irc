@@ -25,8 +25,7 @@
 #define MAX_CHAN_USERS 10000
 #define MIN_CHAN_USERS 2
 #define MAX_TOPIC_LENGTH 50
-#define FLOOD_TIME 30 //in seconds
-#define FLOOD_MAX_MSG 10
+
 
 
 

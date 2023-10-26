@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 19:25:37 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/26 16:58:48 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/26 17:08:54 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,27 +135,4 @@ void Server::commandHandler(std::string bufferString, Client &client) {
 bool Server::passwordIsValid(const std::string &password)
 {
 	return (_password == password);
-}
-
-bool Server::isFlooding(Client &client)
-{
-	std::time_t currentTime = std::time(NULL);
-	// std::cout << client.getFloodCounter() << " - " << client.getFloodClock() << " vs " << currentTime << " ---> " << currentTime - client.getFloodClock() << std::endl;
-	client.setFloodCounter(ADD);
-
-	if (client.getFloodCounter() >= FLOOD_MAX_MSG \
-		&& client.getFloodClock() + FLOOD_TIME < currentTime)
-			return true;
-	if (currentTime - client.getFloodClock() > FLOOD_TIME)
-		client.setFloodCounter(REMOVE);
-	return false;
-}
-
-bool Server::isUserBanned(const std::string& str) {
-	std::vector<std::string>::const_iterator it = _bannedUsers.begin();
-    for (; it != _bannedUsers.end(); ++it) {
-        if (*it == str)
-            return true;
-    }
-    return false;
 }
