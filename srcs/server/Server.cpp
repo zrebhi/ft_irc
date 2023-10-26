@@ -78,15 +78,21 @@ void Server::removeClientFromServer(Client &client) {
 		perror("failed to remove socket from epoll");
 	close(client.getSocket());
 
-	std::map<std::string, Channel>::iterator it = getChannelList().begin();
-	for (;it != getChannelList().end(); it++)
-	{
-		std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
-				"@" + "IRC QUIT :Leaving";
-		it->second.deleteClient(client.getNickname(), reply);
-		if (it->second.getUsers().empty())
-			getChannelList().erase(it->first);
-	}
+        std::map<std::string, Channel>::iterator it = getChannelList().begin();
+    if (it != getChannelList().end())
+    {
+        for (;it != getChannelList().end(); it++)
+        {
+            std::string reply = ":" + client.getNickname() + "!" + client.getUsername() + \
+                    "@" + "IRC QUIT :Leaving";
+            it->second.deleteClient(client.getNickname(), reply);
+            if (it->second.getUsers().empty())
+            {
+                getChannelList().erase(it->first);
+                it = getChannelList().begin();
+            }
+        }
+    }
 	getClientList().erase(client.getSocket());
 }
 

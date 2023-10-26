@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include <fcntl.h>
 
 Server::Server() {}
 
@@ -68,7 +69,6 @@ void	Server::createSocket() {
 		exit(1);
 	}
 
-	// Set socket options to allow reuse of the local address
 	int reuse = 1;
 	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) == -1) {
 		std::cerr << "Error setting socket options" << std::endl;
@@ -76,15 +76,7 @@ void	Server::createSocket() {
 		exit(1);
 	}
 
-	// Set the socket as non-blocking
-	int flags = fcntl(this->_serverSocket, F_GETFL, 0);
-	if (flags == -1) {
-		perror("Error getting socket flags");
-		close(this->_serverSocket);
-		exit(1);
-	}
-
-	if (fcntl(this->_serverSocket, F_SETFL, flags | O_NONBLOCK) == -1) {
+	if (fcntl(this->_serverSocket, F_SETFL, F_SETFL | O_NONBLOCK) == -1) {
 		perror("Error setting socket as non-blocking");
 		close(this->_serverSocket);
 		exit(1);
