@@ -6,15 +6,15 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:49:00 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 22:38:22 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/24 20:33:10 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
 
 void Command::join() {
-	if (_commandArray.size() < 2)
-		return;
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(this->_client, ERR_NEEDMOREPARAMS(this->_client, _commandArray[0]));
 
 	std::map<std::string, std::string> joinMap = joinParser();
 	std::map<std::string, std::string>::iterator it = joinMap.begin();
@@ -39,13 +39,10 @@ std::map<std::string, std::string>	Command::joinParser() {
 }
 
 void	Command::joinChannel(std::string channelName, std::string channelPassword) {
-	if (channelName.at(0) == '#')
-		channelName = channelName.substr(1);
-	else {
-		ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
-		return;
-	}
+	if (!validChannelName(channelName))
+		return ft_send(this->_client, ERR_INVALIDCHANNEL(this->_client, channelName));
 
+	channelName = formatChannelName(channelName);
 	if (!channelExists(channelName))
 		createChannel(channelName, channelPassword);
 	else {
@@ -53,9 +50,14 @@ void	Command::joinChannel(std::string channelName, std::string channelPassword) 
 		if (permissionToJoinChannel(channel, channelName, channelPassword)) {
 			channel.setInvitedList(_client.getNickname(), REMOVE);
 			channel.addUser(this->_client);
-			ft_send(this->_client, RPL_JOIN(this->_client, channelName));
+			channel.serverMessageToChannel(RPL_JOIN(this->_client.getNickname(), channelName));
+			if (!channel.getTopic().empty())
+				ft_send(_client, RPL_TOPIC(_client, channelName, channel.getTopic()));
 		}
+		else
+			return;
 	}
+	ft_send(_client, currentModesStr(channelName));
 }
 
 void Command::createChannel(std::string channelName, std::string channelPassword) {
@@ -64,8 +66,9 @@ void Command::createChannel(std::string channelName, std::string channelPassword
 
 	newChannel.addUser(this->_client);
 	newChannel.addOperator(this->_client);
-	newChannel.setChannelPassword(channelPassword, _client.getNickname(), true);
-	ft_send(this->_client, RPL_JOIN(this->_client, channelName));
+	if (!channelPassword.empty())
+		newChannel.setChannelPassword(channelPassword, _client.getNickname(), true);
+	newChannel.serverMessageToChannel(RPL_JOIN(this->_client.getNickname(), channelName));
 }
 
 bool Command::permissionToJoinChannel(Channel& channel, std::string channelName, std::string channelPassword) {

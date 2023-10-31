@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/21 18:57:57 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/17 19:59:59 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/23 20:04:49 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
+#include <ctime>
 #include <map>
 #include <vector>
 #include <sys/epoll.h>
 #include <cerrno>
+#include <fcntl.h>
 #include "../client/Client.hpp"
 #include "../channels/Channel.hpp"
 #include "../commands/Command.hpp"
@@ -49,12 +51,14 @@ public:
 
 	std::map<std::string, Channel>&	getChannelList();
 	Channel&						getChannel(std::string channelName);
-	std::map<int, Client>		&getClientList();
+	std::map<int, Client>&			getClientList();
 	std::string						getServerPassword();
 	int								getServerSocket();
 	int								getEpollFd();
 
 	void	addChannelToServer(Channel channel);
+	void	removeClientFromServer(Client &client);
+
 	bool	isProtected();
 	bool	passwordIsValid(const std::string &password);
 
@@ -71,6 +75,9 @@ private:
 	std::map<int, Client>			_clients;
 	std::map<std::string, Channel>	_channels;
 	std::map<std::string, CommandFunction>	_commandMap;
+	std::vector<std::string> _bannedUsers;
+
+	bool isUserBanned(const std::string& str);
 
 	void	createSocket();
 	void	bindSocket();
@@ -85,6 +92,8 @@ private:
 	void	manageClientEvents(Client &client);
 	void	commandHandler(std::string bufferString, Client &client);
 	void	commandMapping();
+
+	bool	validBufferInput(ssize_t bytesRead, std::string bufferInput);
 
 	Server	&operator=(const Server &rhs);
 };

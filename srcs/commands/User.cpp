@@ -6,33 +6,59 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 23:24:53 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 20:19:11 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 22:38:53 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Command.hpp"
+#include <iostream>
 
 void Command::user() {
-	std::string &username = _commandArray[1];
-	size_t firstSpace = username.find(' ');
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
 
-	if (username.empty())
-		username = "guest";
-	else if (firstSpace != username.npos)
-		username = username.substr(0, firstSpace);
-	this->_client.setUsername(username);
+	if (_client.isRegistered() == FULL_REGISTRATION)
+		return ft_send(_client, ERR_ALREADYREGISTRED(_client.getNickname()));
+
+	std::string &userCommand = _commandArray[1];
+	size_t firstSpace = userCommand.find(' ');
+	size_t lastColon = userCommand.find_last_of(':');
+
+	if (firstSpace != userCommand.npos && (lastColon != userCommand.npos \
+		&& lastColon != userCommand.length() - 1))
+	{
+		this->_client.setUsername(userCommand.substr(0, firstSpace));
+		this->_client.setRealname(userCommand.substr(lastColon + 1));
+		_client.setRegistered(USER_REGISTRATION);
+	}
+	else
+	{
+		ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+		std::cout << "one condition failed" << std::endl;
+		if (firstSpace != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.npos)
+			std::cout << "true" << std::endl;
+		if (lastColon != userCommand.length() - 1)
+			std::cout << "true" << std::endl;
+	}
 }
 
 void Command::nick() {
+	if (_commandArray.size() < 2 || _commandArray[1].empty())
+		return ft_send(_client, ERR_NEEDMOREPARAMS(_client, _commandArray[0]));
+
 	std::string newNickname = this->_commandArray[1];
 	std::string oldNickname = this->_client.getNickname();
 
+	if (oldNickname == newNickname)
+		return ft_send(this->_client, NICK(oldNickname, newNickname));
+
 	if (oldNickname.empty())
-		oldNickname = '*';
-	if (nicknameAvailable(newNickname) && nicknameIsValid(newNickname)) {
+		oldNickname = "notSet";
+	if (nicknameIsValid(newNickname) && nicknameAvailable(newNickname)) {
 		this->_client.setNickname(newNickname);
-		if (!this->_client.isRegistered())
-			this->_client.setRegistered(NICK_REGISTRATION);
+		this->_client.setRegistered(NICK_REGISTRATION);
 		ft_send(this->_client, NICK(oldNickname, newNickname));
 		changeNicknameInChannels(oldNickname);
 	}
@@ -42,14 +68,17 @@ bool Command::nicknameAvailable(std::string nickname)
 {
 	if (findClientOnServer(nickname) == _ircServ.getClientList().end())
 		return true;
-	ft_send(this->_client, ERR_NICKNAMEINUSE(this->_client));
+	ft_send(this->_client, ERR_NICKNAMEINUSE(nickname));
 	return false;
 }
 
 bool Command::nicknameIsValid(std::string nickname) {
 	std::string nonAlnumValidChars = "-_^[]{}\\`|";
-	if (nickname.at(0) == '-')
+	if (!std::isalpha(nickname.at(0)) || nickname.length() < 3 || nickname.length() > 12)
+	{
+		ft_send(this->_client, ERR_ERRONEUSNICKNAME(nickname));
 		return false;
+	}
 	for (size_t i = 0; i < nickname.length(); i++)
 	{
 		char letter = nickname.at(i);
@@ -72,6 +101,10 @@ void Command::changeNicknameInChannels(std::string oldNickname) {
 			channel.addUser(this->_client);
 			channel.removeUser(oldNickname);
 			channel.serverMessageToChannel(NICK(oldNickname, this->_client.getNickname()));
+			if (channel.isOperator(oldNickname)) {
+				channel.removeOperator(this->_client);
+				channel.addOperator(this->_client);
+			}
 		}
 	}
 }

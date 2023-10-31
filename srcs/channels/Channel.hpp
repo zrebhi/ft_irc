@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:38:38 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 23:19:09 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 23:46:15 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,24 @@ public:
 	void	addOperator(Client &user);
 	void	removeOperator(Client &user);
 
-	void	userMessageToChannel(Client sender, std::string message);
+	void	userMessageToChannel(Client &sender, std::string message);
 	void	serverMessageToChannel(std::string message);
 // Mode related funcs
 	bool	checkChannelPassword(const std::string &password);
-	void setChannelPassword(const std::string &password, const std::string &name, bool addOrRemove);
-	bool isChannelLocked();
-	void setTopicLock(bool addOrRemove, const std::string &name);
-	void setLimit(bool addOrRemove, const std::string &name, std::string limit);
-	void setTopic(const std::string &name, std::string &content);
-	bool isTopicLocked();
-	int isFull();
-	bool isInviteOnly();
-	bool isInvited(const std::string &name);
-	void setInvitedList(const std::string &clientName, bool addOrRemove);
-	void setInviteOnly(bool addOrRemove, const std::string &name);
-	bool isLimitLocked();
+	void	setChannelPassword(const std::string &password, const std::string &name, bool addOrRemove);
+	bool	isChannelLocked();
+	void	setTopicLock(bool addOrRemove, const std::string &name);
+	void	setLimit(bool addOrRemove, Client &client, std::string limit);
+	void	setTopic(const std::string &name, std::string &content);
+	bool	isTopicLocked();
+	int		isFull();
+	bool	isInviteOnly();
+	bool	isInvited(const std::string &name);
+	void	setInvitedList(const std::string &clientName, bool addOrRemove);
+	void	setInviteOnly(bool addOrRemove, const std::string &name);
+	int 	isLimitLocked();
 //
-	void deleteClient(const std::string &clientName, std::string message);
+	void	deleteClient(const std::string &clientName, std::string message);
 // 
 	bool	isOperator(const std::string &nickname);
 	bool	isUserInChannel(const std::string &nickname) const;
@@ -64,7 +64,7 @@ private:
 	std::string _password;
 	bool _inviteOnly;
 	bool _topicLocked;
-	int _limit;
+	size_t _limit;
 	std::vector<std::string> _invitedList;
 	std::string _topic;
 	std::map<std::string, Client>	_users;

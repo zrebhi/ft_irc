@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:34:06 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/19 20:12:35 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/20 23:55:27 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-Channel::Channel(const std::string &channelName) :
-_name(channelName), _inviteOnly(false), _topicLocked(false), _limit(-1) {}
+Channel::Channel(const std::string &channelName) : _name(channelName), _inviteOnly(false),_topicLocked(false), _limit(MAX_CHAN_USERS) {}
 
 Channel::Channel(const Channel &src) {
 	*this = src;
@@ -47,7 +46,7 @@ void Channel::removeUser(std::string nickname) {
 	this->_users.erase(nickname);
 }
 
-void	Channel::userMessageToChannel(Client sender, std::string message) {
+void	Channel::userMessageToChannel(Client &sender, std::string message) {
 	std::map<std::string, Client>::iterator it = this->_users.begin();
 	for (; it != _users.end(); ++it) {
 		if (it->first != sender.getNickname())
@@ -70,6 +69,10 @@ bool Channel::isOperator(const std::string &nickname) {
 		return false;
 }
 
+bool Channel::isUserInChannel(const std::string &nickname) const
+{
+    return _users.find(nickname) != _users.end();
+}
 std::string Channel::getName() const {
 	return this->_name;
 }
@@ -110,14 +113,10 @@ void Channel::deleteClient(const std::string &clientName, std::string reply)
     std::map<std::string, Client>::iterator clientIt = _users.find(clientName);
     if (clientIt != _users.end())
 	{
-		_users.erase(clientIt);
+        _users.erase(clientIt);
 		std::map<std::string, Client>::iterator it = _users.begin();
 		for (; it != _users.end(); ++it)
 			ft_send(it->second, reply);
 	}
 }
 
-bool Channel::isUserInChannel(const std::string &nickname) const
-{
-	return _users.find(nickname) != _users.end();
-}

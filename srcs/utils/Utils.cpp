@@ -6,31 +6,31 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/10 22:51:39 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 23:41:48 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/19 21:57:12 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Utils.hpp"
 
-int	ft_send(Client user, std::string reply) {
+void	ft_send(Client &user, std::string reply) {
 	if (reply.empty())
-		return 1;
+		return;
 	std::cout << "-> " << reply << std::endl;
 	if (reply.at(reply.length() - 1) != '\n')
 		reply.append("\n");
 	if (send(user.getSocket(), reply.c_str(), reply.length(), 0) == -1) {
 		std::cerr << "Failed to send message" << std::endl;
-		return 1;
+		return;
 	}
-	return 0;
+	return;
 }
-
-#include <cctype>  // Include for isprint function
 
 std::vector<std::string> ft_split(std::string string, char separator) {
 	std::vector<std::string> stringsVector;
 	std::string newString;
 
+	if (string.empty())
+		return stringsVector;
 	for (size_t i = 0; i < string.length(); i++) {
 		if (string[i] == separator) {
 			stringsVector.push_back(newString);
@@ -70,10 +70,14 @@ std::string firstWord(std::string commandLine) {
 
 std::vector<std::string> firstWordSplit(std::string &commandLine) {
 	std::vector<std::string> result;
+	if (commandLine.empty())
+		return result;
 	result.push_back(firstWord(commandLine));
 
-	std::string restOfLine = commandLine.substr(firstWord(commandLine).size() + 1);
-	result.push_back(restOfLine);
+	if (result[0].size() < commandLine.size()) {
+		std::string restOfLine = commandLine.substr(firstWord(commandLine).size() + 1);
+		result.push_back(restOfLine);
+	}
 
 	return result;
 }
@@ -87,4 +91,14 @@ std::vector<std::string>	ircCommandSplitter(std::string command) {
 	else
 		commandArray = ft_split(command, ' ');
 	return commandArray;
+}
+
+bool isValidNumber(const std::string &nbStr)
+{
+	for (size_t i = 0; i < nbStr.length(); i++)
+	{
+		if (!isdigit(nbStr.at(i)))
+			return false;
+	}
+	return true;
 }

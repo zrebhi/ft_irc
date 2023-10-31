@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -g3 -std=c++98 -Wall -Wextra -Werror
 SRCS_DIR = srcs
 OBJS_DIR = .obj
-NAME = ft_irc
+NAME = ircserv
 
 SRCS_LIST = $(wildcard $(SRCS_DIR)/**/*.cpp) $(wildcard $(SRCS_DIR)/*.cpp)
 OBJS_LIST = $(patsubst $(SRCS_DIR)/%.cpp,$(OBJS_DIR)/%.o,$(SRCS_LIST))

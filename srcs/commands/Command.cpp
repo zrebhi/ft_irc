@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 19:03:43 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/14 01:06:56 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/25 22:34:39 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,26 +51,57 @@ bool Command::IsChannelMember(std::string userNickname, std::string channelName)
 bool Command::registerRequest() {
 	if (this->_commandArray[0] == "PASS")
 		pass();
+	else if (this->_commandArray[0] == "QUIT")
+		quit();
+
+	else if (this->_client.isRegistered() == SERV_REGISTRATION)
+		return false;
 	else if (this->_commandArray[0] == "NICK")
 		nick();
-	if (this->_client.isRegistered())
+	else if (this->_commandArray[0] == "USER")
+		user();
+	else if (_client.isRegistered() == FULL_REGISTRATION)
 		return true;
+	else if (_client.isRegistered() == SERV_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter your password (ex: /PASS myPassword)"));
+	else if (_client.isRegistered() == NICK_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter a valid nickname (ex: /NICK myNickname)"));
+	else if (_client.isRegistered() == USER_REGISTRATION)
+		ft_send(_client, ERR_NOTREGISTERED_MSG(_client, "You need to enter valid user infos (ex: /USER guest 0 * :Ronnie Reagan)"));
 	return false;
 }
 
 bool Command::validServerPassword() {
 	if (!this->_ircServ.isProtected() || this->_ircServ.getServerPassword() == this->_client.getPassword())
 		return true;
-	ft_send(this->_client, ERR_PASSWDMISMATCH);
 	return false;
 }
 
-std::map<int, Client>::const_iterator Command::findClientOnServer(const std::string &nickname) {
-	std::map<int, Client>::const_iterator it;
+std::map<int, Client>::iterator Command::findClientOnServer(const std::string &nickname) {
+	std::map<int, Client>::iterator it;
     for (it = _ircServ.getClientList().begin(); it != _ircServ.getClientList().end(); ++it)
 	{
         if (it->second.getNickname() == nickname)
             return it;
     }
     return _ircServ.getClientList().end();
+}
+
+bool Command::validChannelName(std::string channelName) {
+	if (channelName[0] != '#' || channelName.size() < 2)
+		return false;
+	std::string allowedSpecialChars = "-[]`^{}\'\"";
+	for (size_t i = 1; i < channelName.size(); i++) {
+		if (!std::isalnum(channelName[i]) && allowedSpecialChars.find(channelName[i]) == allowedSpecialChars.npos)
+			return false;
+	}
+	return true;
+}
+
+std::string Command::formatChannelName(std::string channelName) {
+	channelName = channelName.substr(1);
+	for (size_t i = 0; i < channelName.size(); i++) {
+		channelName[i] = std::tolower(channelName[i]);
+	}
+	return channelName;
 }

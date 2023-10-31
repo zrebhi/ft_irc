@@ -6,7 +6,7 @@
 /*   By: zrebhi <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 18:50:31 by zrebhi            #+#    #+#             */
-/*   Updated: 2023/10/18 21:54:25 by zrebhi           ###   ########.fr       */
+/*   Updated: 2023/10/21 00:35:30 by zrebhi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,13 @@ public:
 	void	invite();
 	void	kick();
 	void	quit();
+	void	topic();
 
 	bool	registerRequest();
 
 	void	setITKL_Modes(char letterMode, size_t &argIndex);
 	void	setO_Modes(size_t &argIndex);
-	void	currentModesStr();
+	std::string	currentModesStr(std::string channelName);
 
 private:
 	std::vector<std::string> _commandArray;
@@ -61,8 +62,11 @@ private:
 
 	bool	validServerPassword();
 
+	bool		validChannelName(std::string channelName);
+	std::string	formatChannelName(std::string channelName);
+
 	void	createChannel(std::string channelName, std::string password);
 	bool	channelExists(std::string channelName);
 	bool	IsChannelMember(std::string userNickname, std::string channelName);
-	std::map<int, Client>::const_iterator findClientOnServer(const std::string &nickname);
+	std::map<int, Client>::iterator findClientOnServer(const std::string &nickname);
 };

@@ -63,3 +63,4 @@ bool Server::serverRunning() {
 bool Server::isProtected() {
 	return (_password.empty() == false);
 }
+
